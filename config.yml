@@ -1,0 +1,8 @@
+tableDefaults:
+    elimination: false
+    minBuy: 10000
+    maxBuy: 100000
+    sb: 500
+    bb: 1000
+    ante: 100
+    dynamicAnteFreq: 0
