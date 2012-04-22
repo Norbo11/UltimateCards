@@ -1,0 +1,23 @@
+name: UltimatePoker
+description: 'The ultimate plugin for Texas Holdem on Bukkit!'
+version: 0.1
+main: com.github.Norbo11.UltimatePoker
+commands:
+    table:
+        description: 'Controls the tables of the UltimatePoker plugin.'
+        usage: 'Usage: /<command>'
+    tables:
+        description: 'Lists all created tables. Alias for /table list.'
+        usage: 'Usage: /<command>'
+    hand:
+        description: 'Controls the hand commands.'
+        usage: 'Usage: /<command>'        
+permissions:
+    upoker.*:
+        description: 'Gives access to every command of the UltimatePoker plugin.'
+        children:
+            upoker.create.table: true
+        default: op
+    upoker.table.create:
+        description: 'Gives access to /table createtable'
+        default: op
