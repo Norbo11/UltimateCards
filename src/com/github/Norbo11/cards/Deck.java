@@ -1,26 +1,17 @@
 package com.github.Norbo11.cards;
 
-<<<<<<< HEAD
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-=======
-import java.util.List;
-import java.util.ArrayList;
->>>>>>> dc2025a689dd38f6adc063612beeb247891ae7ed
 
 import com.github.Norbo11.UltimatePoker;
+import com.github.Norbo11.cards.Card;
 
 public class Deck {
 
     UltimatePoker p;
-<<<<<<< HEAD
     List<Card> cards = new ArrayList<Card>(51);
-=======
-    List<Card> cards = new ArrayList<Card>();
->>>>>>> dc2025a689dd38f6adc063612beeb247891ae7ed
-
     String[] ranks = {"Ace","King","Queen","Jack","10","9","8","7","6","5","4","3","2"};
     String[] suits = {"Spades","Clubs","Hearts","Diamonds"};
 
@@ -54,8 +45,7 @@ public class Deck {
             }
         }
     }
-<<<<<<< HEAD
-    
+
     public Card[] generateCards(int number)
     {
         Card[] returnValue = new Card[number];
@@ -69,6 +59,4 @@ public class Deck {
         }
         return returnValue;
     }
-=======
->>>>>>> dc2025a689dd38f6adc063612beeb247891ae7ed
 }

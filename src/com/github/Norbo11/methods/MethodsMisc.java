@@ -1,14 +1,11 @@
 package com.github.Norbo11.methods;
 
-<<<<<<< HEAD
 import org.bukkit.entity.Player;
 
 import com.github.Norbo11.UltimatePoker;
 import com.github.Norbo11.cards.PokerPlayer;
 import com.github.Norbo11.table.Table;
-=======
-import com.github.Norbo11.UltimatePoker;
->>>>>>> dc2025a689dd38f6adc063612beeb247891ae7ed
+
 
 public class MethodsMisc {
 
@@ -32,7 +29,6 @@ public class MethodsMisc {
             return false;
         }
     }
-<<<<<<< HEAD
     
     public PokerPlayer isAPokerPlayer(Player player)
     {
@@ -52,6 +48,4 @@ public class MethodsMisc {
         //If no match is found, retun null
         return null;
     }
-=======
->>>>>>> dc2025a689dd38f6adc063612beeb247891ae7ed
 }
