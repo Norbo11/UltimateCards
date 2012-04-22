@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 table:
     chatrange: 30
     defaults:
@@ -8,3 +9,13 @@ table:
         bb: 1000
         ante: 100
         dynamicAnteFreq: 0
+=======
+tableDefaults:
+    elimination: false
+    minBuy: 10000
+    maxBuy: 100000
+    sb: 500
+    bb: 1000
+    ante: 100
+    dynamicAnteFreq: 0
+>>>>>>> dc2025a689dd38f6adc063612beeb247891ae7ed

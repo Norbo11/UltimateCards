@@ -1,18 +1,25 @@
 package com.github.Norbo11.cards;
 
+<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.List;
 
+=======
+>>>>>>> dc2025a689dd38f6adc063612beeb247891ae7ed
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.github.Norbo11.UltimatePoker;
+<<<<<<< HEAD
 import com.github.Norbo11.table.Table;
+=======
+>>>>>>> dc2025a689dd38f6adc063612beeb247891ae7ed
 
 public class PokerPlayer {
 
     UltimatePoker p;
 
+<<<<<<< HEAD
     public Player player;
     public Location startLocation;
     public Table table;
@@ -62,5 +69,16 @@ public class PokerPlayer {
     public void takeAction()
     {
         
+=======
+    public String name;
+    public Location startLocation;
+
+    public PokerPlayer(Player player)
+    {
+        p = new UltimatePoker();
+
+        name = player.getName();
+        startLocation = player.getLocation();
+>>>>>>> dc2025a689dd38f6adc063612beeb247891ae7ed
     }
 }

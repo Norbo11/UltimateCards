@@ -6,12 +6,21 @@ commands:
     table:
         description: 'Controls the tables of the UltimatePoker plugin.'
         usage: 'Usage: /<command>'
+<<<<<<< HEAD
     tables:
         description: 'Lists all created tables. Alias for /table list.'
         usage: 'Usage: /<command>'
     hand:
         description: 'Controls the hand commands.'
         usage: 'Usage: /<command>'        
+=======
+    pk:
+        description: 'Controls the tables of the UltimatePoker plugin. Alias for /table.'
+        usage: 'Usage: /<command>'
+    tables:
+        description: 'Lists all created tables. Alias for /table list.'
+        usage: 'Usage: /<command>'
+>>>>>>> dc2025a689dd38f6adc063612beeb247891ae7ed
 permissions:
     upoker.*:
         description: 'Gives access to every command of the UltimatePoker plugin.'

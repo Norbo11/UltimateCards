@@ -3,6 +3,7 @@ package com.github.Norbo11;
 import java.io.File;
 import java.util.logging.Logger;
 
+<<<<<<< HEAD
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
 
@@ -13,6 +14,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.Norbo11.methods.MethodsError;
 import com.github.Norbo11.methods.MethodsHand;
+=======
+import org.bukkit.ChatColor;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import com.github.Norbo11.methods.ErrorDisplay;
+>>>>>>> dc2025a689dd38f6adc063612beeb247891ae7ed
 import com.github.Norbo11.methods.MethodsMisc;
 import com.github.Norbo11.table.TableDisplay;
 import com.github.Norbo11.table.TableMethods;
@@ -26,15 +33,21 @@ public class UltimatePoker extends JavaPlugin {
     //Classes
     public TableMethods tableMethods;
     public TableDisplay tableDisplay;
+<<<<<<< HEAD
     public MethodsError methodsError;
     public MethodsMisc methodsMisc;
     public MethodsHand methodsHand;
+=======
+    public ErrorDisplay errorDisplay;
+    public MethodsMisc methodsMisc;
+>>>>>>> dc2025a689dd38f6adc063612beeb247891ae7ed
 
     //Variables
     public Logger log;
     public String version = "0.1";
     public String pluginTag = ChatColor.BLUE + "[UPoker]" + ChatColor.WHITE + " ";
     public String PLUGIN_DIRECTORY = "plugins/UltimatePoker/";
+<<<<<<< HEAD
     public Economy economy;
     public Vault vault;
 
@@ -57,6 +70,10 @@ public class UltimatePoker extends JavaPlugin {
         return true;
     }
     
+=======
+
+
+>>>>>>> dc2025a689dd38f6adc063612beeb247891ae7ed
     public void onEnable()
     {
 
@@ -65,9 +82,14 @@ public class UltimatePoker extends JavaPlugin {
         CommandExecutor = new ListenerCommandExecutor(this);
         tableMethods = new TableMethods(this);
         tableDisplay = new TableDisplay(this);
+<<<<<<< HEAD
         methodsError = new MethodsError(this);
         methodsMisc = new MethodsMisc(this);
         methodsHand = new MethodsHand(this);
+=======
+        errorDisplay = new ErrorDisplay(this);
+        methodsMisc = new MethodsMisc(this);
+>>>>>>> dc2025a689dd38f6adc063612beeb247891ae7ed
 
         File pluginConfig = new File(PLUGIN_DIRECTORY + "config.yml");
         try
@@ -83,6 +105,7 @@ public class UltimatePoker extends JavaPlugin {
 
         getCommand("table").setExecutor(CommandExecutor);
         getCommand("tables").setExecutor(CommandExecutor);
+<<<<<<< HEAD
         getCommand("hand").setExecutor(CommandExecutor);
         
         if (setupVault() == true)
@@ -104,6 +127,10 @@ public class UltimatePoker extends JavaPlugin {
             return;
         }
         
+=======
+        getCommand("pk").setExecutor(CommandExecutor);
+
+>>>>>>> dc2025a689dd38f6adc063612beeb247891ae7ed
         log.info("UltimatePoker v" + version + " plugin enabled!");
     }
 
