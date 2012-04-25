@@ -2,6 +2,7 @@ package com.github.Norbo11.methods;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import com.github.Norbo11.UltimatePoker;
 
@@ -34,7 +35,8 @@ public class ErrorDisplay {
         }
         if (command.equals("hand"))
         {
-
+            sender.sendMessage(p.pluginTag + ChatColor.GOLD + "/hand");
+            sender.sendMessage(p.pluginTag + ChatColor.GOLD + "/hand bet [amount[]");
         }
     }
 
@@ -45,24 +47,32 @@ public class ErrorDisplay {
 
     public void usage(CommandSender sender, String command)
     {
-        if (command.equals("tablehelp")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /table help");
-        if (command.equals("tablecreate")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /table create|new [name]");
-        if (command.equals("tablelist")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /table list");
-        if (command.equals("tableopen")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /table open|o");
-        if (command.equals("tableclose")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /table close");
-        if (command.equals("tabledelete")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /table delete");
-        if (command.equals("tableset")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /table set [setting] [value]");
-        if (command.equals("tablesettings")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /table settings.");
-        if (command.equals("tablesit")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /table sit [ID] [buy-in]. Check available tables with /table list.");
-        if (command.equals("tableleave")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /table leave");
-        if (command.equals("tablegetup")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /table getup");
-        if (command.equals("tablelistsettings")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /table listsettings");
-        if (command.equals("tableteleport")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /table tp [ID]");
+        //Help
+        if (command.equals("tablehelp")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /table help. Displays all table commands.");
+        if (command.equals("handhelp")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /hand help. Displays all hand commands.");
+        
+        //Table
+        if (command.equals("create")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /table create|new [name]. Creates a new table.");
+        if (command.equals("list")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /table list. List all created tables.");
+        if (command.equals("open")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /table open|o. Opens the table that you currently own.");
+        if (command.equals("close")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /table close. Closes the table that you currently own.");
+        if (command.equals("delete")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /table delete. Deletes the table that you currently own.");
+        if (command.equals("set")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /table set [setting] [value]. Sets the setting to the value specified in the table that you currently own. Use /table listsettings to list all possible settings.");
+        if (command.equals("settings")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /table settings. Lists the current table settings.");
+        if (command.equals("sit")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /table sit [ID] [buy-in]. Sits at table [ID] and teleports you there. Check available tables with /table list.");
+        if (command.equals("leave")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /table leave. Gets up from your current table.");
+        if (command.equals("listsettings")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /table listsettings. Lists all available settings for /table set.");
+        if (command.equals("teleport")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /table tp [ID]. Teleports you to the table with the respective ID.");
+        
+        //Hand
+        if (command.equals("bet")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /hand bet [amount]. Bets an amount of money.");
+        if (command.equals("fold")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /hand fold. Folds your hand.");
+        if (command.equals("call")) sender.sendMessage(p.pluginTag + ChatColor.RED + "Usage: /hand call. Calls the latest bet.");
     }
 
     public void notANumber(CommandSender sender, String value)
     {
-        sender.sendMessage(p.pluginTag + ChatColor.RED + "'" + ChatColor.GOLD + value + ChatColor.RED + "' is not a valid integer!");
+        sender.sendMessage(p.pluginTag + ChatColor.RED + "'" + ChatColor.GOLD + value + ChatColor.RED + "' is not a valid number!");
     }
 
     public void notPlayer(CommandSender sender)
@@ -98,5 +108,10 @@ public class ErrorDisplay {
     public void tableIsInProgress(CommandSender sender)
     {
         sender.sendMessage(p.pluginTag + ChatColor.RED + "Table is currently in progress!");
+    }
+
+    public void notYourTurn(Player player)
+    {
+        player.sendMessage(p.pluginTag + ChatColor.RED + "It's not your turn to act!");
     }
 }

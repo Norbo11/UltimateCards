@@ -1,5 +1,6 @@
 package com.github.Norbo11.methods;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.github.Norbo11.UltimatePoker;
@@ -47,5 +48,31 @@ public class MethodsMisc {
         }
         //If no match is found, retun null
         return null;
+    }
+
+    public boolean isDouble(String amount)
+    {
+        try
+        {
+            double dbl = Double.parseDouble(amount);
+            if (dbl >= 0)
+            {
+                return true;
+            } else return false;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+    }
+
+    public void sendToAllWithinRange(Location location, String message)
+    {
+        Player[] players = p.getServer().getOnlinePlayers();
+        for (Player player : players)
+        {
+            if (player.getLocation().distance(location) < p.getConfig().getInt("table.chatrange"));
+            player.sendMessage(message);
+        }
     }
 }

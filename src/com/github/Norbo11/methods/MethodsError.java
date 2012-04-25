@@ -36,7 +36,7 @@ public class MethodsError {
         }
         if (command.equals("hand"))
         {
-
+            player.sendMessage(p.pluginTag + ChatColor.GOLD + "/hand");
         }
     }
 
@@ -93,9 +93,9 @@ public class MethodsError {
         player.sendMessage(p.pluginTag + ChatColor.RED + "There is no table with the ID of " + id + ".");
     }
 
-    public void notWithinBuyinBounds(Player player, String buyin, int minbuy, int maxbuy)
+    public void notWithinBuyinBounds(Player player, String buyin, double minbuy, double maxbuy)
     {
-        player.sendMessage(p.pluginTag + ChatColor.RED + "Buy-in amount " + ChatColor.GOLD + buyin + ChatColor.WHITE + " is not within the table buy-in boundries. Min: " + Integer.toString(minbuy) + ". Max: " + Integer.toString(maxbuy) + ".");
+        player.sendMessage(p.pluginTag + ChatColor.RED + "Buy-in amount " + ChatColor.GOLD + buyin + ChatColor.WHITE + " is not within the table buy-in boundries. Min: " + Double.toString(minbuy) + ". Max: " + Double.toString(maxbuy) + ".");
     }
 
     public void notOpen(Player player, String id)

@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.github.Norbo11.UltimatePoker;
+import com.github.Norbo11.cards.Card;
 import com.github.Norbo11.cards.Deck;
 import com.github.Norbo11.cards.PokerPlayer;
 
@@ -15,28 +16,39 @@ public class Table {
 
     UltimatePoker p;
 
+    //Generic vars
     public Player owner;
     public String name;
     public int id;
     public Location location;
     public boolean inProgress;
-    public int turn;
 
     public boolean open = false;
 
+    //Settings
+    public boolean minRaiseIsAlwaysBB;
     public boolean elimination;
-    public int minBuy;
-    public int maxBuy;
-    public int originalSB;
-    public int originalBB;
-    public int originalAnte;
-    public int sb;
-    public int bb;
-    public int ante;
-    public int dynamicAnteFreq;
+    public double minBuy;
+    public double maxBuy;
+    public double minRaise;
+    public double originalSB;
+    public double originalBB;
+    public double originalAnte;
+    public double sb;
+    public double bb;
+    public double ante;
+    public double dynamicAnteFreq;
     
+    //Bet related stuff
+    public double pot;
+    public double currentBet;
+    public int turn;
+    
+    //Important shit
     public List<PokerPlayer> players = new ArrayList<PokerPlayer>();
+    public List<Card> board = new ArrayList<Card>(4);
     public Deck deck;
+    public int currentPhase;
 
     public Table(Player owner, String name, int id, Location location, UltimatePoker p)
     {
@@ -49,12 +61,14 @@ public class Table {
         open = false;
 
         elimination = p.getConfig().getBoolean("table.defaults.elimination");
-        minBuy = p.getConfig().getInt("table.defaults.minBuy");
-        maxBuy = p.getConfig().getInt("table.defaults.maxBuy");
-        sb = p.getConfig().getInt("table.defaults.sb");
-        bb = p.getConfig().getInt("table.defaults.bb");
-        ante = p.getConfig().getInt("table.defaults.ante");
-        dynamicAnteFreq = p.getConfig().getInt("table.defaults.dynamicAnteFreq");
+        minBuy = p.getConfig().getDouble("table.defaults.minBuy");
+        maxBuy = p.getConfig().getDouble("table.defaults.maxBuy");
+        sb = p.getConfig().getDouble("table.defaults.sb");
+        bb = p.getConfig().getDouble("table.defaults.bb");
+        ante = p.getConfig().getDouble("table.defaults.ante");
+        dynamicAnteFreq = p.getConfig().getDouble("table.defaults.dynamicAnteFreq");
+        minRaise = p.getConfig().getDouble("table.defaults.minRaise");
+        minRaiseIsAlwaysBB = p.getConfig().getBoolean("table.defaults.minRaiseIsAlwaysBB");
 
         originalSB = sb;
         originalBB = bb;
@@ -81,82 +95,85 @@ public class Table {
         } else player.sendMessage(p.pluginTag + ChatColor.RED + "'" + value + "' is an invalid value! Please specify 'true' or 'false' only.");
     }
 
-    public void setMinBuy(Player player, String value)
+    public void setNumberValue(Player player, String setting, String v)
     {
-        if (p.methodsMisc.isInteger(value) == true)
+        if (p.methodsMisc.isDouble(v) == true)
         {
-            minBuy = Integer.parseInt(value);
+            double value = Double.parseDouble(v);
+            
+            if (setting.equalsIgnoreCase("minBuy")) { minBuy = value;
+            player.sendMessage(p.pluginTag + "Minimum buy-in for table set to " + ChatColor.GOLD + value + "!"); }
+            
+            if (setting.equalsIgnoreCase("maxBuy")) { maxBuy = value;
+            player.sendMessage(p.pluginTag + "Maximum buy-in for table set to " + ChatColor.GOLD + value + "!"); }
+            
+            if (setting.equalsIgnoreCase("sb")) { sb = value; originalSB = sb;
+            player.sendMessage(p.pluginTag + "Small blind for table set to " + ChatColor.GOLD + value + "!"); }
+            
+            if (setting.equalsIgnoreCase("bb")) { bb = value; originalSB = bb;
+            player.sendMessage(p.pluginTag + "Big blind for table set to " + ChatColor.GOLD + value + "!"); }
+            
+            if (setting.equalsIgnoreCase("ante")) { ante = value; originalAnte = ante;
+            player.sendMessage(p.pluginTag + "Ante for table set to " + ChatColor.GOLD + value + "!"); }
+            
+            if (setting.equalsIgnoreCase("minRaise") && p.getConfig().getBoolean("table.minRaiseIsAlwaysBB") == false) 
+            { minRaise = value;
+                player.sendMessage(p.pluginTag + "Minimum buy-in for table set to " + ChatColor.GOLD + value + "!"); 
+            } else
             player.sendMessage(p.pluginTag + "Minimum buy-in for table set to " + ChatColor.GOLD + value + "!");
-        } else p.methodsError.notANumber(player, value);
-    }
-
-    public void setMaxBuy(Player player, String value)
-    {
-        if (p.methodsMisc.isInteger(value) == true)
-        {
-            maxBuy = Integer.parseInt(value);
-            player.sendMessage(p.pluginTag + "Maximum buy-in for table set to " + ChatColor.GOLD + value + "!");
-        } else p.methodsError.notANumber(player, value);
-    }
-
-    public void setSB(Player player, String value)
-    {
-        if (p.methodsMisc.isInteger(value) == true)
-        {
-            sb = Integer.parseInt(value);
-            player.sendMessage(p.pluginTag + "Small blind for table set to " + ChatColor.GOLD + value + "!");
-        } else p.methodsError.notANumber(player, value);
-    }
-
-    public void setBB(Player player, String value)
-    {
-        if (p.methodsMisc.isInteger(value) == true)
-        {
-            bb = Integer.parseInt(value);
-            player.sendMessage(p.pluginTag + "Big blind for table set to " + ChatColor.GOLD + value + "!");
-        } else p.methodsError.notANumber(player, value);
-    }
-
-    public void setAnte(Player player, String value)
-    {
-        if (p.methodsMisc.isInteger(value) == true)
-        {
-            ante = Integer.parseInt(value);
-            player.sendMessage(p.pluginTag + "Ante for table set to " + ChatColor.GOLD + value + "!");
-        } else p.methodsError.notANumber(player, value);
-    }
-
-    public void setDynamicAnteFreq(Player player, String value)
-    {
-        if (p.methodsMisc.isInteger(value) == true)
-        {
-            dynamicAnteFreq = Integer.parseInt(value);
-            if (dynamicAnteFreq > 0)
-            {
-                player.sendMessage(p.pluginTag + "Your table ante + blinds will now increase by themselves every " + ChatColor.GOLD + value + ChatColor.WHITE + " hands.");
-            } else player.sendMessage(p.pluginTag + "Your table ante + blidns will now never increase on its own.");
-        } else p.methodsError.notANumber(player, value);
+            
+            if (setting.equalsIgnoreCase("setDynamicAnteFreq")) { dynamicAnteFreq = value;
+            player.sendMessage(p.pluginTag + "Minimum buy-in for table set to " + ChatColor.GOLD + value + "!"); }
+        } else p.methodsError.notANumber(player, v);
     }
     
+    public void displayBoard(Player who)
+    {
+        if (who == null) 
+        {
+            p.methodsMisc.sendToAllWithinRange(location, p.pluginTag + "Community Cards: ");
+            p.methodsMisc.sendToAllWithinRange(location, p.pluginTag + ChatColor.GOLD + "----------------------------------");
+            for (Card card : board) p.methodsMisc.sendToAllWithinRange(location, p.pluginTag + card.toString());
+        } else 
+        {
+            who.sendMessage(p.pluginTag + "Community Cards: ");
+            who.sendMessage(p.pluginTag + ChatColor.GOLD + "----------------------------------");
+            for (Card card : board) who.sendMessage(p.pluginTag + card.toString());
+        }
+    }
+
+    public void showdown()
+    {
+        currentPhase = 4;
+
+    }
+   
     public void river()
     {
-        
+        currentPhase = 3;
     }
     
     public void turn()
     {
-        
+        currentPhase = 2;
     }
     
     public void flop()
     {
-        
+        currentPhase = 1;
+        Card[] cards = deck.generateCards(3);
+        board.add(cards[0]);
+        board.add(cards[1]);
+        board.add(cards[2]);
+        displayBoard(null);
+        turn = 0;
+        players.get(turn).takeAction();
     }
     
     public void preflop()
     {
-        for (PokerPlayer player : players)
-        player.takeAction();
+        currentPhase = 0;
+        players.get(turn).takeAction();
     }
 
     public void deal()
@@ -175,5 +192,23 @@ public class Table {
             inProgress = true;
             deal();
         } else inProgress = false;
+    }
+
+    public void nextPersonTurn()
+    {
+        if (turn < players.size() - 1)
+        {
+            turn++;
+            players.get(turn).takeAction();
+        }
+        else nextPhase();
+    }
+    
+    public void nextPhase()
+    {
+        if (currentPhase == 0) flop();
+        if (currentPhase == 1) turn();
+        if (currentPhase == 2) river();
+        if (currentPhase == 3) showdown();
     }
 }

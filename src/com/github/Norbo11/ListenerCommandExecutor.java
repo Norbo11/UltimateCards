@@ -32,10 +32,35 @@ public class ListenerCommandExecutor implements CommandExecutor {
             if (sender instanceof Player)
             {
                 Player player = (Player) sender;
-                if (args.length == 0) p.methodsHand.displayHand(player);
-                else p.methodsError.usage(player, "hand");
-                return true;
-            } else { p.methodsError.notPlayer(sender); return true; }
+                if (args.length > 0) 
+                {
+                    String action = args[0];
+                    if (action.equalsIgnoreCase("help"))
+                    {
+                        if (args.length == 1) p.methodsError.displayHelp(player, "hand");
+                        else p.methodsError.usage(player, "handhelp");
+                        return true;
+                    }
+                    if (action.equalsIgnoreCase("bet"))
+                    {
+                        if (args.length == 2) p.methodsHand.bet(player, args[1]);
+                        else p.methodsError.usage(player, "bet");
+                        return true;
+                    }
+                    if (action.equalsIgnoreCase("fold"))
+                    {
+                        if (args.length == 1) p.methodsHand.fold(player);
+                        else p.methodsError.usage(player, "fold");
+                        return true;
+                    }
+                    if (action.equalsIgnoreCase("call"))
+                    {
+                        if (args.length == 1) p.methodsHand.call(player);
+                        else p.methodsError.usage(player, "call");
+                        return true;
+                    }
+                } else p.methodsHand.displayHand(player);
+            } else p.methodsError.notPlayer(sender);
         }
         if (command.getName().equalsIgnoreCase("table"))
         {
@@ -49,7 +74,7 @@ public class ListenerCommandExecutor implements CommandExecutor {
                     {
                         if (args.length == 1) p.methodsError.displayHelp(player, "table");
                         else if (args.length == 2) p.methodsError.displayHelp(player, args[1]);
-                        else p.methodsError.usage(player, "help");
+                        else p.methodsError.usage(player, "tablehelp");
                     }
                     if (action.equalsIgnoreCase("list"))
                     {

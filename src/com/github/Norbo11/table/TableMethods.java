@@ -106,7 +106,7 @@ public class TableMethods {
         if (pokerPlayer != null)
         {
             player.teleport(pokerPlayer.startLocation);
-            pokerPlayer.table.players.remove(player);
+            pokerPlayer.table.players.remove(pokerPlayer);
             player.sendMessage(p.pluginTag + "You have left table '" + ChatColor.GOLD + pokerPlayer.table.name + ChatColor.WHITE + "', ID #" + ChatColor.GOLD + pokerPlayer.table.id + ChatColor.WHITE + ".");
         } else player.sendMessage(p.pluginTag + ChatColor.RED + "You are not sitting at any table! Sit with /table sit [ID].");
     }
@@ -120,7 +120,7 @@ public class TableMethods {
             {
                 player.sendMessage(p.pluginTag + "You have started the game at table '" + ChatColor.GOLD + table.name + ChatColor.WHITE + "', ID #" + ChatColor.GOLD + table.id + ChatColor.WHITE + ".");
                 table.setInProgress(true);
-            } p.methodsError.tableIsInProgress(player);
+            } else p.methodsError.tableIsInProgress(player);
         } else p.methodsError.notOwnerOfTable(player);
     }
 
@@ -139,10 +139,10 @@ public class TableMethods {
 
     public Table isATable(int ID)
     {
-        for (int i = 0; i < tables.size(); i++)
+        for (Table table : tables)
         {
-            if (tables.get(i).id == ID)
-            return tables.get(i);
+            if (table.id == ID && table != null)
+            return table;
         }
         return null;
     }
@@ -176,12 +176,12 @@ public class TableMethods {
             switch (setting)
             {
                 case "elimination": table.setElimination(player, value); break;
-                case "minBuy": table.setMinBuy(player, value); break;
-                case "maxBuy": table.setMaxBuy(player, value); break;
-                case "sb": table.setSB(player, value); break;
-                case "bb": table.setBB(player, value); break;
-                case "ante": table.setAnte(player, value); break;
-                case "dynamicAnteFrequency": table.setDynamicAnteFreq(player, value); break;
+                case "minBuy": table.setNumberValue(player, "minBuy", value); break;
+                case "maxBuy": table.setNumberValue(player, "maxBuy", value); break;
+                case "sb": table.setNumberValue(player, "sb", value); break;
+                case "bb": table.setNumberValue(player, "bb", value); break;
+                case "ante": table.setNumberValue(player, "ante", value); break;
+                case "dynamicAnteFrequency": table.setNumberValue(player, "dynamicAnteFrequency", value); break;
                 default: player.sendMessage(p.pluginTag + ChatColor.RED + "Invalid setting. Check available settings with /table listsettings");
             }
         }
