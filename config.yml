@@ -1,5 +1,6 @@
 table:
     chatrange: 30
+    allowRake: true
     minRaiseIsAlwaysBB: true
     defaults:
         elimination: false
@@ -9,3 +10,4 @@ table:
         bb: 1000
         ante: 100
         dynamicAnteFreq: 0
+        rake: 0.05
