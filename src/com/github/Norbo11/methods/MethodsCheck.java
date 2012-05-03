@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 
 import com.github.Norbo11.UltimatePoker;
 import com.github.Norbo11.classes.PokerPlayer;
+import com.github.Norbo11.classes.Pot;
 import com.github.Norbo11.classes.Table;
 
 public class MethodsCheck
@@ -25,8 +26,9 @@ public class MethodsCheck
             for (PokerPlayer pokerPlayer : table.players)
             {
                 // If the player list contains the player we are looking for
-                if (pokerPlayer.player == player)
+                if (pokerPlayer != null)
                 {
+                    if (pokerPlayer.player == player)
                     return pokerPlayer;
                 }
             }
@@ -41,8 +43,9 @@ public class MethodsCheck
         for (PokerPlayer pokerPlayer : table.players)
         {
             // If the player list contains the player we are looking for
-            if (pokerPlayer.id == id)
+            if (pokerPlayer != null)
             {
+                if (pokerPlayer.id == id)
                 return pokerPlayer;
             }
         }
@@ -105,6 +108,18 @@ public class MethodsCheck
             if (table.owner == player)
             {
                 return table;
+            }
+        }
+        return null;
+    }
+    
+    public Pot isAPot(Table table, int id)
+    {
+        for (Pot pot : table.pots)
+        {
+            if (pot.id == id)
+            {
+                return pot;
             }
         }
         return null;

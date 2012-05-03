@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 
 import com.github.Norbo11.UltimatePoker;
 import com.github.Norbo11.classes.PokerPlayer;
+import com.github.Norbo11.classes.Pot;
 import com.github.Norbo11.classes.Table;
 
 public class MethodsTable
@@ -27,7 +28,7 @@ public class MethodsTable
         player.sendMessage(p.pluginTag + p.gold + "sb [number] - " + p.white + "Set the small blind.");
         player.sendMessage(p.pluginTag + p.gold + "bb [number] - " + p.white + "Set the big blind");
         player.sendMessage(p.pluginTag + p.gold + "ante [number] - " + p.white + "Sets the ante.");
-        player.sendMessage(p.pluginTag + p.gold + "dynamicAnteFrequency [number] - " + p.white
+        player.sendMessage(p.pluginTag + p.gold + "dynamicFrequency [number] - " + p.white
         + "This decides that every [number] hands, the ante + blinds will increase by themselves. 0 = disabled.");
         player.sendMessage(p.pluginTag + p.gold + "rake [number] - " + p.white + "How much of the pot you will get every hand, in percentages. Example: 0.05 = 5% rake.");
     }
@@ -41,14 +42,8 @@ public class MethodsTable
             {
                 table.open = false;
                 player.sendMessage(p.pluginTag + "Table ID '" + p.gold + table.name + p.white + "', ID #" + p.gold + table.id + p.white + " is now closed! Players now can't join!");
-            } else
-            {
-                player.sendMessage(p.pluginTag + "Table ID '" + p.gold + table.name + p.white + "', ID #" + p.gold + table.id + p.white + " is already closed!");
-            }
-        } else
-        {
-            p.methodsError.notOwnerOfTable(player);
-        }
+            } else player.sendMessage(p.pluginTag + p.red + "Table ID " + p.gold + table.name + p.red + ", ID #" + p.gold + table.id + p.red + " is already closed!");
+        } else p.methodsError.notOwnerOfTable(player);
     }
 
     public void createTable(Player player, String tableName)
@@ -79,20 +74,14 @@ public class MethodsTable
         Table table = p.methodsCheck.isOwnerOfTable(player);
         if (table != null)
         {
-            if (table.inProgress == false)
+            for (PokerPlayer pokerPlayer : table.players)
             {
-                if (table.pot == 0)
-                {
-                    for (PokerPlayer pokerPlayer : table.players)
-                    {
-                        pokerPlayer.player.teleport(pokerPlayer.startLocation);
-                        pokerPlayer.sendMessage(p.pluginTag + "You have been paid " + p.gold + p.methodsMisc.formatMoney(pokerPlayer.money)+ p.white + " because " + p.gold + table.owner.getName() + p.white + " closed the table.");
-                        p.economy.depositPlayer(pokerPlayer.player.getName(), pokerPlayer.money);
-                    }
-                    p.tables.remove(table);
-                    player.sendMessage(p.pluginTag + "Table ID '" + p.gold + table.name + p.white + "', ID #" + p.gold + table.id + p.white + " has been deleted!");
-                } else p.methodsError.potExists(player, table.pot);
-            } else p.methodsError.tableIsInProgress(player);
+                pokerPlayer.player.teleport(pokerPlayer.startLocation);
+                pokerPlayer.sendMessage(p.pluginTag + "You have been paid " + p.gold + p.methodsMisc.formatMoney(pokerPlayer.money + pokerPlayer.totalBet)+ p.white + " because " + p.gold + table.owner.getName() + p.white + " closed the table.");
+                p.economy.depositPlayer(pokerPlayer.player.getName(), pokerPlayer.money + pokerPlayer.totalBet);
+            }
+            p.tables.remove(table);
+            player.sendMessage(p.pluginTag + "Table ID '" + p.gold + table.name + p.white + "', ID #" + p.gold + table.id + p.white + " has been deleted!");
         } else p.methodsError.notOwnerOfTable(player);
     }
 
@@ -144,72 +133,33 @@ public class MethodsTable
         {
             player.teleport(pokerPlayer.startLocation);
             p.economy.depositPlayer(player.getName(), pokerPlayer.money);
-            pokerPlayer.table.players.set(pokerPlayer.table.players.indexOf(pokerPlayer), null);
-            player.sendMessage(p.pluginTag + "You have left table '" + p.gold + pokerPlayer.table.name + p.white + "', ID #" + p.gold + pokerPlayer.table.id + p.white
-            + ", and received " + p.gold + p.methodsMisc.formatMoney(pokerPlayer.money) + p.white + ".");
-        } else
-        {
-            p.methodsError.notPokerPlayer(player);
-        }
+            pokerPlayer.table.players.remove(pokerPlayer);
+            player.sendMessage(p.pluginTag + "You have left table '" + p.gold + pokerPlayer.table.name + p.white + "', ID #" + p.gold + pokerPlayer.table.id + p.white + ", and received " + p.gold + p.methodsMisc.formatMoney(pokerPlayer.money) + p.white + ".");
+        } else p.methodsError.notPokerPlayer(player);
     }
 
-    public void listDetails(Player player, String id)
+    public void listDetails(Player player, String type, String tableID)
     {
-        if (p.methodsCheck.isInteger(id))
-        {
-            Table table = p.methodsCheck.p.methodsCheck.isATable(Integer.parseInt(id));
-            if (table != null)
-            {
+        if (type != null)
+        //if (p.methodsCheck.isInteger(id))
+        //{
+            //Table table = p.methodsCheck.p.methodsCheck.isATable(Integer.parseInt(id));
+            //if (table != null)
+            //{
                 player.sendMessage(p.pluginTag + p.gold + "Settings:");
                 player.sendMessage(p.pluginTag + p.lineString);
-                listSettings(player, Integer.parseInt(id));
+                //table.listDetails(player, Integer.parseInt(id));
                 player.sendMessage(p.pluginTag + p.lineString);
                 player.sendMessage(p.pluginTag + p.gold + "Players:");
-                for (PokerPlayer i : table.players)
-                {
-                    player.sendMessage(p.pluginTag + "[" + i.id + "] " + p.gold + i.player.getName());
-                }
+                //player.sendMessage(table.listPlayers());
                 player.sendMessage(p.pluginTag + p.lineString);
-                player.sendMessage(p.pluginTag + "Owner: " + p.gold + table.owner.getName());
-                player.sendMessage(p.pluginTag + "Hand number: " + p.gold + table.handNumber);
-                player.sendMessage(p.pluginTag + "Open: " + p.gold + table.open);
-                player.sendMessage(p.pluginTag + "In progress: " + p.gold + table.inProgress);
-                player.sendMessage(p.pluginTag + "Location: " + p.gold + "X: " + p.white + Math.round(table.location.getX()) + p.gold + " Z: " + p.white
-                + Math.round(table.location.getZ()) + p.gold + " Y: " + p.white + Math.round(table.location.getY()) + p.gold + " World: " + p.white
-                + table.location.getWorld().getName());
-            } else
-            {
-                p.methodsError.notATable(player, id);
-            }
-        } else
-        {
-            p.methodsError.notANumber(player, id);
-        }
-    }
-
-    public void listSettings(Player player, int id)
-    {
-        Table table = p.methodsCheck.isATable(id);
-        if (table != null)
-        {
-            player.sendMessage(p.pluginTag + "Elimination mode: " + p.gold + table.elimination);
-            player.sendMessage(p.pluginTag + "Minimum buy-in: " + p.gold + p.methodsMisc.formatMoney(table.minBuy));
-            player.sendMessage(p.pluginTag + "Maximum buy-in: " + p.gold + p.methodsMisc.formatMoney(table.maxBuy));
-            player.sendMessage(p.pluginTag + "Small blind: " + p.gold + p.methodsMisc.formatMoney(table.sb));
-            player.sendMessage(p.pluginTag + "Big blind: " + p.gold + p.methodsMisc.formatMoney(table.bb));
-            player.sendMessage(p.pluginTag + "Ante: " + p.gold + p.methodsMisc.formatMoney(table.ante));
-            if (table.dynamicAnteFreq > 0)
-            {
-                player.sendMessage(p.pluginTag + "Dynamic ante frequency: " + p.gold + "every " + table.dynamicAnteFreq + " hands.");
-            } else
-            {
-                player.sendMessage(p.pluginTag + "Dynamic ante is turned " + p.gold + "OFF");
-            }
-            player.sendMessage(p.pluginTag + "Rake percentage: " + p.gold + p.methodsMisc.convertToPercentage(table.rake));
-        } else
-        {
-            p.methodsError.notOwnerOfTable(player);
-        }
+                //player.sendMessage(p.pluginTag + "Owner: " + p.gold + table.owner.getName());
+                //player.sendMessage(p.pluginTag + "Hand number: " + p.gold + table.handNumber);
+                //player.sendMessage(p.pluginTag + "Open: " + p.gold + table.open);
+                //player.sendMessage(p.pluginTag + "In progress: " + p.gold + table.inProgress);
+               // player.sendMessage(p.pluginTag + "Location: " + p.gold + "X: " + p.white + Math.round(table.location.getX()) + p.gold + " Z: " + p.white + Math.round(table.location.getZ()) + p.gold + " Y: " + p.white + Math.round(table.location.getY()) + p.gold + " World: " + p.white + table.location.getWorld().getName());
+            //} else p.methodsError.notATable(player, id);
+        //} else p.methodsError.notANumber(player, id);
     }
 
     public void openTable(Player player)
@@ -221,32 +171,47 @@ public class MethodsTable
             {
                 table.open = true;
                 player.sendMessage(p.pluginTag + "Table ID '" + p.gold + table.name + p.white + "', ID #" + p.gold + table.id + p.white + " is now open! Players can now join!");
-            } else
-            {
-                player.sendMessage(p.pluginTag + p.red + "Table ID '" + p.gold + table.name + p.red + "', ID #" + p.gold + table.id + p.red + " is already open!");
-            }
-        } else
-        {
-            p.methodsError.notOwnerOfTable(player);
-        }
+            } else player.sendMessage(p.pluginTag + p.red + "Table ID '" + p.gold + table.name + p.red + "', ID #" + p.gold + table.id + p.red + " is already open!");
+        } else p.methodsError.notOwnerOfTable(player);
     }
 
-    public void payPot(Player player, String id)
+    public void payPot(Player player, String potID, String playerID)
     {
         Table table = p.methodsCheck.isOwnerOfTable(player);
         if (table != null)
         {
-            if (table.pot > 0)
+            if (p.methodsCheck.isInteger(playerID))
             {
-                if (p.methodsCheck.isInteger(id))
+                if (table.inProgress == false)
                 {
-                    PokerPlayer pokerPlayer = p.methodsCheck.isAPokerPlayer(table, Integer.parseInt(id));
-                    if (pokerPlayer != null)
+                    if (potID == null)
                     {
-                        pokerPlayer.payPot();
-                    } else p.methodsError.notAPokerPlayerID(player, id);
-                } else p.methodsError.notANumber(player, id);
-            } else p.methodsError.potDoesntExist(player);
+                        if (table.pots.size() == 1)
+                        {
+                            PokerPlayer pokerPlayer = p.methodsCheck.isAPokerPlayer(table, Integer.parseInt(playerID));
+                            if (pokerPlayer != null)
+                            {
+                                table.pots.get(0).payPot(pokerPlayer);
+                            } else p.methodsError.notAPokerPlayerID(player, playerID);
+                        } else p.methodsError.moreThanOnePot(player);
+                    } else 
+                    {
+                        if (p.methodsCheck.isInteger(potID))
+                        {
+                            Pot pot = p.methodsCheck.isAPot(table, Integer.parseInt(potID));
+                            if (pot != null)
+                            {
+                                    PokerPlayer pokerPlayer = p.methodsCheck.isAPokerPlayer(table, Integer.parseInt(playerID));
+                                    if (pokerPlayer != null)
+                                    {
+                                        pot.payPot(pokerPlayer);
+                                        table.pots.remove(pot);
+                                    } else p.methodsError.notAPokerPlayerID(player, playerID);
+                            } else p.methodsError.notAPotID(player, potID);
+                        } else p.methodsError.notANumber(player, potID);
+                    }
+                } else p.methodsError.tableIsInProgress(player);
+            } else p.methodsError.notANumber(player, playerID);
         } else p.methodsError.notOwnerOfTable(player);
     }
 
@@ -275,13 +240,16 @@ public class MethodsTable
                 case "ante":
                     table.setNumberValue(player, "ante", value);
                     break;
-                case "dynamicAnteFrequency":
-                    table.setNumberValue(player, "dynamicAnteFrequency", value);
+                case "dynamicFrequency":
+                    table.setNumberValue(player, "dynamicFrequency", value);
+                    break;
+                case "rake":
+                    table.setNumberValue(player, "rake", value);
                     break;
                 default:
                     player.sendMessage(p.pluginTag + p.red + "Invalid setting. Check available settings with /table listsettings");
             }
-        }
+        } else p.methodsError.notOwnerOfTable(player);
     }
 
     public void sitTable(Player player, String id, String buyin)
@@ -293,25 +261,30 @@ public class MethodsTable
                 Table table = p.methodsCheck.isATable(Integer.parseInt(id));
                 if (table != null)
                 {
-                    if (table.open == true)
+                    if (table.banned.contains(player.getName()) == false)
                     {
-                        PokerPlayer pokerPlayer = p.methodsCheck.isAPokerPlayer(player);
-                        if (pokerPlayer == null)
+                        if (table.open == true)
                         {
-                            double Buyin = Double.parseDouble(buyin);
-                            if (Buyin >= table.minBuy && Buyin <= table.maxBuy)
+                            if (table.inProgress == false)
                             {
-                                if (p.economy.has(player.getName(), Buyin))
+                                PokerPlayer pokerPlayer = p.methodsCheck.isAPokerPlayer(player);
+                                if (pokerPlayer == null)
                                 {
-                                    table.players.add(new PokerPlayer(player, table, Buyin, p));
-                                    player.teleport(table.location);
-                                    p.economy.withdrawPlayer(player.getName(), Buyin);
-                                    player.sendMessage(p.pluginTag + "You have sat at table '" + p.gold + table.name + p.white + "', ID #" + p.gold + table.id + p.white
-                                    + ", with a buy-in of " + p.gold + p.methodsMisc.formatMoney(Buyin) + p.white + ". Make sure to within " + p.gold + p.getConfig().getInt("table.chatrange") + p.white + " blocks of it to see all of it's messages!");
-                                } else p.methodsError.notEnoughMoney(player, buyin, p.economy.getBalance(player.getName()));
-                            } else p.methodsError.notWithinBuyinBounds(player, Buyin, table.minBuy, table.maxBuy);
-                        } else p.methodsError.alreadyAtTable(player, table.name, table.id);
-                    } else p.methodsError.notOpen(player, id);
+                                    double Buyin = Double.parseDouble(buyin);
+                                    if (Buyin >= table.minBuy && Buyin <= table.maxBuy)
+                                    {
+                                        if (p.economy.has(player.getName(), Buyin))
+                                        {
+                                            table.players.add(new PokerPlayer(player, table, Buyin, p));
+                                            player.teleport(table.location);
+                                            p.economy.withdrawPlayer(player.getName(), Buyin);
+                                            player.sendMessage(p.pluginTag + "You have sat at table '" + p.gold + table.name + p.white + "', ID #" + p.gold + table.id + p.white + ", with a buy-in of " + p.gold + p.methodsMisc.formatMoney(Buyin) + p.white + ". Make sure to stay within " + p.gold + p.getConfig().getInt("table.chatrange") + p.white + " blocks of it to see all of it's messages!");
+                                        } else p.methodsError.notEnoughMoney(player, buyin, p.economy.getBalance(player.getName()));
+                                    } else p.methodsError.notWithinBuyinBounds(player, Buyin, table.minBuy, table.maxBuy);
+                                } else p.methodsError.alreadyAtTable(player, table.name, table.id);
+                            } else p.methodsError.tableIsInProgress(player);
+                        } else p.methodsError.notOpen(player, id);
+                    } else p.methodsError.playerBanned(player);
                 } else p.methodsError.notATable(player, id);
             } else p.methodsError.notANumber(player, buyin);
         } else p.methodsError.notANumber(player, id);
@@ -324,11 +297,14 @@ public class MethodsTable
         {
             if (table.inProgress != true)
             {
-                if (table.players.size() > 0)
+                if (table.stopped == false)
                 {
-                    player.sendMessage(p.pluginTag + "You have started the game at table '" + p.gold + table.name + p.white + "', ID #" + p.gold + table.id + p.white + ".");
-                    table.setInProgress(true);
-                } else p.methodsError.noPlayersAtTable(player, table.name, table.id);
+                    if (table.players.size() >= 2)
+                    {
+                        player.sendMessage(p.pluginTag + "You have started the game at table '" + p.gold + table.name + p.white + "', ID #" + p.gold + table.id + p.white + ".");
+                        table.deal();
+                    } else p.methodsError.notEnoughPlayers(player);
+                } else p.methodsError.tableIsStopped(player);
             } else p.methodsError.tableIsInProgress(player);
         } else p.methodsError.notOwnerOfTable(player);
     }
@@ -341,8 +317,7 @@ public class MethodsTable
             if (table != null)
             {
                 player.teleport(table.location);
-                player.sendMessage(p.pluginTag + "You have teleported to table '" + p.gold + table.name + p.white + "', ID #" + p.gold + table.id + p.white
-                + ". Sit down with /table sit [ID]");
+                player.sendMessage(p.pluginTag + "You have teleported to table " + p.gold + table.name + p.white + ", ID #" + p.gold + table.id + p.white + ". Sit down with " + p.gold + "/table sit [ID]");
             } else
             {
                 p.methodsError.notATable(player, id);
@@ -351,5 +326,57 @@ public class MethodsTable
         {
             p.methodsError.notANumber(player, id);
         }
+    }
+
+    public void kick(Player player, String toKick)
+    {
+        Table table = p.methodsCheck.isOwnerOfTable(player);
+        if (table != null)
+        {
+            if (p.methodsCheck.isInteger(toKick))
+            {
+                PokerPlayer pokerPlayer = p.methodsCheck.isAPokerPlayer(table, Integer.parseInt(toKick));
+                if (pokerPlayer != null)
+                {
+                    p.methodsMisc.sendToAllWithinRange(table.location, p.pluginTag + p.gold + table.owner.getName() + p.white + " has kicked " + p.gold + pokerPlayer.player.getName() + p.white + " from the table!");
+                    table.players.remove(table.players.indexOf(pokerPlayer));
+                    if (pokerPlayer.table.getOnlinePlayers().size() == pokerPlayer.table.players.size() && pokerPlayer.table.stopped == true)
+                    {
+                        p.methodsMisc.sendToAllWithinRange(pokerPlayer.table.location, p.pluginTag + "All players online again, resuming the table!");
+                        pokerPlayer.table.resumeTable();
+                    }
+                } else p.methodsError.notAPokerPlayerID(player, toKick);
+            } else p.methodsError.notANumber(player, toKick);
+        } else p.methodsError.notOwnerOfTable(player);
+    }
+    
+    public void ban(Player player, String toBan)
+    {
+        Table table = p.methodsCheck.isOwnerOfTable(player);
+        if (table != null)
+        {
+            p.methodsMisc.sendToAllWithinRange(table.location, p.pluginTag + p.gold + table.owner.getName() + p.white + " has banned " + p.gold + toBan + p.white + " from the table!");
+            table.banned.add(toBan);
+        } else p.methodsError.notOwnerOfTable(player);
+    }
+
+    public void unBan(Player player, String toUnBan)
+    {
+        Table table = p.methodsCheck.isOwnerOfTable(player);
+        if (table != null)
+        {
+            p.methodsMisc.sendToAllWithinRange(table.location, p.pluginTag + p.gold + table.owner.getName() + p.white + " has unbanned " + p.gold + toUnBan + p.white + " from the table!");
+            table.banned.remove(toUnBan);
+        } else p.methodsError.notOwnerOfTable(player);
+    }
+
+    public void displayPlayers(Player player)
+    {
+        PokerPlayer pokerPlayer = p.methodsCheck.isAPokerPlayer(player);
+        player.sendMessage(p.pluginTag + "List of players (use " + p.gold + "/table pay [ID]" + p.white + ") to pay pots:");
+        if (pokerPlayer != null)
+        {
+            player.sendMessage(pokerPlayer.table.listPlayers());
+        } else p.methodsError.notPokerPlayer(player);
     }
 }

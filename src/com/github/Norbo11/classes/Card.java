@@ -20,8 +20,8 @@ public class Card
 
     public String toString()
     {
-        if (suit.equals("Spades") || suit.equals("Clubs")) return p.gray + rank + p.white + " of " + p.gray + suit + p.white;
-        if (suit.equals("Diamonds") || suit.equals("Hearts")) return p.darkRed + rank + p.white + " of " + p.darkRed + suit + p.white;
-        return " ";
+        if (suit.equals("Spades") || suit.equals("Clubs")) return p.gray + rank + " of " + suit + p.white;
+        if (suit.equals("Diamonds") || suit.equals("Hearts")) return p.darkRed + rank + " of " + suit + p.white;
+        return "";
     }
 }

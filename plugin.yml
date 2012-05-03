@@ -11,7 +11,10 @@ commands:
         usage: 'Usage: /<command>'
     hand:
         description: 'Controls the hand commands.'
-        usage: 'Usage: /<command>'        
+        usage: 'Usage: /<command>'  
+    listcards:
+        description: 'Wat'
+        usage: 'Usage: /<command>'  
 permissions:
     upoker.*:
         description: 'Gives access to every command of the UltimatePoker plugin.'

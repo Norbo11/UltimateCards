@@ -45,7 +45,7 @@ public class UltimatePoker extends JavaPlugin
     // Variables
     public Logger log;
     public String version = "0.1";
-    public String pluginTag = ChatColor.BLUE + "[UPoker]" + white + " ";
+    public String pluginTag = ChatColor.BLUE + "[UP]" + white + " ";
     public String PLUGIN_DIRECTORY = "plugins/UltimatePoker/";
     public String lineString = "---------------------------------------";
     public Economy economy;
@@ -66,6 +66,7 @@ public class UltimatePoker extends JavaPlugin
         methodsCheck = new MethodsCheck(this);
         methodsHand = new MethodsHand(this);
         methodsMisc = new MethodsMisc(this);
+        getServer().getPluginManager().registerEvents(new ListenerGeneral(this), this);
 
         File pluginConfig = new File(PLUGIN_DIRECTORY + "config.yml");
         try

@@ -1,13 +1,14 @@
 table:
     chatrange: 30
-    allowRake: true
+    allowRake: false
     minRaiseIsAlwaysBB: true
     defaults:
         elimination: false
-        minBuy: 10000
+        minBuy: 0
         maxBuy: 100000
         sb: 500
         bb: 1000
-        ante: 100
-        dynamicAnteFreq: 0
+        ante: 0
+        dynamicFrequency: 0
         rake: 0.05
+        minRaise: 200

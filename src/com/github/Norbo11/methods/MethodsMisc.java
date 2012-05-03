@@ -1,7 +1,6 @@
 package com.github.Norbo11.methods;
 
 import java.text.NumberFormat;
-import java.util.Locale;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -11,7 +10,7 @@ import com.github.Norbo11.UltimatePoker;
 public class MethodsMisc
 {
     UltimatePoker p;
-    NumberFormat nf = NumberFormat.getCurrencyInstance(Locale.US);
+    NumberFormat nf = NumberFormat.getCurrencyInstance();
 
     public MethodsMisc(UltimatePoker p)
     {
@@ -25,7 +24,7 @@ public class MethodsMisc
 
     public String formatMoney(double amount)
     {
-        return nf.format(amount) + " " + p.economy.currencyNamePlural();
+        return p.economy.format(amount);
     }
 
     public void sendToAllWithinRange(Location location, String message)
@@ -33,11 +32,10 @@ public class MethodsMisc
         Player[] players = p.getServer().getOnlinePlayers();
         for (Player player : players)
         {
-            if (player.getLocation().distance(location) < p.getConfig().getInt("table.chatrange"))
+            if (player.getLocation().distance(location) <= p.getConfig().getInt("table.chatrange"))
             {
-                ;
+                player.sendMessage(message);
             }
-            player.sendMessage(message);
         }
     }
 
@@ -46,11 +44,10 @@ public class MethodsMisc
         Player[] players = p.getServer().getOnlinePlayers();
         for (Player player : players)
         {
-            if (player.getLocation().distance(location) < p.getConfig().getInt("table.chatrange"))
+            if (player.getLocation().distance(location) <= p.getConfig().getInt("table.chatrange"))
             {
-                ;
+                player.sendMessage(message);
             }
-            player.sendMessage(message);
         }
     }
 }
