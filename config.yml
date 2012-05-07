@@ -1,9 +1,9 @@
 table:
-    chatrange: 30
+    chatRange: 30
     allowRake: false
-    minRaiseIsAlwaysBB: true
     defaults:
         elimination: false
+        minRaiseIsAlwaysBB: true
         minBuy: 0
         maxBuy: 100000
         sb: 500
@@ -12,3 +12,6 @@ table:
         dynamicFrequency: 0
         rake: 0.05
         minRaise: 200
+log:
+    enableLog: true
+    dateFormat: 'dd/MM/yyyy HH:mm:ss'

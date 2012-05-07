@@ -1,26 +1,40 @@
 name: UltimatePoker
 description: 'The ultimate plugin for Texas Holdem on Bukkit!'
-version: 0.1
-main: com.github.Norbo11.UltimatePoker
+version: 1.0
+main: com.github.norbo11.UltimatePoker
 commands:
     table:
         description: 'Controls the tables of the UltimatePoker plugin.'
         usage: 'Usage: /<command>'
+    tbl:
+        description: 'Controls the tables of the UltimatePoker plugin. Alias for /table.'
+        usage: 'Usage: /<command>'
     tables:
-        description: 'Lists all created tables. Alias for /table list.'
+        description: 'Lists all created poker tables. Alias for /poker tables.'
         usage: 'Usage: /<command>'
     hand:
-        description: 'Controls the hand commands.'
-        usage: 'Usage: /<command>'  
-    listcards:
-        description: 'Wat'
-        usage: 'Usage: /<command>'  
+        description: 'Controls the hand commands of the UltimatePoker plugin.'
+        usage: 'Usage: /<command>'
+    poker:
+        description: 'Controls all generic commands of the UltimatePoker plugin.'
+        usage: 'Usage: /<command>'
+    pkr:
+        description: 'Controls all generic commands of the UltimatePoker plugin. Alias for /poker.'
+        usage: 'Usage: /<command>'
 permissions:
     upoker.*:
         description: 'Gives access to every command of the UltimatePoker plugin.'
         children:
-            upoker.create.table: true
+            upoker.table: true
+            upoker.play: true
+            upoker.tp: true
         default: op
-    upoker.table.create:
-        description: 'Gives access to /table createtable'
-        default: op
+    upoker.table:
+        description: 'Gives access to all /table commands. These tables are used for table managment and creation only.'
+        default: true
+    upoker.play:
+        description: 'Gives access to all /hand commands and /poker sit/leave. Without this, your players cannot play.'
+        default: true
+    upoker.tp:
+        description: 'Gives access to /poker tp and automatically TPs the player when they do /poker sit.'
+        default: true
