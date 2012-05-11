@@ -19,6 +19,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.github.norbo11.classes.PokerPlayer;
+
 public class ListenerCommandExecutor implements CommandExecutor
 {
 
@@ -32,6 +34,7 @@ public class ListenerCommandExecutor implements CommandExecutor
     {
         if (command.getName().equalsIgnoreCase("tables"))
         {
+            p.methodsMisc.logCommand(sender, command, args);
             try
             {
                 if (sender instanceof Player)
@@ -42,7 +45,6 @@ public class ListenerCommandExecutor implements CommandExecutor
                         p.methodsPoker.displayTables(player);
                     } else p.methodsError.noPermission(player);
                 } else p.methodsError.notAPlayer(sender);
-                p.methodsMisc.logCommand(sender, command, args);
                 return true;
             } catch (Exception e)
             {
@@ -51,6 +53,7 @@ public class ListenerCommandExecutor implements CommandExecutor
         }
         if (command.getName().equalsIgnoreCase("hand"))
         {
+            p.methodsMisc.logCommand(sender, command, args);
             try
             {
                 if (sender instanceof Player)
@@ -136,11 +139,11 @@ public class ListenerCommandExecutor implements CommandExecutor
             {
                 p.methodsMisc.catchException(e, command, sender, args);
             }
-            p.methodsMisc.logCommand(sender, command, args);
         }
         p.methodsMisc.logCommand(sender, command, args);
         if (command.getName().equalsIgnoreCase("poker") || command.getName().equalsIgnoreCase("pkr"))
         {
+            p.methodsMisc.logCommand(sender, command, args);
             try
             {
                 if (sender instanceof Player)
@@ -206,6 +209,22 @@ public class ListenerCommandExecutor implements CommandExecutor
                                 else p.methodsError.usage(player, "invite");
                                 return true;
                             }
+                            if (action.equalsIgnoreCase("checkplayer") || action.equalsIgnoreCase("check"))
+                            {
+                                if (args.length == 2) p.methodsPoker.check(player, args[1]);
+                                else p.methodsError.usage(player, "checkplayer");
+                                return true;
+                            }
+                            if (action.equalsIgnoreCase("servetea"))
+                            {
+                                if (args.length == 1) 
+                                {
+                                    PokerPlayer pokerPlayer = p.methodsCheck.isAPokerPlayer(player);
+                                    if (pokerPlayer != null) p.methodsMisc.sendToAllWithinRange(pokerPlayer.table.location, p.pluginTag + p.gold + pokerPlayer.name + p.white + " has served everyone a cup of tea! Also easter eggs.");
+                                    else player.sendMessage(p.pluginTag + p.red + "No such poker command. Check help with /poker help.");
+                                }
+                                return true;
+                            }
                             player.sendMessage(p.pluginTag + p.red + "No such poker command. Check help with /poker help.");
                             return true;
                         } else p.methodsError.noPermission(player);
@@ -215,10 +234,10 @@ public class ListenerCommandExecutor implements CommandExecutor
             {
                 p.methodsMisc.catchException(e, command, sender, args);
             }
-            p.methodsMisc.logCommand(sender, command, args);
         }
         if (command.getName().equalsIgnoreCase("table") || command.getName().equalsIgnoreCase("tbl"))
         {
+            p.methodsMisc.logCommand(sender, command, args);
             try
             {
                 if (sender instanceof Player)
@@ -305,6 +324,12 @@ public class ListenerCommandExecutor implements CommandExecutor
                                 else p.methodsError.usage(player, "unban");
                                 return true;
                             }
+                            if (action.equalsIgnoreCase("continue") || action.equalsIgnoreCase("cont") || action.equalsIgnoreCase("next"))
+                            {
+                                if (args.length == 1) p.methodsTable.continueHand(player);
+                                else p.methodsError.usage(player, "continue");
+                                return true;
+                            }
                             player.sendMessage(p.pluginTag + p.red + "No such table command. Check help with /table help.");
                             return true;
                         } else p.methodsError.displayHelp(player, "table");
@@ -314,7 +339,6 @@ public class ListenerCommandExecutor implements CommandExecutor
             {
                 p.methodsMisc.catchException(e, command, sender, args);
             }
-            p.methodsMisc.logCommand(sender, command, args);
         }
         return true;
     }

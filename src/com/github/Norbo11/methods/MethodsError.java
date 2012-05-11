@@ -76,19 +76,20 @@ public class MethodsError
             message.add(p.pluginTag + p.gold + "/table kick|boot|k [player ID]");
             message.add(p.pluginTag + p.gold + "/table ban|b [player name]");
             message.add(p.pluginTag + p.gold + "/table unban|pardon|forgive|u [player name]");
+            message.add(p.pluginTag + p.gold + "/table continue|cont|next");
             message.add(p.pluginTag + "/table may be replaced with /tbl.");
         }
         if (command.equals("hand"))
         {
             message.add(p.pluginTag + p.gold + "/hand");
             message.add(p.pluginTag + p.gold + "/hand help|h (command)");
-            message.add(p.pluginTag + p.gold + "/hand bet|b");
+            message.add(p.pluginTag + p.gold + "/hand bet|b [amount]");
             message.add(p.pluginTag + p.gold + "/hand fold|muck|f");
             message.add(p.pluginTag + p.gold + "/hand call|match|ca");
             message.add(p.pluginTag + p.gold + "/hand check|ch");
             message.add(p.pluginTag + p.gold + "/hand board|b");
             message.add(p.pluginTag + p.gold + "/hand money|balance|m");
-            message.add(p.pluginTag + p.gold + "/hand rebuy|addmoney|addstack");
+            message.add(p.pluginTag + p.gold + "/hand rebuy|addmoney|addstack [amount]");
             message.add(p.pluginTag + p.gold + "/hand pot|pots|p");
             message.add(p.pluginTag + p.gold + "/hand allin|shove|a");
             message.add(p.pluginTag + p.gold + "/hand reveal|show|display");
@@ -103,6 +104,7 @@ public class MethodsError
             message.add(p.pluginTag + p.gold + "/poker details|info|d (type) (table ID)");
             message.add(p.pluginTag + p.gold + "/poker players|listplayers|lp (table ID)");
             message.add(p.pluginTag + p.gold + "/poker invite|i [player name]");
+            message.add(p.pluginTag + p.gold + "/poker check|checkplayer [player name]");
             message.add(p.pluginTag + "/poker may be replaced with /pkr.");
         }
         String parsedMessage[] = p.methodsMisc.replaceSpecialCharacters(message);
@@ -260,7 +262,7 @@ public class MethodsError
         String message = "";
 
         // Help
-        if (command.equals("help")) message = (p.pluginTag + p.red + "Usage: /table | /poker | /hand help or /table | /poker | /hand help [cmd]." + p.gold + " - Displays list of commands or gives command specific help.");
+        if (command.equals("help")) message = (p.pluginTag + p.red + "Usage: /table help | /poker help | /hand help (cmd)" + p.gold + " - Displays list of commands or gives command specific help.");
 
         // Table
         if (command.equals("create")) message = (p.pluginTag + p.red + "Usage: /table create | new | cr [name] [buyin]" + p.gold + " - Creates a table and sits at it with the specified buyin.");
@@ -274,6 +276,7 @@ public class MethodsError
         if (command.equals("kick")) message = (p.pluginTag + p.red + "Usage: /table kick | boot | k [Player ID]" + p.gold + " - Kicks the player from the table.");
         if (command.equals("ban")) message = (p.pluginTag + p.red + "Usage: /table ban | b [Player name]" + p.gold + " - Bans the player from the table.");
         if (command.equals("unban")) message = (p.pluginTag + p.red + "Usage: /table unban | pardon | forgive | u [Player name]" + p.gold + " - Unbans the player from the table.");
+        if (command.equals("continue")) message = (p.pluginTag + p.red + "Usage: /table continue | cont | next" + p.gold + " - Continues the hand after a player won by being last person to not fold.");
 
         // Hand
         if (command.equals("hand")) message = (p.pluginTag + p.red + "Usage: /hand" + p.gold + " - Displays your hand.");
@@ -293,10 +296,11 @@ public class MethodsError
         if (command.equals("tables")) message = (p.pluginTag + p.red + "Usage: /poker tables | list | all | l | /tables" + p.gold + " - Lists all created tables.");
         if (command.equals("sit")) message = (p.pluginTag + p.red + "Usage: /poker sit | join | s [table ID] [buyin]" + p.gold + " - Sits down at the specified table with the specified buy-in.");
         if (command.equals("leave")) message = (p.pluginTag + p.red + "Usage: /poker leave | getup | stand | standup" + p.gold + " - Leaves the table you are currently sititng at.");
-        if (command.equals("details")) message = (p.pluginTag + p.red + "Usage: /poker details | info | d (type) (table ID)" + p.gold + " - Gives specific details about a table. Allowed types: settings, players, general | other.");
+        if (command.equals("details")) message = (p.pluginTag + p.red + "Usage: /poker details | info | d (type) (table ID)" + p.gold + " - Gives specific details about a table. Allowed types: all, settings, players, general | other.");
         if (command.equals("players")) message = (p.pluginTag + p.red + "Usage: /poker players | listplayers | lp (table ID)" + p.gold + " - Lists all players at the specified table. If no table is specified, lists players at the table you're sitting on.");
         if (command.equals("invite")) message = (p.pluginTag + p.red + "Usage: /poker invite|i " + p.gold + " - Invites the specified player to your table.");
-
+        if (command.equals("playercheck")) message = (p.pluginTag + p.red + "Usage: /poker check|checkplayer [player name]" + p.gold + " - Checks the player's money stack if they are playing poker.");
+        
         if (message != "") player.sendMessage(message);
         else player.sendMessage(p.pluginTag + p.red + "That is not a valid command! Use /table help, /hand help, and /poker help for lists of commands.");
     }
@@ -344,5 +348,20 @@ public class MethodsError
     public void cantReveal(Player player)
     {
         player.sendMessage(p.pluginTag + p.red + "You cannot reveal your hand right now!");
+    }
+
+    public void tableIsAtShowdown(Player player)
+    {
+        player.sendMessage(p.pluginTag + p.red + "The table is currently at showdown! Reveal your hand with " + p.gold + "/hand reveal");
+    }
+
+    public void cantContinue(Player player)
+    {
+        player.sendMessage(p.pluginTag + p.red + "You can't continue the hand right now!");
+    }
+
+    public void pokerPlayerNotFound(Player player, String toCheck)
+    {
+        player.sendMessage(p.pluginTag + p.red + "The player " + p.gold + toCheck + p.red + " is not currently playing poker!");
     }
 }

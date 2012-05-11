@@ -38,15 +38,15 @@ public class MethodsTable
         player.sendMessage(p.pluginTag + p.red + "Usage: /table set [setting] [value]");
         player.sendMessage(p.pluginTag + p.white + "Available settings:");
         player.sendMessage(p.pluginTag + p.gold + "elimination [true|false] - " + p.white + "If true, players can't re-buy.");
-        player.sendMessage(p.pluginTag + p.gold + "minBuy [number] - " + p.white + "The mininmum number that players can buy-in (and re-buy) for.");
-        player.sendMessage(p.pluginTag + p.gold + "maxBuy [number] - " + p.white + "The maximum number that players can buy-in (and re-buy) for.");
-        player.sendMessage(p.pluginTag + p.gold + "sb [number] - " + p.white + "Set the small blind.");
-        player.sendMessage(p.pluginTag + p.gold + "bb [number] - " + p.white + "Set the big blind");
-        player.sendMessage(p.pluginTag + p.gold + "ante [number] - " + p.white + "Sets the ante.");
-        player.sendMessage(p.pluginTag + p.gold + "dynamicFrequency [number] - " + p.white + "This decides that every [number] hands, the ante + blinds will increase by themselves. 0 = disabled.");
+        player.sendMessage(p.pluginTag + p.gold + "minBuy [number] - " + p.white + "The minimum (re)buy-in amount.");
+        player.sendMessage(p.pluginTag + p.gold + "maxBuy [number] - " + p.white + "The maximum (re)buy-in amount.");
+        player.sendMessage(p.pluginTag + p.gold + "sb [number] - " + p.white + "The small blind.");
+        player.sendMessage(p.pluginTag + p.gold + "bb [number] - " + p.white + "The big blind");
+        player.sendMessage(p.pluginTag + p.gold + "ante [number] - " + p.white + "The ante.");
+        player.sendMessage(p.pluginTag + p.gold + "dynamicFrequency [number] - " + p.white + "Every [number] hands, the ante + blinds will increase by their original setting. 0 = OFF.");
         player.sendMessage(p.pluginTag + p.gold + "rake [number] - " + p.white + "How much of the pot you will get every hand, in percentages. Example: 0.05 = 5% rake.");
-        player.sendMessage(p.pluginTag + p.gold + "minRaise [number] - " + p.white + "Sets the minimum raise at the table.");
-        player.sendMessage(p.pluginTag + p.gold + "minRaiseIsAlwaysBB [true|false] - " + p.white + "If true, the minimum raise will always be the big blind.");
+        player.sendMessage(p.pluginTag + p.gold + "minRaise [number] - " + p.white + "The minimum raise at the table.");
+        player.sendMessage(p.pluginTag + p.gold + "minRaiseIsAlwaysBB [true|false] - " + p.white + "If true, the minimum raise will always be equal big blind.");
     }
 
     //Bans the specified player
@@ -57,7 +57,7 @@ public class MethodsTable
         {
             if (!table.banned.contains(toBan)) //Check if the player is not already banned
             {
-                if (p.methodsMisc.stringToPlayer(toBan) != null) //Check if the player is online
+                if (p.methodsCheck.isAPlayer(toBan) != null) //Check if the player is online
                     table.ban(toBan);
                 else p.methodsError.playerNotFound(player, toBan);
             } else p.methodsError.playerAlreadyBanned(player, toBan);
@@ -86,16 +86,18 @@ public class MethodsTable
             {
                 if (p.methodsCheck.isDouble(buyIn))
                 {
+                    double buyin = Double.parseDouble(buyIn);
                     if (p.economy.has(player.getName(), Double.parseDouble(buyIn)))
                     {
                         //Makes a newTable, adds that table to the table list, displays messages and withdraws money from the owner.
-                        Table newTable = new Table(player, tableName, p.tables.size(), player.getLocation(), Double.parseDouble(buyIn), p);
+                        Table newTable = new Table(player, tableName, p.tables.size(), player.getLocation(), buyin, p);
                         p.tables.add(newTable);
-                        player.sendMessage(p.pluginTag + "Created table named " + p.gold + "'" + tableName + "'" + p.white + ", ID " + p.gold + Integer.toString(p.tables.size() - 1) + p.white + "!");
+                        p.methodsMisc.sendToAllWithinRange(newTable.location, p.pluginTag + p.gold + player.getName() + p.white + " has created a poker table named " + p.gold + "'" + tableName + "'" + p.white + ", ID " + p.gold + Integer.toString(p.tables.size() - 1));
+                        player.sendMessage(p.pluginTag + "Bought in for " + p.gold + p.methodsMisc.formatMoney(buyin));
                         player.sendMessage(p.pluginTag + "Edit the rules of your table with " + p.gold + "'/table set'" + p.white + ", and open it with " + p.gold + "'/table open'" + p.white + " when ready!");
-                        p.economy.withdrawPlayer(player.getName(), Double.parseDouble(buyIn));
-                        p.methodsMisc.addToLog(p.getDate() + " [ECONOMY] Withdrawing " + Double.parseDouble(buyIn) + " from " + player.getName());
-                    } else p.methodsError.notEnoughMoney(player, buyIn, p.economy.getBalance(player.getName()) - Double.parseDouble(buyIn));
+                        p.economy.withdrawPlayer(player.getName(), buyin);
+                        p.methodsMisc.addToLog(p.getDate() + " [ECONOMY] Withdrawing " + buyin + " from " + player.getName());
+                    } else p.methodsError.notEnoughMoney(player, buyIn, p.economy.getBalance(player.getName()) - buyin);
                 } else p.methodsError.notANumber(player, buyIn);
             } else p.methodsError.playerIsPokerPlayer(player);
         } else p.methodsError.playerIsOwnerGeneral(player);
@@ -108,7 +110,7 @@ public class MethodsTable
         if (table != null)
         {
             //Displays a message, returns money for every player, and removes the table
-            player.sendMessage(p.pluginTag + "Table ID '" + p.gold + table.name + p.white + "', ID #" + p.gold + table.id + p.white + " has been deleted!");
+            p.methodsMisc.sendToAllWithinRange(table.location, p.pluginTag + "Table ID '" + p.gold + table.name + p.white + "', ID #" + p.gold + table.id + p.white + " has been deleted!");
             p.methodsMisc.returnMoney(table);
             p.tables.remove(table);
         } else p.methodsError.notOwnerOfTable(player);
@@ -168,7 +170,6 @@ public class MethodsTable
                                 {
                                     table.pots.get(0).payPot(pokerPlayer);
                                     table.pots.remove(0);
-                                    table.deal();
                                 } else p.methodsError.notAPokerPlayerID(player, playerID);
                             } else p.methodsError.potIsEmpty(player, table.pots.get(0));
                         } else p.methodsError.tableMultiplePots(player);
@@ -203,17 +204,20 @@ public class MethodsTable
         Table table = p.methodsCheck.isOwnerOfTable(player);
         if (table != null)
         {
-            if (setting.equalsIgnoreCase("elimination")) { table.setBooleanValue(player, "elimination", value); return; }
-            if (setting.equalsIgnoreCase("minRaiseIsAlwaysBB")) { table.setBooleanValue(player, "minRaiseIsAlwaysBB", value); return; }
-            if (setting.equalsIgnoreCase("minBuy")) { table.setNumberValue(player, "minBuy", value); return; }
-            if (setting.equalsIgnoreCase("maxBuy")) { table.setNumberValue(player, "maxBuy", value); return; }
-            if (setting.equalsIgnoreCase("sb")) { table.setNumberValue(player, "sb", value); return; }
-            if (setting.equalsIgnoreCase("bb")) { table.setNumberValue(player, "bb", value); return; }
-            if (setting.equalsIgnoreCase("ante")) { table.setNumberValue(player, "ante", value); return; }
-            if (setting.equalsIgnoreCase("dynamicFrequency")) { table.setNumberValue(player, "dynamicFrequency", value); return; }
-            if (setting.equalsIgnoreCase("rake")) { table.setNumberValue(player, "rake", value); return; }
-            if (setting.equalsIgnoreCase("minRaise")) { table.setNumberValue(player, "mineRaise", value); return; }
-            player.sendMessage(p.pluginTag + p.red + "Invalid setting. Check available settings with /table listsettings");
+            if (table.inProgress == false)
+            {
+                if (setting.equalsIgnoreCase("elimination")) { table.setBooleanValue(player, "elimination", value); return; }
+                if (setting.equalsIgnoreCase("minRaiseIsAlwaysBB")) { table.setBooleanValue(player, "minRaiseIsAlwaysBB", value); return; }
+                if (setting.equalsIgnoreCase("minBuy")) { table.setNumberValue(player, "minBuy", value); return; }
+                if (setting.equalsIgnoreCase("maxBuy")) { table.setNumberValue(player, "maxBuy", value); return; }
+                if (setting.equalsIgnoreCase("sb")) { table.setNumberValue(player, "sb", value); return; }
+                if (setting.equalsIgnoreCase("bb")) { table.setNumberValue(player, "bb", value); return; }
+                if (setting.equalsIgnoreCase("ante")) { table.setNumberValue(player, "ante", value); return; }
+                if (setting.equalsIgnoreCase("dynamicFrequency")) { table.setNumberValue(player, "dynamicFrequency", value); return; }
+                if (setting.equalsIgnoreCase("rake")) { table.setNumberValue(player, "rake", value); return; }
+                if (setting.equalsIgnoreCase("minRaise")) { table.setNumberValue(player, "minRaise", value); return; }
+                player.sendMessage(p.pluginTag + p.red + "Invalid setting. Check available settings with /table listsettings");
+            } else p.methodsError.tableIsInProgress(player);
         } else p.methodsError.notOwnerOfTable(player);
     }
 
@@ -244,6 +248,18 @@ public class MethodsTable
             if (table.banned.contains(toUnBan))
                 table.unBan(toUnBan);
             else player.sendMessage(p.pluginTag + p.gold + toUnBan + p.red + " is not banned from this table!");
+        } else p.methodsError.notOwnerOfTable(player);
+    }
+
+    public void continueHand(Player player)
+    {
+        Table table = p.methodsCheck.isOwnerOfTable(player);
+        if (table != null)
+        {
+            if (table.toBeContinued == true)
+            {
+                table.continueHand();
+            } else p.methodsError.cantContinue(player);
         } else p.methodsError.notOwnerOfTable(player);
     }
 }

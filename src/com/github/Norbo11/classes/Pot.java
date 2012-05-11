@@ -89,7 +89,13 @@ public class Pot
         else p.methodsMisc.sendToAllWithinRange(table.location, p.pluginTag + p.gold + player.player.getName() + p.white + " has won the side pot of " + p.gold + p.methodsMisc.formatMoney(pot - rake));
 
         player.money = player.money + (pot - rake); //Get the actual amount that the player wins by subtracting the rake from the pot, then give it to the player's stack
+        pot = 0;
 
-        if (table.pots.size() == 1 && table.pots.get(0).pot == 0) table.deal(); //If after paying this pot there is only 1 pot left (the main pot), and that main pot is empty, deal the next hand.
+        //If after paying this pot there is only 1 pot left (the main pot), and that main pot is empty, deal the next hand.
+        if (table.pots.size() == 1 && table.pots.get(0).pot == 0) 
+        { 
+            table.toBeContinued = true;
+            p.methodsMisc.sendToAllWithinRange(table.location, p.pluginTag + "All pots paid! Table owner: use " + p.gold + "/table continue" + p.white + " to deal the next hand.");
+        }
     }
 }

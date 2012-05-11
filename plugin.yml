@@ -28,13 +28,13 @@ permissions:
             upoker.table: true
             upoker.play: true
             upoker.tp: true
-        default: op
+        default: false
     upoker.table:
         description: 'Gives access to all /table commands. These tables are used for table managment and creation only.'
-        default: true
+        default: false
     upoker.play:
         description: 'Gives access to all /hand commands and /poker sit/leave. Without this, your players cannot play.'
-        default: true
+        default: false
     upoker.tp:
         description: 'Gives access to /poker tp and automatically TPs the player when they do /poker sit.'
-        default: true
+        default: false

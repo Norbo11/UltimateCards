@@ -15,7 +15,6 @@
         <file path="/UltimatePoker/plugin.yml"/>
         <file path="/UltimatePoker/config.yml"/>
         <javaElement handleIdentifier="=UltimatePoker/src"/>
-        <file path="/UltimatePoker/UltimatePoker.jardesc"/>
         <file path="/UltimatePoker/.project"/>
     </selectedElements>
 </jardesc>

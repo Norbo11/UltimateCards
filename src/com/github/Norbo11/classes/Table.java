@@ -41,6 +41,7 @@ public class Table
         deck = new Deck(p);
         inProgress = false;
         stopped = false;
+        toBeContinued = false;
         actionPlayer = null;
         pots.add(new Pot(null, this, 0, 0, p));
         pots.get(0).main = true;
@@ -84,6 +85,7 @@ public class Table
     public boolean inProgress;          //True if the hand is currently in progress. Its false if the table hasen't even started or is currently in showdown
     public boolean open;                //Decides if players can join or not
     public boolean stopped;             //This is set to true only if the table is stopped by another player quitting the game
+    public boolean toBeContinued;
     public double currentBet;           //The current bet at the table, in the current phase
     public double rake;                 //A number from 
     public double chatRange;
@@ -122,6 +124,12 @@ public class Table
             player.acted = false;
         }
     }
+    
+    public void continueHand()
+    {
+        toBeContinued = false;
+        deal();
+    }
 
     //Clears all the pots at the table and adds a new pot main pot
     public void clearPots()
@@ -151,10 +159,6 @@ public class Table
             moveButton();
             dealCards();
             preflop();
-        } else //If not, tell everyone that there isn't enough players, and stop the table
-        {
-            p.methodsMisc.sendToAllWithinRange(location, p.pluginTag + "Less than 2 non-eliminated players left, stopping table!");
-            //inProgress = false
         }
     }
 
@@ -169,6 +173,7 @@ public class Table
                 pokerPlayer.clearHand();
                 pokerPlayer.folded = false;
                 pokerPlayer.action = false;
+                pokerPlayer.revealed = false;
                 pokerPlayer.pot = null;                     //Make sure that the player's all-in status is reset
                 pokerPlayer.totalBet = 0;
                 pokerPlayer.addCards(deck.generateCards(2));
@@ -223,7 +228,9 @@ public class Table
             player.sendMessage(p.pluginTag + "Small Blind: " + p.gold + p.methodsMisc.formatMoney(sb));
             player.sendMessage(p.pluginTag + "Big Blind: " + p.gold + p.methodsMisc.formatMoney(bb));
             player.sendMessage(p.pluginTag + "Rake: " + p.gold + p.methodsMisc.convertToPercentage(rake));
-            player.sendMessage(p.pluginTag + "Minimum Raise: " + p.gold + p.methodsMisc.formatMoney(minRaise));
+            if (minRaiseIsAlwaysBB)
+                player.sendMessage(p.pluginTag + "Minimum Raise: " + p.gold + "equal to the Big Blind");
+            else player.sendMessage(p.pluginTag + "Minimum Raise: " + p.gold + p.methodsMisc.formatMoney(minRaise));
             player.sendMessage(p.pluginTag + "Elimination: " + p.gold + elimination);
             if (dynamicFrequency > 0) player.sendMessage(p.pluginTag + "Dynamic Frequency: " + p.gold + "Every " + dynamicFrequency + " hands");
             else player.sendMessage(p.pluginTag + "Dynamic Frequency: " + p.gold + "OFF");
@@ -251,6 +258,9 @@ public class Table
             player.sendMessage(p.pluginTag + "In progress: " + p.gold + inProgress);
             player.sendMessage(p.pluginTag + "Location: " + p.gold + "X: " + p.white + Math.round(location.getX()) + p.gold + " Z: " + p.white + Math.round(location.getZ()) + p.gold + " Y: " + p.white + Math.round(location.getY()) + p.gold + " World: " + p.white + location.getWorld().getName());
         }
+        
+        if (type.equalsIgnoreCase("all"))
+            displayAllDetails(player);
     }
 
     // Method to eliminate players with 0 money, return true if more than 2 non eliminated players are left, false if otherwise
@@ -262,11 +272,22 @@ public class Table
             if (player.money == 0)
             {
                 player.eliminate();
-                p.methodsMisc.removePlayer(player);
+                if (player.owner == false)
+                    p.methodsMisc.removePlayer(player);
             }
         }
         //If there are not enough players to continue the hand (less than 2 non eliminated players are left)
-        if (getEliminatedPlayers().size() > players.size() - 2) return false;
+        if (getEliminatedPlayers().size() > players.size() - 2) 
+        {
+            p.methodsMisc.sendToAllWithinRange(location, p.pluginTag + p.red + "Less than 2 non-eliminated players left, stopping table!");
+            return false;
+        }
+        
+        if (players.size() >= 23)
+        {
+            p.methodsMisc.sendToAllWithinRange(location, p.pluginTag + p.red + "A poker game of 23+ players!? Are you nuts!? Stopping table!");
+            return false;
+        }
 
         return true;
     }
@@ -362,6 +383,7 @@ public class Table
         allowedTypes.add("players");
         allowedTypes.add("other");
         allowedTypes.add("general");
+        allowedTypes.add("all");
 
         if (allowedTypes.contains(type)) return true;
         else return false;
@@ -410,11 +432,9 @@ public class Table
     {   
         if (currentPhase != 4)
         {
-            if (getNonFoldedPlayers().size() == 1) { winner(getNonFoldedPlayers().get(0)); return; } // If there is only 1 non-folded player left, announce him the winner
-    
             List<PokerPlayer> contributed = new ArrayList<PokerPlayer>(); // List to hold all the players that have contributed the required amount
             List<PokerPlayer> acted = new ArrayList<PokerPlayer>();       // List to hold all the players that have acted
-    
+            
             // Go through all players that have not folded
             for (PokerPlayer nonFolded : getNonFoldedPlayers())
             {
@@ -425,6 +445,15 @@ public class Table
             //Go through all players and add them to the acted list or if they are all in
             for (PokerPlayer player : getNonFoldedPlayers())
                 if (player.acted == true || player.money == 0) acted.add(player);
+            
+            if (getNonFoldedPlayers().size() == 1) { winner(getNonFoldedPlayers().get(0)); return; } // If there is only 1 non-folded player left, announce him the winner
+    
+            //If there is only 1 player left that isn't all in, and everyone has contributed the right amount, go to showdown
+            if (players.size() == getAllInPlayers().size() + 1 && contributed.size() - 1 == getAllInPlayers().size())
+            {
+                showdown();
+                return; //If you go to showdown dont do anything else by quitting the method
+            }            
     
             // If every non-folded player has contributed the right amount
             if (contributed.size() == getNonFoldedPlayers().size())
@@ -453,13 +482,6 @@ public class Table
                 }
             }
             
-            //If there is only 1 player left that isn't all in, go to showdown unless we are already in showdown
-            if (players.size() == getAllInPlayers().size() + 1)
-            {
-                showdown();
-                return; //If you go to showdown dont do anything else by quitting the method
-            }
-            
             //If its not time to go to the next phase, simply keep trying to choose a player that has not folded and still has money. Then take his/her action
             actionPlayer = getNextPlayer(players.indexOf(pokerPlayer));
             while (actionPlayer.folded == true || actionPlayer.money == 0)
@@ -481,10 +503,10 @@ public class Table
             }
             
             actionPlayer = getNextPlayer(players.indexOf(pokerPlayer));
-            while (actionPlayer.revealed == true)
+            while (actionPlayer.revealed == true || actionPlayer.folded == true)
             {
                 actionPlayer = getNextPlayer(players.indexOf(actionPlayer));
-                if (actionPlayer.revealed == false) break;
+                if (actionPlayer.revealed == false && actionPlayer.folded == false) break;
             }
             actionPlayer.takeAction();
         }
@@ -543,8 +565,7 @@ public class Table
         currentPhase = 0;
         currentBet = 0;
         postBlinds();
-        p.log.info("Button: " + button);
-        nextPersonTurn(players.get(button));
+        nextPersonTurn(getNextPlayer(button + 1));
     }
 
     //Raise the blinds if the dynamic frequency is set
@@ -593,8 +614,10 @@ public class Table
         }
         if (setting.equalsIgnoreCase("minRaiseIsAlwaysBB"))
         {
-            minRaiseIsAlwaysBB = true;
-            p.methodsMisc.sendToAllWithinRange(location, p.pluginTag + p.gold + player.getName() + p.white + " has made the " + p.gold + "Minimum Raise" + p.white + " be always equal to the Big Blind!");
+            minRaiseIsAlwaysBB = value;
+            if (value == true)
+                p.methodsMisc.sendToAllWithinRange(location, p.pluginTag + p.gold + player.getName() + p.white + " has made the " + p.gold + "Minimum Raise" + p.white + " be always equal to the Big Blind!");
+            else p.methodsMisc.sendToAllWithinRange(location, p.pluginTag + p.gold + player.getName() + p.white + " has made the " + p.gold + "Minimum Raise" + p.white + " no longer be equal to the Big Blind!");
             return;
         }
         p.methodsMisc.sendToAllWithinRange(location, p.pluginTag + p.gold + player.getName() + p.white + " has set " + p.gold + setting + p.white + " to " + p.gold + v);
@@ -642,11 +665,11 @@ public class Table
 
             if (setting.equalsIgnoreCase("minRaise"))
             {
-                if (p.getConfig().getBoolean("table.minRaiseIsAlwaysBB") == false)
+                if (minRaiseIsAlwaysBB == false)
                 {
                     minRaise = value;
                     p.methodsMisc.sendToAllWithinRange(location, p.pluginTag + p.gold + player.getName() + p.white + " has set the " + p.gold + "Minimum Raise" + p.white + " to " + p.gold + p.methodsMisc.formatMoney(value));
-                } else player.sendMessage(p.pluginTag + p.red + "This table's minimum raise will always be the big blind! Change this with /table set minRaiseIsAlwaysBB.");
+                } else player.sendMessage(p.pluginTag + p.red + "This table's minimum raise is currently set to always be equal to the big blind! Change this with " + p.gold + "/table set minRaiseIsAlwaysBB.");
             }
 
             if (setting.equalsIgnoreCase("rake"))
@@ -670,7 +693,9 @@ public class Table
                     if (p.methodsCheck.isInteger(v))
                     {
                         dynamicFrequency = (int) value;
-                        p.methodsMisc.sendToAllWithinRange(location, p.pluginTag + p.gold + player.getName() + p.white + " has set the " + p.gold + "Dynamic Frequency " + p.white + "to " + p.gold + "'Every " + v + " hands'");
+                        if (dynamicFrequency > 0)
+                            p.methodsMisc.sendToAllWithinRange(location, p.pluginTag + p.gold + player.getName() + p.white + " has set the " + p.gold + "Dynamic Frequency " + p.white + "to " + p.gold + "'Every " + v + " hands'");
+                        else p.methodsMisc.sendToAllWithinRange(location, p.pluginTag + p.gold + player.getName() + p.white + " has truned the " + p.gold + "Dynamic Frequency " + p.white + p.gold + "off.");
                     } else p.methodsError.notANumber(player, v);
                 } else player.sendMessage(p.pluginTag + p.red + "You may only set the dynamic frequency during a hand where the blinds increased, or if the table is not in progress.");
             }
@@ -702,15 +727,13 @@ public class Table
     {
         currentPhase = 5;
         
-        displayBoard(null); //Null makes the board show to everyone around the table
-        
         //If there is only 1 pot, display this specific message.
         if (pots.size() == 1) { p.methodsMisc.sendToAllWithinRange(location, p.pluginTag + "Pot: " + p.gold + p.methodsMisc.formatMoney(pots.get(0).pot)); p.methodsMisc.sendToAllWithinRange(location, p.pluginTag + "Table owner: Please use " + p.gold + "/table pay [player ID]" + p.white + " to pay the winner."); }
         else //If there are side pots, list them all with a different message at the end
         {
             p.methodsMisc.sendToAllWithinRange(location, p.pluginTag + "List of pots:");
             p.methodsMisc.sendToAllWithinRange(location, listPots());
-            p.methodsMisc.sendToAllWithinRange(location, p.pluginTag + "Table owner: Please use " + p.gold + "/table pay [pot ID] [player ID]" + p.white + " to pay the winner(s).");
+            p.methodsMisc.sendToAllWithinRange(location, p.pluginTag + "Table owner: Please use " + p.gold + "/table pay [pot ID] [player ID]" + p.white + " to pay the winner(s). You can now also modify settings of the table.");
         }
         p.methodsMisc.sendToAllWithinRange(location, p.pluginTag + "Players: use " + p.gold + "/hand rebuy [amount]" + p.white + " to add more money to your stacks.");
         inProgress = false;
@@ -730,10 +753,12 @@ public class Table
     // Method used to pay a winner if everyone else has folded
     public void winner(PokerPlayer player)
     {
+        inProgress = false;
+        toBeContinued = true;
         p.methodsMisc.sendToAllWithinRange(location, p.pluginTag + "Everybody except " + p.gold + player.player.getName() + p.white + " folded!");
         for (Pot pot : pots)   //Pay all pots to the winner
             pot.payPot(player);
-        deal();
+        p.methodsMisc.sendToAllWithinRange(location, p.pluginTag + "Table owner: use " + p.gold + "/table continue" + p.white + " to deal a new hand.");
     }
 
     //Adds the specified player to the ban list, and sends a message
@@ -747,13 +772,13 @@ public class Table
     public void close()
     {
         open = false;
-        p.methodsMisc.sendToAllWithinRange(location, p.pluginTag + "Table ID '" + p.gold + name + p.white + "', ID #" + p.gold + id + p.white + " is now closed! Players now can't join!");
+        p.methodsMisc.sendToAllWithinRange(location, p.pluginTag + "Table named '" + p.gold + name + p.white + "', ID #" + p.gold + id + p.white + " is now closed! Players now can't join!");
     }
 
     public void open()
     {
         open = true;
-        owner.sendMessage(p.pluginTag + "Table ID '" + p.gold + name + p.white + "', ID #" + p.gold + id + p.white + " is now open! Players can now join!");
+        p.methodsMisc.sendToAllWithinRange(location, p.pluginTag + "Table named '" + p.gold + name + p.white + "', ID #" + p.gold + id + p.white + " is now open! Players can now join!");
     }
 
     public void start()

@@ -40,17 +40,23 @@ public class MethodsHand
             {
                 if (pokerPlayer.table.inProgress) //Check if the table is in progress
                 {
-                    if (pokerPlayer.folded == false)
+                    if (pokerPlayer.table.currentPhase != 4)
                     {
-                        if (pokerPlayer.pot == null) //Check if the player is already all in
+                        if (pokerPlayer.action == true)
                         {
-                            //Check if the player has enough money to call. This is done by taking their current bet away from the table current bet, effectively getting the amount that they need to call.
-                            //Then add the minimum raise to it.
-                            if ((pokerPlayer.table.currentBet - pokerPlayer.currentBet) + pokerPlayer.table.minRaise > pokerPlayer.money)
-                                pokerPlayer.allIn();
-                            else p.methodsError.cantAllIn(player);
-                        } else p.methodsError.playerIsAllIn(player);
-                    } else p.methodsError.playerIsFolded(player);
+                            if (pokerPlayer.folded == false)
+                            {
+                                if (pokerPlayer.pot == null) //Check if the player is already all in
+                                {
+                                    //Check if the player has enough money to call. This is done by taking their current bet away from the table current bet, effectively getting the amount that they need to call.
+                                    //Then add the minimum raise to it.
+                                    if ((pokerPlayer.table.currentBet - pokerPlayer.currentBet) + pokerPlayer.table.minRaise > pokerPlayer.money)
+                                        pokerPlayer.allIn();
+                                    else p.methodsError.cantAllIn(player);
+                                } else p.methodsError.playerIsAllIn(player);
+                            } else p.methodsError.playerIsFolded(player);
+                        } else p.methodsError.notYourTurn(player);
+                    } else p.methodsError.tableIsAtShowdown(player);
                 } else p.methodsError.noPotsOnTable(player);
             } else p.methodsError.tableIsStopped(player);
         } else p.methodsError.notAPokerPlayer(player);
@@ -66,32 +72,35 @@ public class MethodsHand
             {
                 if (pokerPlayer.table.inProgress == true)
                 {
-                    if (pokerPlayer.folded == false)
+                    if (pokerPlayer.table.currentPhase != 4)
                     {
-                        if (pokerPlayer.pot == null) //Check if the player is not all in
+                        if (pokerPlayer.action == true)
                         {
-                            if (pokerPlayer.action == true)
+                            if (pokerPlayer.folded == false)
                             {
-                                if (p.methodsCheck.isDouble(amount))
+                                if (pokerPlayer.pot == null) //Check if the player is not all in
                                 {
-                                    List<PokerPlayer> haveLessThanRaise = new ArrayList<PokerPlayer>();
-                                    //Go through all players on the table, and add them to "haveLessThanRaise" if they cannot call this bet/raise.
-                                    for (PokerPlayer temp : pokerPlayer.table.getNonFoldedPlayers())
-                                        if (temp.money < Double.parseDouble(amount) - temp.currentBet) haveLessThanRaise.add(temp);
-                                    
-                                    if (pokerPlayer.table.players.size() != haveLessThanRaise.size() + 1) //If there is at least one person that can call the bet
+                                    if (p.methodsCheck.isDouble(amount))
                                     {
-                                        if (Double.parseDouble(amount) >= pokerPlayer.table.currentBet + pokerPlayer.table.minRaise) //Check if raise is at least the minraise.
+                                        List<PokerPlayer> haveLessThanRaise = new ArrayList<PokerPlayer>();
+                                        //Go through all players on the table, and add them to "haveLessThanRaise" if they cannot call this bet/raise.
+                                        for (PokerPlayer temp : pokerPlayer.table.getNonFoldedPlayers())
+                                            if (temp.money < Double.parseDouble(amount) - temp.currentBet && temp != pokerPlayer) haveLessThanRaise.add(temp);
+                                        
+                                        if (pokerPlayer.table.players.size() - haveLessThanRaise.size() > 1) //If there is at least one person that can call the bet
                                         {
-                                            if (pokerPlayer.money >= Double.parseDouble(amount) - pokerPlayer.currentBet) //Check if the player has enough money to perform the raise.
-                                                pokerPlayer.bet(Double.parseDouble(amount));
-                                            else p.methodsError.notEnoughMoney(player, amount, pokerPlayer.money);
-                                        } else p.methodsError.cantRaise(player, pokerPlayer.table.minRaise, pokerPlayer.table.currentBet);
-                                    } else p.methodsError.tableNoCallers(player, amount, pokerPlayer.table.currentBet + pokerPlayer.table.getHighestBalance(pokerPlayer));
-                                } else p.methodsError.notANumber(player, amount);
-                            } else p.methodsError.notYourTurn(player);
-                        } else p.methodsError.playerIsAllIn(player);
-                    } else p.methodsError.playerIsFolded(player);
+                                            if (Double.parseDouble(amount) >= pokerPlayer.table.currentBet + pokerPlayer.table.minRaise) //Check if raise is at least the minraise.
+                                            {
+                                                if (pokerPlayer.money >= Double.parseDouble(amount) - pokerPlayer.currentBet) //Check if the player has enough money to perform the raise.
+                                                    pokerPlayer.bet(Double.parseDouble(amount));
+                                                else p.methodsError.notEnoughMoney(player, amount, pokerPlayer.money);
+                                            } else p.methodsError.cantRaise(player, pokerPlayer.table.minRaise, pokerPlayer.table.currentBet);
+                                        } else p.methodsError.tableNoCallers(player, amount, pokerPlayer.table.currentBet + pokerPlayer.table.getHighestBalance(pokerPlayer));
+                                    } else p.methodsError.notANumber(player, amount);
+                                } else p.methodsError.playerIsAllIn(player);
+                            } else p.methodsError.playerIsFolded(player);
+                        } else p.methodsError.notYourTurn(player);
+                    } else p.methodsError.tableIsAtShowdown(player);
                 } else p.methodsError.tableIsNotInProgress(player);
             } else p.methodsError.tableIsStopped(player);
         } else p.methodsError.notAPokerPlayer(player);
@@ -107,21 +116,24 @@ public class MethodsHand
             {
                 if (pokerPlayer.table.inProgress == true)
                 {
-                    if (pokerPlayer.folded == false)
+                    if (pokerPlayer.table.currentPhase != 4)
                     {
-                        if (pokerPlayer.pot == null) //Check if the player is not all in
+                        if (pokerPlayer.action == true)
                         {
-                            if (pokerPlayer.action == true)
+                            if (pokerPlayer.folded == false)
                             {
-                                if (pokerPlayer.currentBet < pokerPlayer.table.currentBet) //Check if the player hasn't already called
-                                { 
-                                    if (pokerPlayer.money >= pokerPlayer.table.currentBet - pokerPlayer.currentBet) //Check if the player has enough money to call.
-                                        pokerPlayer.call();
-                                    else p.methodsError.notEnoughMoney(player, Double.toString(pokerPlayer.table.currentBet), pokerPlayer.money);
-                                } else p.methodsError.cantCall(player);
-                            } else p.methodsError.notYourTurn(player);
-                        } else p.methodsError.playerIsAllIn(player);
-                    } else p.methodsError.playerIsFolded(player);
+                                if (pokerPlayer.pot == null) //Check if the player is not all in
+                                {
+                                    if (pokerPlayer.currentBet < pokerPlayer.table.currentBet) //Check if the player hasn't already called
+                                    { 
+                                        if (pokerPlayer.money >= pokerPlayer.table.currentBet - pokerPlayer.currentBet) //Check if the player has enough money to call.
+                                            pokerPlayer.call();
+                                        else p.methodsError.notEnoughMoney(player, Double.toString(pokerPlayer.table.currentBet), pokerPlayer.money);
+                                    } else p.methodsError.cantCall(player);
+                                } else p.methodsError.playerIsAllIn(player);
+                            } else p.methodsError.playerIsFolded(player);
+                        } else p.methodsError.notYourTurn(player);
+                    } else p.methodsError.tableIsAtShowdown(player);
                 } else p.methodsError.tableIsNotInProgress(player);
             } else p.methodsError.tableIsStopped(player);
         } else p.methodsError.notAPokerPlayer(player);
@@ -137,18 +149,21 @@ public class MethodsHand
             {
                 if (pokerPlayer.table.inProgress == true)
                 {
-                    if (pokerPlayer.folded == false)
+                    if (pokerPlayer.table.currentPhase != 4)
                     {
-                        if (pokerPlayer.pot == null) //Check if the player is not all in
+                        if (pokerPlayer.action == true)
                         {
-                            if (pokerPlayer.action == true)
+                            if (pokerPlayer.folded == false)
                             {
-                                if (pokerPlayer.currentBet == pokerPlayer.table.currentBet) //Check if the player already contributed enough (and therefore can check)
-                                    pokerPlayer.check();
-                                else p.methodsError.cantCheck(pokerPlayer);
-                            } else p.methodsError.notYourTurn(player);
-                        } else p.methodsError.playerIsAllIn(player);
-                    } else p.methodsError.playerIsFolded(player);
+                                if (pokerPlayer.pot == null) //Check if the player is not all in
+                                {
+                                    if (pokerPlayer.currentBet == pokerPlayer.table.currentBet) //Check if the player already contributed enough (and therefore can check)
+                                        pokerPlayer.check();
+                                    else p.methodsError.cantCheck(pokerPlayer);
+                                } else p.methodsError.playerIsAllIn(player);
+                            } else p.methodsError.playerIsFolded(player);
+                        } else p.methodsError.notYourTurn(player);
+                    } else p.methodsError.tableIsAtShowdown(player);
                 } else p.methodsError.tableIsNotInProgress(player);
             } else p.methodsError.tableIsStopped(player);
         } else p.methodsError.notAPokerPlayer(player);
@@ -207,15 +222,15 @@ public class MethodsHand
             {
                 if (pokerPlayer.table.inProgress == true)
                 {
-                    if (pokerPlayer.folded == false)
+                    if (pokerPlayer.action == true)
                     {
-                        if (pokerPlayer.pot == null) //Check if the player is not all in
+                        if (pokerPlayer.folded == false)
                         {
-                            if (pokerPlayer.action == true)
+                            if (pokerPlayer.pot == null) //Check if the player is not all in
                                 pokerPlayer.fold();
-                            else p.methodsError.notYourTurn(player);
-                        } else p.methodsError.playerIsAllIn(player);
-                    } else p.methodsError.playerIsFolded(player);
+                            else p.methodsError.playerIsAllIn(player);
+                        } else p.methodsError.playerIsFolded(player);
+                    } else p.methodsError.notYourTurn(player);
                 } else p.methodsError.tableIsNotInProgress(player);
             } else p.methodsError.tableIsStopped(player);
         } else p.methodsError.notAPokerPlayer(player);
@@ -229,7 +244,7 @@ public class MethodsHand
         {
             if (pokerPlayer.table.stopped == false)
             {
-                if (pokerPlayer.eliminated == false) //Check if the player is eliminated (if they are, they cant rebuy)
+                if (pokerPlayer.table.elimination == false) //Check if the table is in elimination mode (if it is, they cant rebuy)
                 {
                     if (pokerPlayer.table.inProgress == false)
                     {

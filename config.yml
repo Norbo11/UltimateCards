@@ -1,6 +1,14 @@
+#All general table settings
 table:
+    #The maximum distance (in blocks) that players can join tables and see table messages. 
+    #This is the distance away from where the table was created.
+    #If the TP permission is given, players automatically get teleported on joining a table.
     chatRange: 30
+    #Set to true if you want table owners to be able to set a percentage rake that they get each pot.
     allowRake: false
+    #Set to true if you want the rake to go to their playing stack, rather than their actual money account.
+    rakeToStack: false
+    #These are the default settings every table will have upon creation
     defaults:
         elimination: false
         minRaiseIsAlwaysBB: true
@@ -12,6 +20,9 @@ table:
         dynamicFrequency: 0
         rake: 0.05
         minRaise: 200
+#Settings regarding the log.txt file
 log:
+    #Set to true if you want every command, error and economy action be reflected in the log.txt file
     enableLog: true
+    #Set a date/time format for the log
     dateFormat: 'dd/MM/yyyy HH:mm:ss'

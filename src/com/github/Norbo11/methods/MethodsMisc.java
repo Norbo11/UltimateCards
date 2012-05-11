@@ -175,10 +175,13 @@ public class MethodsMisc
         List<Player> players = p.methodsMisc.getOnlinePlayers();
         for (Player player : players)
         {
-            if (player.getLocation().distance(location) <= p.getConfig().getInt("table.chatRange"))
+            if (player.getWorld() == location.getWorld())
             {
-                for (String temp : message)
-                    player.sendMessage(temp);
+                if (player.getLocation().distance(location) <= p.getConfig().getInt("table.chatRange"))
+                {
+                    for (String temp : message)
+                        player.sendMessage(temp);
+                }
             }
         }
     }
@@ -189,8 +192,11 @@ public class MethodsMisc
         List<Player> players = p.methodsMisc.getOnlinePlayers();
         for (Player player : players)
         {
-            if (player.getLocation().distance(location) <= p.getConfig().getInt("table.chatRange"))
-                player.sendMessage(message);
+            if (player.getWorld() == location.getWorld())
+            {
+                if (player.getLocation().distance(location) <= p.getConfig().getInt("table.chatRange"))
+                    player.sendMessage(message);
+            }
         }
     }
 
@@ -200,17 +206,12 @@ public class MethodsMisc
         List<Player> players = p.methodsMisc.getOnlinePlayers();
         for (Player player : players)
         {
-            if (player.getLocation().distance(location) <= p.getConfig().getInt("table.chatRange"))
-                player.sendMessage(message);
+            if (player.getWorld() == location.getWorld())
+            {
+                if (player.getLocation().distance(location) <= p.getConfig().getInt("table.chatRange"))
+                    player.sendMessage(message);
+            }
         }
-    }
-
-    //Converts a string to a player, if they are online. Returns null if no player was found. Ignores case
-    public Player stringToPlayer(String toFind)
-    {
-        for (Player player : getOnlinePlayers()) //Go through all online players, if the player's name equals to the player we are looking for, return the player
-            if (player.getName().equalsIgnoreCase(toFind)) return player;
-        return null; //If no player was found return null
     }
     
     public double roundDouble(double d) 
@@ -237,7 +238,7 @@ public class MethodsMisc
     
     public void catchException(Exception e)
     {
-        p.methodsMisc.addToLog("[ERROR] An error has occured: " + e.getMessage());
+        p.methodsMisc.addToLog(p.getDate() + " [ERROR] An error has occured: " + e.getMessage());
         e.printStackTrace();
     }
     
@@ -252,7 +253,7 @@ public class MethodsMisc
     {
         p.methodsMisc.logCommand(sender, command, args);
         sender.sendMessage(p.pluginTag + p.red + "An error has occured: " + e.getMessage());
-        p.methodsMisc.addToLog("[ERROR] An error has occured: " + e.getMessage());
+        p.methodsMisc.addToLog(p.getDate() + " [ERROR] An error has occured: " + e.getMessage());
         e.printStackTrace();
     }
 

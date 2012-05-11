@@ -19,8 +19,6 @@ package com.github.norbo11;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -79,13 +77,9 @@ public class UltimatePoker extends JavaPlugin
     public File filePluginDir;
     public File fileLog;
     public File filePluginConfig;
-    public String fileDatabase = "UltimatePoker.db";
 
     // Misc
     DateFormat dateFormat;
-    public Connection database;
-    public String databaseTableName = "UltimatePokerStats";
-    public String databaseRowName = "playerName";
 
     public String getDate()
     {
@@ -96,14 +90,6 @@ public class UltimatePoker extends JavaPlugin
     public void onDisable()
     {
         methodsMisc.returnMoney();
-        try
-        {
-            database.close();
-        } catch (SQLException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
         log.info("UltimatePoker v" + version + " plugin disabled!");
     }
 

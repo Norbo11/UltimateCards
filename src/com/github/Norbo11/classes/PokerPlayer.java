@@ -112,31 +112,32 @@ public class PokerPlayer
         for (double temp2 : temp)
             sidePot = sidePot + temp2;
 
-        //Makes a new pot with the obtained sidepot amount, adds the pot to the list of table pots, and sets the latestPot variable to the created pot.
-        pot = new Pot(this, table, sidePot, table.pots.size(), p);
-        table.pots.add(pot);
-        table.latestPot = pot;
+        if (sidePot > 0)
+        {
+            //Makes a new pot with the obtained sidepot amount, adds the pot to the list of table pots, and sets the latestPot variable to the created pot.
+            pot = new Pot(this, table, sidePot, table.pots.size(), p);
+            table.pots.add(pot);
+            table.latestPot = pot;
+            /* Sets the pot before the one just created (effectively latestPot - 1 in index of pots) to its amount, minus the created side pot, plus the amount that the player is going all in for.
+             * This means "take away what the player is short from the previous pot (usually the main pot), and put it in the new side pot. Then add the amount that the player is actually
+             * covering to the pot before this one (usually the main pot)
+             */
+            table.pots.get(table.pots.indexOf(table.latestPot) - 1).pot = (table.pots.get(table.pots.indexOf(table.latestPot) - 1).pot - sidePot) + amount;
+        } else table.pots.get(0).pot = (table.pots.get(0).pot - sidePot) + amount;
         
-        /* Sets the pot before the one just created (effectively latestPot - 1 in index of pots) to its amount, minus the created side pot, plus the amount that the player is going all in for.
-         * This means "take away what the player is short from the previous pot (usually the main pot), and put it in the new side pot. Then add the amount that the player is actually
-         * covering to the pot before this one (usually the main pot)
-         */
-        
-        table.pots.get(table.pots.indexOf(table.latestPot) - 1).pot = (table.pots.get(table.pots.indexOf(table.latestPot) - 1).pot - sidePot) + amount;
-
         // Since the player is going all in, deduct all of his money
         money = 0;
 
         //Send messages
         p.methodsMisc.sendToAllWithinRange(table.location, p.pluginTag + p.gold + player.getName() + p.white + " is all in for " + p.gold + p.methodsMisc.formatMoney(amount) + p.white + "! (Total: " + p.gold + p.methodsMisc.formatMoney(totalBet) + p.white + ")");
-        p.methodsMisc.sendToAllWithinRange(table.location, p.pluginTag + "Created side pot of " + p.gold + p.methodsMisc.formatMoney(sidePot) + p.white + "!");
+        if (sidePot > 0) p.methodsMisc.sendToAllWithinRange(table.location, p.pluginTag + "Created side pot of " + p.gold + p.methodsMisc.formatMoney(sidePot) + p.white + "!");
 
         //If there is only 1 non all-in player left on the table, go to showdown
-        if (table.players.size() - 1 == table.getAllInPlayers().size())
-        {
-            table.showdown();
-            return; //If you're going to showdown, return so that it doesn't go to next the next person's turn
-        }
+        //if (table.players.size() - 1 == table.getAllInPlayers().size())
+        //{
+        //    table.showdown();
+        //    return; //If you're going to showdown, return so that it doesn't go to next the next person's turn
+        //}
        
         table.nextPersonTurn(this);         //Go to the next person's turn
     }
@@ -211,7 +212,7 @@ public class PokerPlayer
         //Simply say that the player has took action, and just send a message. Then go to the next player's turn
         action = false;
         acted = true;
-        p.methodsMisc.sendToAllWithinRange(table.location, p.pluginTag + p.gold + player.getName() + p.white + " has checked.");
+        p.methodsMisc.sendToAllWithinRange(table.location, p.pluginTag + p.gold + player.getName() + p.white + " checks.");
         table.nextPersonTurn(this);
     }
     
@@ -256,7 +257,7 @@ public class PokerPlayer
         action = false;
         acted = true;
         folded = true;
-        p.methodsMisc.sendToAllWithinRange(table.location, p.pluginTag + p.gold + player.getName() + p.white + " has folded.");
+        p.methodsMisc.sendToAllWithinRange(table.location, p.pluginTag + p.gold + player.getName() + p.white + " folds.");
         clearHand();
         table.nextPersonTurn(this);
     }
@@ -275,7 +276,7 @@ public class PokerPlayer
         //Go through all cards, add them to the temporary array and then return the array.
         for (Card card : cards)
         {
-            returnValue[i] = p.pluginTag + "[" + i + "] " + card.toString();
+            returnValue[i] = p.pluginTag + "[" + (i + 1) + "] " + card.toString();
             i++;
         }
         return returnValue;

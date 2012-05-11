@@ -114,4 +114,12 @@ public class MethodsCheck
         }
         return null;
     }
+    
+    //Converts a string to a player, if they are online. Returns null if no player was found. Ignores case
+    public Player isAPlayer(String toFind)
+    {
+        for (Player player : p.methodsMisc.getOnlinePlayers()) //Go through all online players, if the player's name equals to the player we are looking for, return the player
+            if (player.getName().equalsIgnoreCase(toFind)) return player;
+        return null; //If no player was found return null
+    }
 }

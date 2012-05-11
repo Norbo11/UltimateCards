@@ -37,7 +37,7 @@ public class MethodsPoker
         PokerPlayer pokerPlayer = p.methodsCheck.isAPokerPlayer(player);
         if (pokerPlayer != null)
         {
-            Player playerToInvite = p.methodsMisc.stringToPlayer(toInvite);
+            Player playerToInvite = p.methodsCheck.isAPlayer(toInvite);
             if (playerToInvite != null) //If the player specified is an online player (ignoring the case), then send them the invite.
                 pokerPlayer.invite(playerToInvite);
             else p.methodsError.playerNotFound(player, toInvite);
@@ -131,33 +131,41 @@ public class MethodsPoker
                         //Check if the player is banned
                         if (table.banned.contains(player.getName()) == false)
                         {
+                            boolean notNearEnough = false;
                             //Check if they have permission to teleport there, OR if they are close enough to see all of the table's messages
-                            if (player.hasPermission("upoker.tp") || player.getLocation().distance(table.location) <= table.chatRange)
+                            if (player.hasPermission("upoker.tp") == false)
                             {
-                                //Check if the table is open
-                                if (table.open == true)
+                                if (player.getWorld() == table.location.getWorld())
                                 {
-                                    //Check if the table is in progress
-                                    if (table.inProgress == false)
+                                    if (player.getLocation().distance(table.location) <= table.chatRange)
+                                    notNearEnough = false;
+                                    else notNearEnough = true;
+                                } else notNearEnough = true;
+                            }
+                            if (notNearEnough == true) { p.methodsError.playerNotNearEnough(player); return; }
+                            //Check if the table is open
+                            if (table.open == true)
+                            {
+                                //Check if the table is in progress
+                                if (table.inProgress == false)
+                                {
+                                    //Check if the buy in is within the bounds of the table
+                                    double Buyin = Double.parseDouble(buyin);
+                                    if (Buyin >= table.minBuy && Buyin <= table.maxBuy)
                                     {
-                                        //Check if the buy in is within the bounds of the table
-                                        double Buyin = Double.parseDouble(buyin);
-                                        if (Buyin >= table.minBuy && Buyin <= table.maxBuy)
+                                        //Check if the player even has that amount
+                                        if (p.economy.has(player.getName(), Buyin))
                                         {
-                                            //Check if the player even has that amount
-                                            if (p.economy.has(player.getName(), Buyin))
-                                            {
-                                                //Creates a new poker player, adds them to the table, teleport them (if they have permission), withdraws money from them, logs the action and sends them a message
-                                                table.players.add(new PokerPlayer(player, table, Buyin, p));
-                                                if (player.hasPermission("upoker.tp")) player.teleport(table.location);
-                                                p.economy.withdrawPlayer(player.getName(), Buyin);
-                                                p.methodsMisc.addToLog(p.getDate() + " [ECONOMY] Withdrawing " + Buyin + " from " + player.getName());
-                                                player.sendMessage(p.pluginTag + "You have sat at table '" + p.gold + table.name + p.white + "', ID #" + p.gold + table.id + p.white + ", with a buy-in of " + p.gold + p.methodsMisc.formatMoney(Buyin) + p.white + ". Make sure to stay within " + p.gold + p.getConfig().getInt("table.chatrange") + p.white + " blocks of it to see all of it's messages!");
-                                            } else p.methodsError.notEnoughMoney(player, buyin, p.economy.getBalance(player.getName()));
-                                        } else p.methodsError.notWithinBuyinBounds(player, Buyin, table.minBuy, table.maxBuy);
-                                    } else p.methodsError.tableIsInProgress(player);
-                                } else p.methodsError.notOpen(player, id);
-                            } else p.methodsError.playerNotNearEnough(player);
+                                            //Creates a new poker player, adds them to the table, teleport them (if they have permission), withdraws money from them, logs the action and sends them a message
+                                            table.players.add(new PokerPlayer(player, table, Buyin, p));
+                                            if (player.hasPermission("upoker.tp")) player.teleport(table.location);
+                                            p.economy.withdrawPlayer(player.getName(), Buyin);
+                                            p.methodsMisc.addToLog(p.getDate() + " [ECONOMY] Withdrawing " + Buyin + " from " + player.getName());
+                                            p.methodsMisc.sendToAllWithinRange(table.location, p.pluginTag + p.gold + player.getName() + p.white + " has sat down at the table with " + p.gold + p.methodsMisc.formatMoney(Buyin));
+                                        } else p.methodsError.notEnoughMoney(player, buyin, p.economy.getBalance(player.getName()));
+                                    } else p.methodsError.notWithinBuyinBounds(player, Buyin, table.minBuy, table.maxBuy);
+                                } else p.methodsError.tableIsInProgress(player);
+                            } else p.methodsError.notOpen(player, id);
                         } else p.methodsError.playerIsBanned(player);
                     } else p.methodsError.notATable(player, id);
                 } else p.methodsError.notANumber(player, buyin);
@@ -168,40 +176,62 @@ public class MethodsPoker
     //Lists the specified details type of the specified table. If no table is specified, lists details of the table that the player is sitting on. If a type is not specified, lists all details.
     public void listDetails(Player player, String type, String tableID)
     {
-        Table table = null;
-        if (tableID != null) // If the user specified a table, make sure that its a number and a valid table.
+        if (tableID == null && type == null) //If the player didnt specify a type or a table ID, make sure he is sitting at a table, then display all details.
+        {
+            PokerPlayer pokerPlayer = p.methodsCheck.isAPokerPlayer(player);
+            if (pokerPlayer != null) pokerPlayer.table.displayAllDetails(player);
+            else player.sendMessage(p.pluginTag + p.red + "You have not specified a table and are currently not sitting at one!");
+            return;
+        }
+        
+        if (tableID == null && type != null) //If the player specified a type but not a table, make sure he is sitting at a table, then display the type of detail to him.
+                                             //If he is not sitting at a table, assume that the type is the table ID.
+        {
+            PokerPlayer pokerPlayer = p.methodsCheck.isAPokerPlayer(player);
+            if (pokerPlayer != null)
+            {
+                if (pokerPlayer.table.isADetail(type)) pokerPlayer.table.displayDetail(player, type);
+                else player.sendMessage(p.pluginTag + p.red + "Invalid detail type! Valid types: " + p.gold + "all, settings, players, general | other");
+                return;
+            }
+            if (p.methodsCheck.isInteger(type))
+            {
+                Table table = p.methodsCheck.isATable(Integer.parseInt(type));
+                if (table != null)
+                {
+                    table.displayAllDetails(player);
+                    return;
+                } else player.sendMessage(p.pluginTag + p.red + "You are not currently sitting at any table, and the specified value " + p.gold + type + p.white + " is not a table!");
+            } else player.sendMessage(p.pluginTag + p.red + "You are not currently sitting at any table, and the specified value " + p.gold + type + p.white + " is not a number!");
+        }
+
+        if (tableID != null && type != null) //If the player specified a table ID and a type, make sure that the type is a type and the table is a table, then display the detail type to him.
         {
             if (p.methodsCheck.isInteger(tableID))
             {
-                table = p.methodsCheck.isATable(Integer.parseInt(tableID));
-                if (table == null)
+                Table table = p.methodsCheck.isATable(Integer.parseInt(tableID));
+                if (table != null)
                 {
-                    p.methodsError.notATable(player, tableID);
-                    return;
-                }
-            } else
-            {
-                p.methodsError.notANumber(player, tableID);
-                return;
-            }
-        } else
-        // If the user didn't specify a table, make sure that he is a poker player.
-        {
-            PokerPlayer pokerPlayer = p.methodsCheck.isAPokerPlayer(player);
-            if (pokerPlayer != null) table = pokerPlayer.table;
-            else
-            {
-                player.sendMessage(p.pluginTag + p.red + "You have not specified a table, and are currently not sitting at one!");
-                return;
-            }
+                    if (table.isADetail(type))
+                    {
+                        table.displayDetail(player, type);
+                        return;
+                    } player.sendMessage(p.pluginTag + p.red + "Invalid detail type! Valid types: " + p.gold + "all, settings, players, general | other");
+                } else p.methodsError.notATable(player, tableID);
+            } else p.methodsError.notATable(player, tableID);
         }
-        if (type == null) // If the user didn't specify a type of detail, display all details.
-        table.displayAllDetails(player);
-        else
-        // If the user did specify a type of detail, display just that detail, is it is a valid detail type.
+    }
+
+    public void check(Player player, String toCheck)
+    {
+        Player playerToCheck = p.methodsCheck.isAPlayer(toCheck);
+        if (playerToCheck != null)
         {
-            if (table.isADetail(type)) table.displayDetail(player, type);
-            else p.methodsError.notADetailType(player, type);
-        }
+            PokerPlayer pokerPlayer = p.methodsCheck.isAPokerPlayer(playerToCheck);
+            if (pokerPlayer != null)
+            {
+                player.sendMessage(p.pluginTag + p.gold + toCheck + p.white + "'s stack: " + p.gold + p.methodsMisc.formatMoney(pokerPlayer.money));
+            } else p.methodsError.pokerPlayerNotFound(player, toCheck);
+        } else p.methodsError.playerNotFound(player, toCheck);
     }
 }
