@@ -1,5 +1,5 @@
 /* ==================================================================================================
- * UltimatePoker v1.0 - By Norbo11
+ * UltimatePoker v1.1 - By Norbo11
  * Copyright (C) 2012
  * You may NOT modify this file in any way, or use any of it's code for personal projects. 
  * You may, however, read and learn from it if you like. All rights blah blah and shit. 
@@ -14,7 +14,6 @@
 package com.github.norbo11.methods;
 
 import java.io.FileWriter;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,13 +44,13 @@ public class MethodsMisc
 
     public void addToLog(String message)
     {
-        //Only send to the log if it is enabled in the config
+        // Only send to the log if it is enabled in the config
         if (p.getConfig().getBoolean("log.enableLog") == true)
         {
             try
             {
-                //Attempt to write the supplied message as a new line at the end of the log
-                FileWriter writer = new FileWriter(p.fileLog, true);
+                // Attempt to write the supplied message as a new line at the end of the log
+                FileWriter writer = new FileWriter(p.FILE_LOG, true);
                 writer.write(message + "\r\n");
                 writer.flush();
                 writer.close();
@@ -62,19 +61,54 @@ public class MethodsMisc
         }
     }
 
-    //Converts the given double into a percentage string
+    public void catchException(Exception e)
+    {
+        p.methodsMisc.addToLog(p.getDate() + " [ERROR] An error has occured: " + e.getMessage());
+        e.printStackTrace();
+    }
+
+    public void catchException(Exception e, Command command, CommandSender sender, String args[])
+    {
+        sender.sendMessage(p.PLUGIN_TAG + p.red + "An error has occured: " + e.getMessage());
+        p.methodsMisc.addToLog(p.getDate() + " [ERROR] An error has occured: " + e.getMessage());
+        e.printStackTrace();
+    }
+
+    public void catchException(Exception e, Player sender, String message)
+    {
+        sender.sendMessage(p.PLUGIN_TAG + p.red + "An error has occured: " + e.getMessage());
+        p.methodsMisc.addToLog(message);
+        e.printStackTrace();
+    }
+
+    // Converts the given double into a percentage string
     public String convertToPercentage(double value)
     {
-        return Double.toString(value * 100) + '%';
+        return Double.toString(roundDouble(value * 100, 1)) + '%';
     }
 
-    //Converts things like '31982193' into '31,982,193.00 Dollars'
+    // Converts things like '31982193' into '31,982,193.00 Dollars'
     public String formatMoney(double amount)
     {
-        return p.economy.format(amount);
+        return p.ECONOMY.format(amount);
     }
 
-    //Returns a list of all online players on the server
+    public int getFreeTableID()
+    {
+        int newID = 0;
+        try
+        {
+            // Try to get the first table. If that table exists, increment the newID variable
+            while (p.tables.get(newID).id == newID)
+                newID++;
+        } catch (Exception e) // As soon as you try to get a player that return null (doesnt exist), this means that that ID is free. Therefore, return it
+        {
+            return newID;
+        }
+        return newID; // This doesnt actually do anything but is required so the compiler doesnt complain
+    }
+
+    // Returns a list of all online players on the server
     public List<Player> getOnlinePlayers()
     {
         List<Player> returnValue = new ArrayList<Player>();
@@ -84,92 +118,96 @@ public class MethodsMisc
         return returnValue;
     }
 
-    //Logs the supplied command, it's sender and all of it's arguments
+    public Player getPlayer(String name)
+    {
+        for (Player player : getOnlinePlayers())
+        {
+            if (player.getName().equalsIgnoreCase(name)) return player;
+        }
+        return null;
+    }
+
+    // Logs the supplied command, it's sender and all of it's arguments
     public void logCommand(CommandSender sender, Command command, String args[])
     {
         String arguments = "";
-        for (String argument : args) //Goes through the array of given arguments, appends them at the back of the arguments variable
+        for (String argument : args)
+            // Goes through the array of given arguments, appends them at the back of the arguments variable
             arguments = arguments + " " + argument;
-        addToLog(p.getDate() + " " + sender.getName() + ": /" + command.getName() + arguments); //Adds the timestamped result to the log
+        addToLog(p.getDate() + " " + sender.getName() + ": /" + command.getName() + arguments); // Adds the timestamped result to the log
     }
 
-    //Replaces [] () | by colouring them. [] = dark gray, () = dark aqua, | = blue.
+    // Replaces [] () | by colouring them. [] = dark gray, () = dark aqua, | = blue.
     public String[] replaceSpecialCharacters(List<String> message)
     {
-        String[] returnValue = new String[message.size()];                      //Create a return value which will eventually be returned, with the size of the amount of messages to parse
-        Pattern squareBrackets = Pattern.compile("(.*?)(\\[.*?\\])(.*?)");      //Compile the regular expression for square brackets. group 1 = first part of the message. 2 = coloured part (part inside square brackets, including them). 3 = the rest of the message.
-        Pattern normalBrackets = Pattern.compile("(.*?)(\\(.*?\\))(.*?)");      //Same as above, but for brackets. \\ is used before []() because those characters are part of regex syntax and need to be escaped.
-        Matcher squareBracketMatcher; //These are the matchers that we will     //The question mark makes it so that the expression matches as many times as it can (doesnt really make sense since that makes it relucant, but whatever)
-        Matcher normalBracketMatcher; //use to actually match the strings
-        int i = 0; //Used to loop through the return value which returns the array
-        for (String temp : message) //Go through the list of supplied messages
+        String[] returnValue = new String[message.size()];                      // Create a return value which will eventually be returned, with the size of the amount of messages to parse
+        Pattern squareBrackets = Pattern.compile("(.*?)(\\[.*?\\])(.*?)");      // Compile the regular expression for square brackets. group 1 = first part of the message. 2 = coloured part (part inside square brackets, including them). 3 = the rest of the message.
+        Pattern normalBrackets = Pattern.compile("(.*?)(\\(.*?\\))(.*?)");      // Same as above, but for brackets. \\ is used before []() because those characters are part of regex syntax and need to be escaped.
+        Matcher squareBracketMatcher; // These are the matchers that we will //The question mark makes it so that the expression matches as many times as it can (doesnt really make sense since that makes it relucant, but whatever)
+        Matcher normalBracketMatcher; // use to actually match the strings
+        int i = 0; // Used to loop through the return value which returns the array
+        for (String temp : message) // Go through the list of supplied messages
         {
-            //Replace square and normal brackets if they are matched (colour them)
+            // Replace square and normal brackets if they are matched (colour them)
             squareBracketMatcher = squareBrackets.matcher(temp);
             if (squareBracketMatcher.find()) temp = squareBracketMatcher.replaceAll("$1" + ChatColor.DARK_GRAY + "$2" + p.gold + "$3");
             normalBracketMatcher = normalBrackets.matcher(temp);
             if (normalBracketMatcher.find()) temp = normalBracketMatcher.replaceAll("$1" + ChatColor.DARK_AQUA + "$2" + p.gold + "$3");
-            
-            //Because our plugin tag contains square brackets we need to replace it back if it is replaced
-            temp = temp.replace(ChatColor.stripColor(p.pluginTag).replace(" ", ""), p.pluginTag.replace(" ", "")); //We match against the raw plugin tag with no colour and replace it with the colored one, removing an extra space that is created
-            temp = temp.replace("|", ChatColor.BLUE + " | " + p.gold);                            //We replace all pipes by adding spaces around them and making them dark aqua
-            returnValue[i] = temp;                                                                //We add to the return value
-            i++;                                                                                  //Increase our iterator
+
+            // Because our plugin tag contains square brackets we need to replace it back if it is replaced
+            temp = temp.replace(ChatColor.stripColor(p.PLUGIN_TAG).replace(" ", ""), p.PLUGIN_TAG.replace(" ", "")); // We match against the raw plugin tag with no colour and replace it with the colored one, removing an extra space that is created
+            temp = temp.replace("|", ChatColor.BLUE + " | " + p.gold);                            // We replace all pipes by adding spaces around them and making them dark aqua
+            returnValue[i] = temp;                                                                // We add to the return value
+            i++;                                                                                  // Increase our iterator
         }
-        return returnValue; //Return the value once we parse through everything
+        return returnValue; // Return the value once we parse through everything
     }
 
-    //Returns money to EVERYONE that is currently at a table. Should be called when a reload happens
+    // Returns money to EVERYONE that is currently at a table. Should be called when a reload happens
     public void returnMoney()
     {
         for (Table table : p.tables)
         {
-            //Go through every online player, teleport them to their starting location, display them messages to them, give them their money back and log the event.
+            // Go through every online player, teleport them to their starting location, display them messages to them, give them their money back and log the event.
             for (PokerPlayer player : table.players)
             {
                 if (player.online)
                 {
-                    player.player.teleport(player.startLocation);
-                    player.sendMessage(p.pluginTag + p.red + "Something (an error, plugin reload, etc) has caused all poker tables to be deleted!");
-                    player.sendMessage(p.pluginTag + "You have been paid your remaining stack of " + p.gold + p.methodsMisc.formatMoney(player.money + player.totalBet));
+                    getPlayer(player.name).teleport(player.startLocation);
+                    player.sendMessage(p.PLUGIN_TAG + p.red + "Something (an error, plugin reload, etc) has caused all poker tables to be deleted!");
+                    player.sendMessage(p.PLUGIN_TAG + "You have been paid your remaining stack of " + p.gold + p.methodsMisc.formatMoney(player.money + player.totalBet));
                 }
-                p.economy.depositPlayer(player.name, player.money + player.totalBet);
+                p.ECONOMY.depositPlayer(player.name, player.money + player.totalBet);
                 p.methodsMisc.addToLog(p.getDate() + " [ECONOMY] Depositing " + player.totalBet + " to " + player.name);
             }
         }
         p.tables.clear();
     }
 
-    //Returns money to all the players in the specified table. Should be called when a table is deleted, etc.
+    // Returns money to all the players in the specified table. Should be called when a table is deleted, etc.
     public void returnMoney(Table table)
     {
-        //Go through every online player, teleport them to their starting location, display them messages to them, give them their money back and log the event.
+        // Go through every online player, teleport them to their starting location, display them messages to them, give them their money back and log the event.
         for (PokerPlayer player : table.players)
         {
             if (player.online)
             {
-                player.player.teleport(player.startLocation);
-                player.sendMessage(p.pluginTag + "You have been paid your remaining stack of " + p.gold + p.methodsMisc.formatMoney(player.money + player.totalBet));
-                p.methodsMisc.addToLog(p.getDate() + " [ECONOMY] Depositing " + Double.toString(player.money + player.totalBet) + " to " + player.name);
+                getPlayer(player.name).teleport(player.startLocation);
+                player.sendMessage(p.PLUGIN_TAG + "You have been paid your remaining stack of " + p.gold + p.methodsMisc.formatMoney(player.money + player.totalBet));
             }
-            p.economy.depositPlayer(player.name, player.money + player.totalBet);
-            p.methodsMisc.addToLog(p.getDate() + " [ECONOMY] Depositing " + player.totalBet + " to " + player.name);
+            p.ECONOMY.depositPlayer(player.name, player.money + player.totalBet);
+            addToLog(p.getDate() + " [ECONOMY] Depositing " + Double.toString(player.money + player.totalBet) + " to " + player.name);
         }
     }
 
-    public void returnMoney(PokerPlayer player)
+    public double roundDouble(double valueToRound, int numberOfDecimalPlaces)
     {
-        if (player.online)
-        {
-            player.player.teleport(player.startLocation);
-            player.sendMessage(p.pluginTag + "You have been paid your remaining stack of " + p.gold + p.methodsMisc.formatMoney(player.money + player.totalBet));
-            p.methodsMisc.addToLog(p.getDate() + " [ECONOMY] Depositing " + Double.toString(player.money + player.totalBet) + " to " + player.name);
-        }
-        p.economy.depositPlayer(player.name, player.money + player.totalBet);
-        p.methodsMisc.addToLog(p.getDate() + " [ECONOMY] Depositing " + player.totalBet + " to " + player.name);
+        double multipicationFactor = Math.pow(10, numberOfDecimalPlaces);
+        double interestedInZeroDPs = valueToRound * multipicationFactor;
+        return Math.round(interestedInZeroDPs) / multipicationFactor;
     }
 
-    //Sends a list of messages to all players that are close to the specified location. The maximum distance is specified in the config
+    // Sends a list of messages to all players that are close to the specified location. The maximum distance is specified in the config
     public void sendToAllWithinRange(Location location, List<String> message)
     {
         List<Player> players = p.methodsMisc.getOnlinePlayers();
@@ -186,7 +224,7 @@ public class MethodsMisc
         }
     }
 
-    //Sends a single message to all players that are close to the specified location. The maximum distance is specified in the config
+    // Sends a single message to all players that are close to the specified location. The maximum distance is specified in the config
     public void sendToAllWithinRange(Location location, String message)
     {
         List<Player> players = p.methodsMisc.getOnlinePlayers();
@@ -194,13 +232,12 @@ public class MethodsMisc
         {
             if (player.getWorld() == location.getWorld())
             {
-                if (player.getLocation().distance(location) <= p.getConfig().getInt("table.chatRange"))
-                    player.sendMessage(message);
+                if (player.getLocation().distance(location) <= p.getConfig().getInt("table.chatRange")) player.sendMessage(message);
             }
         }
     }
 
-    //Sends an array of messages to all players that are close to the specified location. The maximum distance is specified in the confi
+    // Sends an array of messages to all players that are close to the specified location. The maximum distance is specified in the confi
     public void sendToAllWithinRange(Location location, String[] message)
     {
         List<Player> players = p.methodsMisc.getOnlinePlayers();
@@ -208,53 +245,8 @@ public class MethodsMisc
         {
             if (player.getWorld() == location.getWorld())
             {
-                if (player.getLocation().distance(location) <= p.getConfig().getInt("table.chatRange"))
-                    player.sendMessage(message);
+                if (player.getLocation().distance(location) <= p.getConfig().getInt("table.chatRange")) player.sendMessage(message);
             }
         }
     }
-    
-    public double roundDouble(double d) 
-    {
-        DecimalFormat twoDForm = new DecimalFormat("#.##");
-    return Double.valueOf(twoDForm.format(d));
-    }
-
-    public void removePlayer(PokerPlayer player)
-    {
-        for (Table table : p.tables)
-        {
-            for (PokerPlayer temp : table.players)
-            {
-                if (temp == player) 
-                {
-                    table.players.remove(temp);
-                    table.shiftIDs();
-                    return;
-                }
-            }
-        }
-    }
-    
-    public void catchException(Exception e)
-    {
-        p.methodsMisc.addToLog(p.getDate() + " [ERROR] An error has occured: " + e.getMessage());
-        e.printStackTrace();
-    }
-    
-    public void catchException(Exception e, Player sender, String message)
-    {
-        sender.sendMessage(p.pluginTag + p.red + "An error has occured: " + e.getMessage());
-        p.methodsMisc.addToLog(message);
-        e.printStackTrace();
-    }
-    
-    public void catchException(Exception e, Command command, CommandSender sender, String args[])
-    {
-        p.methodsMisc.logCommand(sender, command, args);
-        sender.sendMessage(p.pluginTag + p.red + "An error has occured: " + e.getMessage());
-        p.methodsMisc.addToLog(p.getDate() + " [ERROR] An error has occured: " + e.getMessage());
-        e.printStackTrace();
-    }
-
 }

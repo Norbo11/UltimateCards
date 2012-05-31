@@ -1,5 +1,5 @@
 /* ==================================================================================================
- * UltimatePoker v1.0 - By Norbo11
+ * UltimatePoker v1.1 - By Norbo11
  * Copyright (C) 2012
  * You may NOT modify this file in any way, or use any of it's code for personal projects. 
  * You may, however, read and learn from it if you like. All rights blah blah and shit. 
@@ -33,13 +33,13 @@ public class ListenerGeneral implements Listener
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event)
     {
-        PokerPlayer pokerPlayer = p.methodsCheck.isAPokerPlayer(event.getPlayer());
+        PokerPlayer pokerPlayer = p.methodsCheck.isAPokerPlayer(event.getPlayer().getName());
         if (pokerPlayer != null)
         {
             pokerPlayer.online = true;
             if (pokerPlayer.table.getOnlinePlayers().size() == pokerPlayer.table.players.size())
             {
-                p.methodsMisc.sendToAllWithinRange(pokerPlayer.table.location, p.pluginTag + "All players online again, resuming the table!");
+                p.methodsMisc.sendToAllWithinRange(pokerPlayer.table.location, p.PLUGIN_TAG + "All players online again, resuming the table!");
                 pokerPlayer.table.stopped = false;
             }
         }
@@ -48,12 +48,12 @@ public class ListenerGeneral implements Listener
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event)
     {
-        PokerPlayer pokerPlayer = p.methodsCheck.isAPokerPlayer(event.getPlayer());
+        PokerPlayer pokerPlayer = p.methodsCheck.isAPokerPlayer(event.getPlayer().getName());
         if (pokerPlayer != null)
         {
             pokerPlayer.online = false;
-            p.methodsMisc.sendToAllWithinRange(pokerPlayer.table.location, p.pluginTag + p.gold + pokerPlayer.player.getName() + p.red + " has left the game, pausing the table!");
-            p.methodsMisc.sendToAllWithinRange(pokerPlayer.table.location, p.pluginTag + p.red + "Table owner: please " + p.gold + "/table kick [player]" + p.red + " the missing players or wait for them to join back.");
+            p.methodsMisc.sendToAllWithinRange(pokerPlayer.table.location, p.PLUGIN_TAG + p.gold + pokerPlayer.name + p.red + " has left the game, pausing the table!");
+            p.methodsMisc.sendToAllWithinRange(pokerPlayer.table.location, p.PLUGIN_TAG + p.red + "Table owner: please " + p.gold + "/table kick [player]" + p.red + " the missing players or wait for them to join back.");
             pokerPlayer.table.stopped = true;
         }
     }

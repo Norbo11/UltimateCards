@@ -1,5 +1,5 @@
 /* ==================================================================================================
- * UltimatePoker v1.0 - By Norbo11
+ * UltimatePoker v1.1 - By Norbo11
  * Copyright (C) 2012
  * You may NOT modify this file in any way, or use any of it's code for personal projects. 
  * You may, however, read and learn from it if you like. All rights blah blah and shit. 
@@ -24,11 +24,21 @@ import com.github.norbo11.classes.Table;
 public class MethodsCheck
 {
 
-    UltimatePoker p;
     public MethodsCheck(UltimatePoker p)
     {
         this.p = p;
-    } 
+    }
+
+    UltimatePoker p;
+
+    // Converts a string to a player, if they are online. Returns null if no player was found. Ignores case
+    public Player isAPlayer(String toFind)
+    {
+        for (Player player : p.methodsMisc.getOnlinePlayers())
+            // Go through all online players, if the player's name equals to the player we are looking for, return the player
+            if (player.getName().equalsIgnoreCase(toFind)) return player;
+        return null; // If no player was found return null
+    }
 
     public PokerPlayer isAPokerPlayer(Player player)
     {
@@ -39,13 +49,22 @@ public class MethodsCheck
             for (PokerPlayer pokerPlayer : table.players)
             {
                 // If the player list contains the player we are looking for
-                if (pokerPlayer != null)
-                {
-                    if (pokerPlayer.player == player) return pokerPlayer;
-                }
+                if (pokerPlayer.name.equals(player.getName())) return pokerPlayer;
             }
         }
         // If no match is found, return null
+        return null;
+    }
+
+    public PokerPlayer isAPokerPlayer(String player)
+    {
+        for (Table table : p.tables)
+        {
+            for (PokerPlayer pokerPlayer : table.players)
+            {
+                if (pokerPlayer.name.equalsIgnoreCase(player)) return pokerPlayer;
+            }
+        }
         return null;
     }
 
@@ -68,8 +87,7 @@ public class MethodsCheck
     {
         for (Pot pot : table.pots)
         {
-            if (pot.id == id)
-                return pot;
+            if (pot.id == id) return pot;
         }
         return null;
     }
@@ -78,8 +96,7 @@ public class MethodsCheck
     {
         for (Table table : p.tables)
         {
-            if (table.id == ID && table != null)
-                return table;
+            if (table.id == ID && table != null) return table;
         }
         return null;
     }
@@ -90,8 +107,11 @@ public class MethodsCheck
         {
             double dbl = Double.parseDouble(amount);
             if (dbl >= 0) return true;
-                else return false;
-        } catch (Exception e) { return false; }
+            else return false;
+        } catch (Exception e)
+        {
+            return false;
+        }
     }
 
     public boolean isInteger(String string)
@@ -100,8 +120,11 @@ public class MethodsCheck
         {
             int integer = Integer.parseInt(string);
             if (integer >= 0) return true;
-                else return false;
-        } catch (Exception e) { return false; }
+            else return false;
+        } catch (Exception e)
+        {
+            return false;
+        }
     }
 
     public Table isOwnerOfTable(Player player)
@@ -109,17 +132,8 @@ public class MethodsCheck
         PokerPlayer pokerPlayer = isAPokerPlayer(player);
         for (Table table : p.tables)
         {
-            if (table.owner == pokerPlayer)
-                return table;
+            if (table.owner == pokerPlayer) return table;
         }
         return null;
-    }
-    
-    //Converts a string to a player, if they are online. Returns null if no player was found. Ignores case
-    public Player isAPlayer(String toFind)
-    {
-        for (Player player : p.methodsMisc.getOnlinePlayers()) //Go through all online players, if the player's name equals to the player we are looking for, return the player
-            if (player.getName().equalsIgnoreCase(toFind)) return player;
-        return null; //If no player was found return null
     }
 }
