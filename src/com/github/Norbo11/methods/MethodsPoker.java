@@ -104,7 +104,7 @@ public class MethodsPoker
         if (pokerPlayer != null)
         {
             if (pokerPlayer.owner == false) // Make sure to check if the player is an owner of the table before leaving it.
-            pokerPlayer.table.leave(pokerPlayer);
+                pokerPlayer.table.leave(pokerPlayer);
             else p.methodsError.playerIsOwnerSpecific(player);
         } else p.methodsError.notAPokerPlayer(player);
     }
@@ -137,8 +137,8 @@ public class MethodsPoker
                 {
                     table.displayAllDetails(player);
                     return;
-                } else player.sendMessage(p.PLUGIN_TAG + p.red + "You are not currently sitting at any table, and the specified value " + p.gold + type + p.white + " is not a table!");
-            } else player.sendMessage(p.PLUGIN_TAG + p.red + "You are not currently sitting at any table, and the specified value " + p.gold + type + p.white + " is not a number!");
+                } else player.sendMessage(p.PLUGIN_TAG + p.red + "You are not currently sitting at any table, and the specified value " + p.gold + type + p.red + " is not a table!");
+            } else player.sendMessage(p.PLUGIN_TAG + p.red + "You are not currently sitting at any table, and the specified value " + p.gold + type + p.red + " is not a number!");
         }
 
         if (tableID != null && type != null) // If the player specified a table ID and a type, make sure that the type is a type and the table is a table, then display the detail type to him.

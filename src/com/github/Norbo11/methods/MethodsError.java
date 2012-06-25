@@ -438,7 +438,7 @@ public class MethodsError
             if (command.equalsIgnoreCase("check")) message.add(p.PLUGIN_TAG + p.red + "Usage: /poker stats check [player name]" + p.gold + " - Displays the statistics of the specified user.");
             else if (command.equalsIgnoreCase("top"))
             {
-                message.add(p.PLUGIN_TAG + p.red + "Usage: /poker stats top [type]" + p.gold + " - Displays the leaderboards of a particular statistic type.");
+                message.add(p.PLUGIN_TAG + p.red + "Usage: /poker stats top [type] (amount to display)" + p.gold + " - Displays the leaderboards of a particular statistic type.");
                 availableStatisticTypes(player);
             } else if (command.equalsIgnoreCase("rank"))
             {

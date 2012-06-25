@@ -138,18 +138,15 @@ public class MethodsTable
         {
             if (p.methodsCheck.isInteger(toKick))
             {
-                if (table.currentPhase != 5)
+                PokerPlayer pokerPlayer = p.methodsCheck.isAPokerPlayer(table, Integer.parseInt(toKick));
+                if (pokerPlayer != null) // Check if the ID specified is a real poker player ID.
                 {
-                    PokerPlayer pokerPlayer = p.methodsCheck.isAPokerPlayer(table, Integer.parseInt(toKick));
-                    if (pokerPlayer != null) // Check if the ID specified is a real poker player ID.
+                    if (pokerPlayer.owner == false) // This is the player to kick, not the command sender!
                     {
-                        if (pokerPlayer.owner == false) // This is the player to kick, not the command sender!
-                        {
-                            table.kick(pokerPlayer);
-                            table.shiftIDs();
-                        } else p.methodsError.playerIsOwnerSpecific(player);
-                    } else p.methodsError.notAPokerPlayerID(player, toKick);
-                } else p.methodsError.tableHasPots(player);
+                        table.kick(pokerPlayer);
+                        table.shiftIDs();
+                    } else p.methodsError.playerIsOwnerSpecific(player);
+                } else p.methodsError.notAPokerPlayerID(player, toKick);
             } else p.methodsError.notANumber(player, toKick);
         } else p.methodsError.notOwnerOfTable(player);
     }

@@ -238,12 +238,13 @@ public class ListenerCommandExecutor implements CommandExecutor
                                 else if (args.length == 3)
                                 {
                                     if (args[1].equalsIgnoreCase("check")) p.methodsStats.check(player, args[2]);
-                                    else if (args[1].equalsIgnoreCase("top")) p.methodsStats.top(player, args[2]);
+                                    else if (args[1].equalsIgnoreCase("top")) p.methodsStats.top(player, args[2], null);
                                     else if (args[1].equalsIgnoreCase("rank")) p.methodsStats.rank(player, args[2], player.getName());
                                     else p.methodsError.usage(player, "stats", args[1]);
                                 } else if (args.length == 4)
                                 {
-                                    if (args[1].equalsIgnoreCase("rank")) p.methodsStats.rank(player, args[2], args[3]);
+                                    if (args[1].equalsIgnoreCase("top")) p.methodsStats.top(player, args[2], args[3]);
+                                    else if (args[1].equalsIgnoreCase("rank")) p.methodsStats.rank(player, args[2], args[3]);
                                     else p.methodsError.usage(player, "stats", args[1]);
                                 } else p.methodsError.usage(player, "stats", args[1]);
                                 return true;

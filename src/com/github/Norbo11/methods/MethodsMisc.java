@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -120,11 +121,7 @@ public class MethodsMisc
 
     public Player getPlayer(String name)
     {
-        for (Player player : getOnlinePlayers())
-        {
-            if (player.getName().equalsIgnoreCase(name)) return player;
-        }
-        return null;
+        return Bukkit.getPlayer(name);
     }
 
     // Logs the supplied command, it's sender and all of it's arguments

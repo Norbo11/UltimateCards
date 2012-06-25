@@ -137,7 +137,9 @@ public class Pot
         else p.methodsMisc.sendToAllWithinRange(table.location, p.PLUGIN_TAG + p.gold + player.name + p.white + " has won the side pot of " + p.gold + p.methodsMisc.formatMoney(pot - rake));
 
         player.money = player.money + (pot - rake); // Get the actual amount that the player wins by subtracting the rake from the pot, then give it to the player's stack
-        player.stats.adjustStats("potWon", pot - rake);
+        p.log.info(player.totalBet + "");
+        p.log.info(Double.toString((pot - rake) - player.totalBet) + "");
+        player.stats.adjustStats("potWon", (pot - rake) - player.totalBet);
         player.wonThisHand = player.wonThisHand + (pot - rake);
         pot = 0;
 
@@ -147,6 +149,7 @@ public class Pot
             for (PokerPlayer temp : table.showdownPlayers)
                 if (temp.wonThisHand == 0) temp.stats.adjustStats("handLost", temp.totalBet);
             table.toBeContinued = true;
+            for (PokerPlayer temp : table.players) temp.totalBet = 0;
             table.showdownPlayers.clear();
             p.methodsMisc.sendToAllWithinRange(table.location, p.PLUGIN_TAG + "All pots paid! Table owner: use " + p.gold + "/table continue" + p.white + " to deal the next hand.");
             table.saveStats();

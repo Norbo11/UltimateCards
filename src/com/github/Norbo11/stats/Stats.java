@@ -95,7 +95,11 @@ public class Stats
         if (action.equalsIgnoreCase("potWon"))
         {
             getStat("amountWon").adjustStat(1, true);
-            if (pokerPlayer.wonThisHand == 0) getStat("amountWonAtShowdown").adjustStat(1, true);
+            if (pokerPlayer.wonThisHand == 0)
+            {
+                getStat("amountWonAtShowdown").adjustStat(1, true);
+                getStat("percentageWinsAtShowdown").adjustStat(value, false);
+            }
 
             getStat("biggestWin").adjustStat(value, false);
             getStat("totalWinnings").adjustStat(value - pokerPlayer.wonThisHand, true);
@@ -108,23 +112,19 @@ public class Stats
             }
 
             getStat("percentageWins").adjustStat(value, false);
-            getStat("percentageWinsAtShowdown").adjustStat(value, false);
         }
 
         if (action.equalsIgnoreCase("handLost"))
         {
             getStat("totalLosses").adjustStat(value, true);
-
             getStat("biggestLoss").adjustStat(value, false);
             getStat("profit").adjustStat(value, false);
-            getStat("percentageWins").adjustStat(value, false);
-            getStat("percentageWinsAtShowdown").adjustStat(value, false);
         }
 
         if (action.equalsIgnoreCase("enteredShowdown"))
         {
             getStat("amountWentToShowdown").adjustStat(1, true);
-            getStat("percentageWinsAtShowdown").adjustStat(value, false);
+            getStat("percentageWinsAtShowdown").adjustStat(0, false);
         }
 
         if (action.equalsIgnoreCase("startedHand"))

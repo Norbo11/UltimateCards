@@ -201,7 +201,7 @@ public class UltimatePoker extends JavaPlugin
         try
         {
             Class.forName("org.sqlite.JDBC");
-            database = DriverManager.getConnection("jdbc:sqlite:" + FILE_PLUGIN_DIR.getPath() + "\\UltimatePoker.db");
+            database = DriverManager.getConnection("jdbc:sqlite:" + FILE_PLUGIN_DIR.getPath() + File.separatorChar + "UltimatePoker.db");
             methodsDatabase.createTable(DATABASE_TABLE_NAME, methodsStats.getStatHeaders());
         } catch (Exception e)
         {

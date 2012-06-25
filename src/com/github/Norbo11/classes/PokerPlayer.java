@@ -386,6 +386,7 @@ public class PokerPlayer
         p.methodsMisc.sendToAllWithinRange(table.location, p.PLUGIN_TAG + p.gold + name + p.white + " folds.");
         clearHand();
         if (table.currentPhase != 4) stats.adjustStats("handLost", totalBet);
+        totalBet = 0;
         table.adjustPots();
         table.nextPersonTurn(this);
     }
@@ -465,7 +466,7 @@ public class PokerPlayer
         revealed = true;
         acted = true;
         action = false;
-        p.methodsMisc.sendToAllWithinRange(table.location, p.PLUGIN_TAG + p.gold + name + p.white + "'s hand:");
+        p.methodsMisc.sendToAllWithinRange(table.location, p.PLUGIN_TAG + "[" + id + "] " + p.gold + name + p.white + "'s hand:");
         p.methodsMisc.sendToAllWithinRange(table.location, hand());
         table.nextPersonTurn(this);
     }

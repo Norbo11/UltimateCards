@@ -440,7 +440,7 @@ public class Table
     {
         double highestCallingAmount = 0;
         for (PokerPlayer player : players)
-            if (player.currentBet + player.money >= highestCallingAmount && player != exclude) highestCallingAmount = player.currentBet + player.money;
+            if (player.currentBet + player.money >= highestCallingAmount && player != exclude && !player.folded && !player.eliminated) highestCallingAmount = player.currentBet + player.money;
         return highestCallingAmount;
     }
 
@@ -478,7 +478,6 @@ public class Table
     public void handEnd()
     {
         currentPhase = 5;
-
         // If there is only 1 pot, display this specific message.
         if (pots.size() == 1)
         {
@@ -539,10 +538,11 @@ public class Table
 
     public void leave(PokerPlayer player)
     {
-        player.fold();
+        if (inProgress && !player.folded && !player.eliminated)
+            player.fold();
         p.ECONOMY.depositPlayer(player.name, player.money);
         p.methodsMisc.addToLog(p.getDate() + " [ECONOMY] Depositing " + player.money + " to " + player.name);
-        player.sendMessage(p.PLUGIN_TAG + p.gold + player.name + p.white + " has left the poker table with his/her stack of " + p.gold + p.methodsMisc.formatMoney(player.money));
+        p.methodsMisc.sendToAllWithinRange(location, p.PLUGIN_TAG + p.gold + player.name + p.white + " has left the poker table with his/her stack of " + p.gold + p.methodsMisc.formatMoney(player.money));
         p.methodsMisc.getPlayer(player.name).teleport(player.startLocation);
         removePlayer(player);
     }
@@ -550,7 +550,7 @@ public class Table
     // Lists the settings of the table, returning a string array
     public String[] listSettings()
     {
-        String[] returnValue = new String[20];
+        String[] returnValue = new String[12];
         returnValue[0] = p.PLUGIN_TAG + "Settings:";
         returnValue[1] = p.PLUGIN_TAG + p.gold + p.LINE_STRING;
         returnValue[2] = p.PLUGIN_TAG + "Minimum Buy-in: " + p.gold + p.methodsMisc.formatMoney(minBuy);
@@ -560,11 +560,11 @@ public class Table
         returnValue[6] = p.PLUGIN_TAG + "Big Blind: " + p.gold + p.methodsMisc.formatMoney(bb);
         returnValue[7] = p.PLUGIN_TAG + "Rake: " + p.gold + p.methodsMisc.convertToPercentage(rake);
         if (minRaiseIsAlwaysBB) returnValue[8] = p.PLUGIN_TAG + "Minimum Raise: " + p.gold + "equal to the Big Blind";
-        else returnValue[9] = p.PLUGIN_TAG + "Minimum Raise: " + p.gold + p.methodsMisc.formatMoney(minRaise);
-        returnValue[10] = p.PLUGIN_TAG + "Elimination: " + p.gold + elimination;
-        returnValue[11] = p.PLUGIN_TAG + "Display turns publicly: " + p.gold + displayTurnsPublicly;
-        if (dynamicFrequency > 0) returnValue[12] = p.PLUGIN_TAG + "Dynamic Frequency: " + p.gold + "Every " + dynamicFrequency + " hands";
-        else returnValue[13] = p.PLUGIN_TAG + "Dynamic Frequency: " + p.gold + "OFF";
+        else returnValue[8] = p.PLUGIN_TAG + "Minimum Raise: " + p.gold + p.methodsMisc.formatMoney(minRaise);
+        returnValue[9] = p.PLUGIN_TAG + "Elimination: " + p.gold + elimination;
+        returnValue[10] = p.PLUGIN_TAG + "Display turns publicly: " + p.gold + displayTurnsPublicly;
+        if (dynamicFrequency > 0) returnValue[11] = p.PLUGIN_TAG + "Dynamic Frequency: " + p.gold + "Every " + dynamicFrequency + " hands";
+        else returnValue[11] = p.PLUGIN_TAG + "Dynamic Frequency: " + p.gold + "OFF";
         return returnValue;
     }
 
@@ -601,8 +601,8 @@ public class Table
                 return;
             } // If there is only 1 non-folded player left, announce him the winner
 
-            // If there is only 1 player left that isn't all in, and everyone has acted go to showdown
-            if (getNonFoldedPlayers().size() == getAllInPlayers().size() + 1 && contributed.size() == getNonFoldedPlayers().size())
+            // If there is only 1 player left that isn't all in, and everyone has acted, OR everyone that hasnt folded is simply all in, go to showdown
+            if ((getNonFoldedPlayers().size() == getAllInPlayers().size() + 1 && contributed.size() == getNonFoldedPlayers().size()) || getNonFoldedPlayers().size() == getAllInPlayers().size())
             {
                 showdown();
                 return; // If you go to showdown dont do anything else by quitting the method
@@ -644,7 +644,8 @@ public class Table
                 actionPlayer = getNextPlayer(players.indexOf(actionPlayer));
                 if (!actionPlayer.folded && actionPlayer.money > 0 && actionPlayer.allIn == 0 && !actionPlayer.eliminated) break;
             }
-            actionPlayer.takeAction();
+            if (actionPlayer != pokerPlayer) actionPlayer.takeAction();
+            else nextPhase();
         } else
         {
             List<PokerPlayer> revealed = new ArrayList<PokerPlayer>();
@@ -967,6 +968,5 @@ public class Table
         for (Pot pot : pots)
             // Pay all pots to the winner
             pot.payPot(player);
-        p.methodsMisc.sendToAllWithinRange(location, p.PLUGIN_TAG + "Table owner: use " + p.gold + "/table continue" + p.white + " to deal a new hand.");
     }
 }

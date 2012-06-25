@@ -244,8 +244,23 @@ public class MethodsStats
         } else p.methodsError.noSuchTopStat(player);
     }
 
-    public void top(Player player, String stat) throws Exception
+    public void top(Player player, String stat, String amountToDisplay) throws Exception
     {
+        int toDisplay = 10; //Default amount of rows to display is amountToDisplay is not specified
+        if (amountToDisplay != null)
+        {
+            if (p.methodsCheck.isInteger(amountToDisplay))
+            {
+                toDisplay = Integer.parseInt(amountToDisplay);
+                if (toDisplay > 100) toDisplay = 100;
+            }
+            else
+            {
+                p.methodsError.notANumber(player, amountToDisplay);
+                return;
+            }
+        }
+        
         String[] columns = new String[2]; // This is an array with 2 elements - first element is the header of the column of the stat, 2nd is the player name. This is necessary because it is supplied to the getColumn method.
         String type = "";                 // This will hold the type of the stat (money, int, double or percentage) for formatting purposes.
 
@@ -334,7 +349,7 @@ public class MethodsStats
             List<String> temp = new ArrayList<String>();               // This is a temporary list which will hold the player names and the values in the leaderboard
             player.sendMessage(p.PLUGIN_TAG + "Displaying poker leaderboard of " + p.gold + stat);
             player.sendMessage(p.PLUGIN_TAG + p.gold + p.LINE_STRING);
-            for (int i = 1; i <= 10; i++) // Go through the first 10 rows, break if the end of the rows is reached. If the row is a valid row, read its player name and value of stat.
+            for (int i = 1; i <= toDisplay; i++) // Go through the first 10 rows, break if the end of the rows is reached. If the row is a valid row, read its player name and value of stat.
             {
                 if (rs.next() == false) break;
                 if (type.equalsIgnoreCase("int")) temp.add(p.gold + rs.getString(columns[1]) + p.white + " - " + p.gold + rs.getInt(columns[0]) + " hand(s)");
@@ -342,7 +357,7 @@ public class MethodsStats
                 if (type.equalsIgnoreCase("money")) temp.add(p.gold + rs.getString(columns[1]) + p.white + " - " + p.gold + p.methodsMisc.formatMoney(rs.getDouble(columns[0])));
                 if (type.equalsIgnoreCase("percentage")) temp.add(p.gold + rs.getString(columns[1]) + p.white + " - " + p.gold + p.methodsMisc.convertToPercentage(rs.getDouble(columns[0])));
             }
-            for (int i = 1; i <= 10; i++) // Display 10 messages which show the actual leaderboard to the player
+            for (int i = 1; i <= toDisplay; i++) // Display 10 messages which show the actual leaderboard to the player
             {
                 String string = p.PLUGIN_TAG + i + ". ";
                 try
@@ -350,11 +365,11 @@ public class MethodsStats
                     string = string + temp.get(i - 1);
                 } catch (Exception e)
                 {
-                } // If we have less than 10 rows, we cant get all of them, because an exception will be thrown (the element in the list will null). So we just catch and do nothing.
+                    // If we have less than rows than toDisplay, we cant get all of them, because an exception will be thrown (the element in the list will null). So we just catch and do nothing.
+                    break;
+                } 
                 player.sendMessage(string);
-
             }
-
         } else p.methodsError.noSuchTopStat(player);
     }
 
