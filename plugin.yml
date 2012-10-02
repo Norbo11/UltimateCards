@@ -1,40 +1,52 @@
-name: UltimatePoker
-description: 'The ultimate plugin for Texas Holdem on Bukkit!'
-version: 1.1.1
-main: com.github.norbo11.UltimatePoker
+name: UltimateCards
+description: 'The ultimate Texas Holdem and Blackjack plugin for Bukkit!'
+version: 1.2
+main: com.github.norbo11.UltimateCards
+depend: [Vault]
+softdepend: [TagAPI]
 commands:
     table:
-        description: 'Controls the tables of the UltimatePoker plugin.'
+        description: 'Controls the tables of the UltimateCards plugin.'
         usage: 'Usage: /<command>'
-    tbl:
-        description: 'Controls the tables of the UltimatePoker plugin. Alias for /table.'
+    t:
+        description: 'Controls the tables of the UltimateCards plugin.'
         usage: 'Usage: /<command>'
-    tables:
-        description: 'Lists all created poker tables. Alias for /poker tables.'
+    cards:
+        description: 'Controls generic commands of the UltimateCards plugin.'
         usage: 'Usage: /<command>'
-    hand:
-        description: 'Controls the hand commands of the UltimatePoker plugin.'
+    c:
+        description: 'Controls generic commands of the UltimateCards plugin.'
         usage: 'Usage: /<command>'
     poker:
-        description: 'Controls all generic commands of the UltimatePoker plugin.'
+        description: 'Controls all poker commands of the UltimateCards plugin.'
         usage: 'Usage: /<command>'
-    pkr:
-        description: 'Controls all generic commands of the UltimatePoker plugin. Alias for /poker.'
+    p:
+        description: 'Controls all poker commands of the UltimateCards plugin.'
+        usage: 'Usage: /<command>'
+    blackjack:
+        description: 'Controls all blackjack commands of the UltimateCards plugin.'
+        usage: 'Usage: /<command>'
+    bj:
+        description: 'Controls all blackjack commands of the UltimateCards plugin.'
         usage: 'Usage: /<command>'
 permissions:
-    upoker.*:
-        description: 'Gives access to every command of the UltimatePoker plugin.'
+    ucards.*:
+        description: 'Gives access to every command of the UltimateCards plugin.'
         children:
-            upoker.table: true
-            upoker.play: true
-            upoker.tp: true
+            ucards.table: true
+            ucards.cards: true
+            ucards.poker: true
+            ucards.blackjack: true
         default: op
-    upoker.table:
-        description: 'Gives access to all /table commands. These tables are used for table managment and creation only.'
+    ucards.table:
+        description: 'Gives access to /table commands.'
         default: false
-    upoker.play:
-        description: 'Gives access to all /hand commands and /poker sit/leave. Without this, your players cannot play.'
+    ucards.cards:
+        description: 'Gives access to /cards commands.'
         default: false
-    upoker.tp:
-        description: 'Gives access to /poker tp and automatically TPs the player when they do /poker sit.'
+    ucards.poker:
+        description: 'Gives access to /poker commands.'
+        default: false
+    ucards.blackjack:
+        description: 'Gives access to /blackjack commands.'
         default: false

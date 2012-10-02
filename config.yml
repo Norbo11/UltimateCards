@@ -1,29 +1,38 @@
-#All general table settings
-table:
-    #The maximum distance (in blocks) that players can join tables and see table messages. 
-    #This is the distance away from where the table was created.
-    #If the TP permission is given, players automatically get teleported on joining a table.
-    chatRange: 30
-    #Set to a -1 if you want players to be able to set their own rake. Set between 0 to 1 to fix the rake on all tables to that value.
-    fixRake: -1
-    #Set to true if you want the rake to go to their playing stack, rather than their actual money account.
-    rakeToStack: false
-    #These are the default settings every table will have upon creation
-    defaults:
-        elimination: false
-        minRaiseIsAlwaysBB: true
-        displayTurnsPublicly: false
-        minBuy: 0
-        maxBuy: 100000
-        sb: 500
-        bb: 1000
-        ante: 0
-        dynamicFrequency: 0
-        rake: 0.05
-        minRaise: 200
-#Settings regarding the log.txt file
-log:
-    #Set to true if you want every command, error and economy action be reflected in the log.txt file
-    enableLog: true
-    #Set a date/time format for the log
+options:
+  general:
+    autoUpdate: true
+  log:
+    enableLog: false
     dateFormat: 'dd/MM/yyyy HH:mm:ss'
+  chat:
+    displayTag: true
+    colorTag: '&1'
+    colorNormalMessage: '&f'
+    colorErrorMessage: '&c'
+    colorHighlight: '&6'
+    chatRange: 30
+  generalDefaults:
+    allowRebuys: true
+    displayTurnsPublicly: false
+  poker:
+    fixRake: -1
+    rakeToStack: false
+    defaults:
+      elimination: false
+      minRaiseIsAlwaysBB: true
+      minBuy: 0
+      maxBuy: 100000
+      sb: 500
+      bb: 1000
+      ante: 0
+      dynamicFrequency: 0
+      rake: 0.05
+      minRaise: 200
+  blackjack:
+    serverNeverDealer: true
+    defaults:
+      allowDoubleDown: true
+      minBet: 100
+      dealerHitsSoft: true
+      serverDealer: false
+      amountOfDecks: 5
