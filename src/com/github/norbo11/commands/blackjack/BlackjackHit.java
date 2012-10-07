@@ -21,9 +21,9 @@ public class BlackjackHit extends PluginCommand
 
         setDescription("Gives you an additional card.");
 
-        setArgumentString("");
+        setArgumentString("(hand ID)");
 
-        getPermissionNodes().add(PERMISSIONS_BASE_NODE + "blackjack.*");
+        getPermissionNodes().add(PERMISSIONS_BASE_NODE + "blackjack");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "blackjack." + getAlises().get(0));
     }
 

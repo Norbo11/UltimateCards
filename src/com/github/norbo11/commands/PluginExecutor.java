@@ -121,12 +121,7 @@ public class PluginExecutor implements CommandExecutor
             if (sender instanceof Player)
             {
                 Player player = (Player) sender;
-                if (args.length == 0 && !command.getName().equalsIgnoreCase("cards"))
-                {
-                    Messages.sendMessage(player, "&cPlease specify a command. See a list of commands with &6/cards help&c, &6/table help&c, &6/bj help&c and &6/poker help&c.");
-                    return true;
-                }
-
+                
                 if (args.length >= 1)
                 {
                     String action = args[0];
@@ -139,7 +134,7 @@ public class PluginExecutor implements CommandExecutor
                         return true;
                     }
 
-                    if (command.getName().equalsIgnoreCase("cards") || command.getName().equalsIgnoreCase("c"))
+                    if (command.getName().equalsIgnoreCase("cards"))// || command.getName().equalsIgnoreCase("c"))
                     {
 
                         for (PluginCommand cmd : commandsCards)
@@ -147,14 +142,14 @@ public class PluginExecutor implements CommandExecutor
                         Messages.sendMessage(player, "&cNo such cards command. Check help with &6/cards help.");
                     }
 
-                    if (command.getName().equalsIgnoreCase("table") || command.getName().equalsIgnoreCase("t"))
+                    if (command.getName().equalsIgnoreCase("table"))// || command.getName().equalsIgnoreCase("t"))
                     {
                         for (PluginCommand cmd : commandsTable)
                             if (performChecks(cmd, args, player, action)) return true;
                         Messages.sendMessage(player, "&cNo such table command. Check help with &6/table help.");
                     }
 
-                    if (command.getName().equalsIgnoreCase("poker") || command.getName().equalsIgnoreCase("p"))
+                    if (command.getName().equalsIgnoreCase("poker"))// || command.getName().equalsIgnoreCase("p"))
                     {
                         for (PluginCommand cmd : commandsPoker)
                             if (performChecks(cmd, args, player, action)) return true;
@@ -167,7 +162,7 @@ public class PluginExecutor implements CommandExecutor
                             if (performChecks(cmd, args, player, action)) return true;
                         Messages.sendMessage(player, "&cNo such blackjack command. Check help with &6/blackjack help.");
                     }
-                } else
+                } else 
                 {
                     ErrorMessages.displayHelp(player, command.getName());
                 }

@@ -382,8 +382,8 @@ public class MapMethods
                     createdMaps.remove(new Short(mapItem.getDurability()));
                 }
                 savedMaps.remove(player.getName());
-                redrawTasks.remove(player.getName());
                 Bukkit.getScheduler().cancelTask(redrawTasks.get(player.getName()));
+                redrawTasks.remove(player.getName());
             }
         }
     }
@@ -397,7 +397,7 @@ public class MapMethods
             createdMaps.remove(new Short(mapItem.getDurability()));
         }
         savedMaps.remove(player.getName());
-        redrawTasks.remove(player.getName());
         Bukkit.getScheduler().cancelTask(redrawTasks.get(player.getName()));
+        redrawTasks.remove(player.getName());
     }
 }

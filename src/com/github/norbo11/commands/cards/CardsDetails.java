@@ -20,7 +20,7 @@ public class CardsDetails extends PluginCommand
 
         setArgumentString("(type) (table ID)");
 
-        getPermissionNodes().add(PERMISSIONS_BASE_NODE + "cards.*");
+        getPermissionNodes().add(PERMISSIONS_BASE_NODE + "cards");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "cards." + getAlises().get(0));
     }
 

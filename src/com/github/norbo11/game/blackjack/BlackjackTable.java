@@ -110,10 +110,7 @@ public class BlackjackTable extends CardsTable
         for (BlackjackPlayer blackjackPlayer : getPlayersThisHand())
         {
             blackjackPlayer.clearHands();
-            if (!blackjackPlayer.isEliminated())
-            {
-                blackjackPlayer.getHands().get(0).addCards(getDeck().generateCards(2));
-            }
+            blackjackPlayer.getHands().get(0).addCards(getDeck().generateCards(2));
         }
 
         // Gives the dealer 2 cards

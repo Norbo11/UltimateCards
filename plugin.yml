@@ -1,36 +1,22 @@
 name: UltimateCards
 description: 'The ultimate Texas Holdem and Blackjack plugin for Bukkit!'
-version: 1.2
+version: 1.2.2
 main: com.github.norbo11.UltimateCards
 depend: [Vault]
 softdepend: [TagAPI]
 commands:
     table:
         description: 'Controls the tables of the UltimateCards plugin.'
-        usage: 'Usage: /<command>'
-    t:
-        description: 'Controls the tables of the UltimateCards plugin.'
-        usage: 'Usage: /<command>'
     cards:
         description: 'Controls generic commands of the UltimateCards plugin.'
-        usage: 'Usage: /<command>'
-    c:
-        description: 'Controls generic commands of the UltimateCards plugin.'
-        usage: 'Usage: /<command>'
     poker:
         description: 'Controls all poker commands of the UltimateCards plugin.'
-        usage: 'Usage: /<command>'
-    p:
-        description: 'Controls all poker commands of the UltimateCards plugin.'
-        usage: 'Usage: /<command>'
     blackjack:
         description: 'Controls all blackjack commands of the UltimateCards plugin.'
-        usage: 'Usage: /<command>'
     bj:
         description: 'Controls all blackjack commands of the UltimateCards plugin.'
-        usage: 'Usage: /<command>'
 permissions:
-    ucards.*:
+    ucards:
         description: 'Gives access to every command of the UltimateCards plugin.'
         children:
             ucards.table: true

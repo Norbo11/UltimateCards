@@ -33,6 +33,5 @@ options:
     defaults:
       allowDoubleDown: true
       minBet: 100
-      dealerHitsSoft: true
       serverDealer: false
       amountOfDecks: 5

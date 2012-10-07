@@ -24,7 +24,7 @@ public class BlackjackBet extends PluginCommand
 
         setArgumentString("[amount]");
 
-        getPermissionNodes().add(PERMISSIONS_BASE_NODE + "blackjack.*");
+        getPermissionNodes().add(PERMISSIONS_BASE_NODE + "blackjack");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "blackjack." + getAlises().get(0));
     }
 

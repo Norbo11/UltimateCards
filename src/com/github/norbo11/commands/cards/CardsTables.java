@@ -21,7 +21,7 @@ public class CardsTables extends PluginCommand
 
         setArgumentString("");
 
-        getPermissionNodes().add(PERMISSIONS_BASE_NODE + "cards.*");
+        getPermissionNodes().add(PERMISSIONS_BASE_NODE + "cards");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "cards." + getAlises().get(0));
     }
 

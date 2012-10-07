@@ -27,7 +27,7 @@ public class PokerBet extends PluginCommand
 
         setArgumentString("[amount]");
 
-        getPermissionNodes().add(PERMISSIONS_BASE_NODE + "poker.*");
+        getPermissionNodes().add(PERMISSIONS_BASE_NODE + "poker");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "poker." + getAlises().get(0));
     }
 

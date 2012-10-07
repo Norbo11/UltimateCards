@@ -214,15 +214,26 @@ public class UltimateCards extends JavaPlugin
         filePluginDir = getDataFolder();
         filePluginConfig = new File(filePluginDir, "config.yml");
         fileLog = new File(filePluginDir, "log.txt");
+        
+        // Creates all files
+        if (!createFiles()) return;
+
+        // Hook into vault, economy and database
+        if (!setupVault()) return;
+        if (!setupEconomy()) return;
 
         // Create/load config
         pluginConfig = new PluginConfig(this);
         pluginConfig.load();
 
         // Update
-        /*
-         * Updater updater; if (pluginConfig.isAutoUpdate()) { updater = new Updater(this, "ultimatepoker", this.getFile(), Updater.UpdateType.DEFAULT, true); if (updater.getResult() == Updater.UpdateResult.SUCCESS) log.info("To apply the update, reload/restart your server."); }
-         */
+        
+        Updater updater; 
+        if (pluginConfig.isAutoUpdate()) 
+        { 
+            updater = new Updater(this, "ultimatecards", this.getFile(), Updater.UpdateType.DEFAULT, true); 
+            if (updater.getResult() == Updater.UpdateResult.SUCCESS) log.info("To apply the update, reload/restart your server."); 
+        }
 
         // Set all listeners and create classes
         pluginExecutor = new PluginExecutor();
@@ -231,24 +242,14 @@ public class UltimateCards extends JavaPlugin
         messages = new Messages(this);
         Sound.p = this;
         getServer().getPluginManager().registerEvents(new MapListener(), this);
+        addPermissions();
 
         // Set all commands to the command executor
         getCommand("cards").setExecutor(pluginExecutor);
-        getCommand("c").setExecutor(pluginExecutor);
         getCommand("table").setExecutor(pluginExecutor);
-        getCommand("t").setExecutor(pluginExecutor);
         getCommand("poker").setExecutor(pluginExecutor);
-        getCommand("p").setExecutor(pluginExecutor);
         getCommand("blackjack").setExecutor(pluginExecutor);
         getCommand("bj").setExecutor(pluginExecutor);
-
-        // Creates all files
-        if (!createFiles()) return;
-
-        // Hook into vault, economy and database
-        if (!setupVault()) return;
-        if (!setupEconomy()) return;
-        addPermissions();
 
         if (!(getConfig().getDouble("table.fixRake") <= 1 && getConfig().getDouble("table.fixRake") >= -1))
         {

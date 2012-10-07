@@ -22,7 +22,7 @@ public class TableKick extends PluginCommand
 
         setArgumentString("[player ID]");
 
-        getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table.*");
+        getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table." + getAlises().get(0));
     }
 

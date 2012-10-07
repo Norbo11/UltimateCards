@@ -18,7 +18,7 @@ public class PokerBoard extends PluginCommand
 
         setArgumentString("");
 
-        getPermissionNodes().add(PERMISSIONS_BASE_NODE + "poker.*");
+        getPermissionNodes().add(PERMISSIONS_BASE_NODE + "poker");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "poker." + getAlises().get(0));
     }
 

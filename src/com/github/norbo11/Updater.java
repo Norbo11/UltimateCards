@@ -595,12 +595,7 @@ public class Updater
             String version = plugin.getDescription().getVersion();
             if (title.split("v").length == 2)
             {
-                String remoteVersion = title.split("v")[1].split(" ")[0]; // Get
-                                                                          // the
-                                                                          // newest
-                                                                          // file's
-                                                                          // version
-                                                                          // number
+                String remoteVersion = title.split("v")[1].split(" ")[0]; // Get the newest file's version number
                 if (hasTag(version) || version.equalsIgnoreCase(remoteVersion))
                 {
                     // We already have the latest version, or this build is

@@ -17,7 +17,7 @@ public class TableSet extends PluginCommand
 
         setArgumentString("[setting] [value]");
 
-        getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table.*");
+        getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table." + getAlises().get(0));
     }
 

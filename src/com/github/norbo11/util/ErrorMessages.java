@@ -69,7 +69,6 @@ public class ErrorMessages
             }
 
             Messages.sendMessage(player, "&6/cards help &b[command]");
-            Messages.sendMessage(player, "&6/cards&b can be replaced with &6/c&b.");
         } else if (command.equalsIgnoreCase("table") || command.equalsIgnoreCase("t"))
         {
             for (PluginCommand pluginCommand : PluginExecutor.commandsTable)
@@ -78,7 +77,6 @@ public class ErrorMessages
             }
             
             Messages.sendMessage(player, "&6/table help &b[command]");
-            Messages.sendMessage(player, "&6/table&b can be replaced with &6/t&b.");
         } else if (command.equalsIgnoreCase("poker") || command.equalsIgnoreCase("p"))
         {
             for (PluginCommand pluginCommand : PluginExecutor.commandsPoker)
@@ -87,7 +85,6 @@ public class ErrorMessages
             }
             
             Messages.sendMessage(player, "&6/poker help &b[command]");
-            Messages.sendMessage(player, "&6/poker&b can be replaced with &6/p&b.");
         } else if (command.equalsIgnoreCase("blackjack") || command.equalsIgnoreCase("bj"))
         {
             for (PluginCommand pluginCommand : PluginExecutor.commandsBlackjack)

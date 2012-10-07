@@ -24,7 +24,7 @@ public class TableListSettings extends PluginCommand
 
         setArgumentString("");
 
-        getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table.*");
+        getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table." + getAlises().get(0));
     }
 

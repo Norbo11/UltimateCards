@@ -2,6 +2,7 @@ package com.github.norbo11.commands.cards;
 
 import com.github.norbo11.UltimateCards;
 import com.github.norbo11.commands.PluginCommand;
+import com.github.norbo11.commands.PluginExecutor;
 import com.github.norbo11.game.cards.CardsPlayer;
 import com.github.norbo11.game.cards.CardsTable;
 import com.github.norbo11.util.DateMethods;
@@ -27,7 +28,7 @@ public class CardsSit extends PluginCommand
 
         setArgumentString("[table ID] [buyin]");
 
-        getPermissionNodes().add(PERMISSIONS_BASE_NODE + "cards.*");
+        getPermissionNodes().add(PERMISSIONS_BASE_NODE + "cards");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "cards." + getAlises().get(0));
     }
 
@@ -58,7 +59,7 @@ public class CardsSit extends PluginCommand
                             {
                                 boolean notNearEnough = false;
                                 // Check if they have permission to teleport there, OR if they are close enough to see all of the table's messages
-                                if (!getPlayer().hasPermission("ucards.cards.teleport"))
+                                if (!PluginExecutor.cardsTeleport.hasPermission(getPlayer()))
                                 {
                                     if (getPlayer().getWorld() == cardsTable.getLocation().getWorld())
                                     {
@@ -141,7 +142,7 @@ public class CardsSit extends PluginCommand
     // Sits the player at the specified table with the specified buy-in
     public void perform() throws Exception
     {
-        if (getPlayer().hasPermission("upoker.tp"))
+        if (PluginExecutor.cardsTeleport.hasPermission(getPlayer()))
         {
             getPlayer().teleport(cardsTable.getLocation());
         }

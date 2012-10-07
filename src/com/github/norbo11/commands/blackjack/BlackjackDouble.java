@@ -23,7 +23,7 @@ public class BlackjackDouble extends PluginCommand
 
         setArgumentString("");
 
-        getPermissionNodes().add(PERMISSIONS_BASE_NODE + "blackjack.*");
+        getPermissionNodes().add(PERMISSIONS_BASE_NODE + "blackjack");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "blackjack." + getAlises().get(0));
     }
 

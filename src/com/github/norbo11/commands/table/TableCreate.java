@@ -33,7 +33,7 @@ public class TableCreate extends PluginCommand
 
         setArgumentString("[table name] [buyin] [game type]");
 
-        getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table.*");
+        getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table." + getAlises().get(0));
     }
 

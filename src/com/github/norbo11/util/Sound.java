@@ -20,7 +20,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Note;
 import org.bukkit.Note.Tone;
-import org.bukkit.block.BlockState;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import com.github.norbo11.UltimateCards;
@@ -31,24 +31,18 @@ public class Sound
 
     public static void playerTurn(final Player player)
     {
-        // First we save the location of the player and then the block he is currently standing on (Hence the Y-1).
         final Location location = new Location(player.getWorld(), player.getLocation().getX(), player.getLocation().getY() - 1, player.getLocation().getZ());
-        final BlockState oldstate = location.getBlock().getState();
+        final Block oldBlock = location.getBlock();
 
-        // We set the block under him to a note block (required for the sound to be played)
-        location.getBlock().setType(Material.NOTE_BLOCK);
-
-        // We schedule a task which runs after 1 tick. This is for some reason necessary for the sound to play, otherwise the client tries to play the sound too quickly and nothing happends.
-        Bukkit.getScheduler().scheduleSyncDelayedTask(p, new Runnable()
+        player.sendBlockChange(location, Material.NOTE_BLOCK, (byte)0);
+        
+        Bukkit.getScheduler().scheduleSyncDelayedTask(p, new Runnable() 
         {
-            @Override
             public void run()
             {
-                player.playNote(location, Instrument.PIANO, Note.flat(1, Tone.D));
-                player.playNote(location, Instrument.PIANO, Note.flat(1, Tone.F));
+                player.playNote(new Location(player.getWorld(), 55, 63, 55), Instrument.PIANO, Note.sharp(1, Tone.A));
 
-                // After we play our sound we revert the block to what it was before.
-                oldstate.update(true);
+                player.sendBlockChange(location, oldBlock.getType(), oldBlock.getData());
             }
         }, 1L);
     }

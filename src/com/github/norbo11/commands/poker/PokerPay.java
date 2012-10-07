@@ -26,7 +26,7 @@ public class PokerPay extends PluginCommand
 
         setArgumentString("(pot ID) [player ID]");
 
-        getPermissionNodes().add(PERMISSIONS_BASE_NODE + "poker.*");
+        getPermissionNodes().add(PERMISSIONS_BASE_NODE + "poker");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "poker." + getAlises().get(0));
     }
 

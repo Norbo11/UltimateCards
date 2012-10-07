@@ -22,9 +22,9 @@ public class BlackjackStand extends PluginCommand
 
         setDescription("Keeps your current score, and stands.");
 
-        setArgumentString("");
-
-        getPermissionNodes().add(PERMISSIONS_BASE_NODE + "blackjack.*");
+        setArgumentString("(hand ID)");
+        
+        getPermissionNodes().add(PERMISSIONS_BASE_NODE + "blackjack");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "blackjack." + getAlises().get(0));
     }
 
