@@ -102,16 +102,9 @@ public class PokerCall extends PluginCommand
     public void perform() throws Exception
     {
 
-        double called = pokerTable.getCurrentBet() - pokerPlayer.getCurrentBet(); // Amount
-                                                                                  // of
-                                                                                  // money
-                                                                                  // that
-                                                                                  // is
-                                                                                  // being
-                                                                                  // called
-        // double allInCover = called - pokerTable.getLatestPot().pot; // The
-        // cover for the latest all in.
-
+        //Amount being called
+        double called = pokerTable.getCurrentBet() - pokerPlayer.getCurrentBet(); 
+        
         if (pokerPlayer.getMoney() - called == 0)
         {
             pokerPlayer.allIn();
@@ -138,9 +131,6 @@ public class PokerCall extends PluginCommand
                     pokerTable.getPots().get(pokerTable.getPots().indexOf(pot) - 1).adjustPot();
                 }
             pokerTable.getLatestPot().contribute(pokerPlayer, called - allInCover, false);
-            // if (allInCover == 0)
-            // pokerTable.getPots().get(pokerTable.getPots().indexOf(pot) -
-            // 1).even(this);
             pokerTable.getLatestPot().adjustPot();
         } else
         {

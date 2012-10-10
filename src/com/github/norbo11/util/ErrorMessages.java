@@ -31,7 +31,7 @@ public class ErrorMessages
 
     public static void cantAllIn(Player player)
     {
-        Messages.sendMessage(player, "&cYou have enough money to call/raise the current bet! If you wish to bet all of your stack, simply " + "&6/hand bet [your stack]" + "&c (check with " + "&6/hand money" + "&c)");
+        Messages.sendMessage(player, "&cYou have enough money to call/raise the current bet! If you wish to bet all of your stack, simply " + "&6/poker bet [your stack]" + "&c (check with " + "&6/cards money" + "&c)");
     }
 
     public static void cantCall(Player player)
@@ -328,7 +328,7 @@ public class ErrorMessages
 
     public static void tableAtShowdown(Player player)
     {
-        Messages.sendMessage(player, "&cThe table is currently at showdown! Reveal your hand with " + "&6/hand reveal");
+        Messages.sendMessage(player, "&cThe table is currently at showdown! Reveal your hand with " + "&6/poker reveal");
     }
 
     public static void tableDoesntAllowRebuys(Player player)
@@ -343,7 +343,7 @@ public class ErrorMessages
 
     public static void tableHasNoCallers(Player player, String amount, double highestBalance)
     {
-        Messages.sendMessage(player, "&cNobody on the table can call a raise of " + "&6" + Formatter.formatMoney(Double.parseDouble(amount)) + "&c! Raise to " + Formatter.formatMoney(highestBalance) + " at most, or call.");
+        Messages.sendMessage(player, "&cNobody on the table can call a raise of " + "&6" + Formatter.formatMoney(Double.parseDouble(amount)) + "&c! Raise to " + Formatter.formatMoney(highestBalance) + "&c at most, or call.");
     }
 
     public static void tableHasPots(Player player)
@@ -384,5 +384,10 @@ public class ErrorMessages
     public static void playerAlreadyDoubled(Player player)
     {
         Messages.sendMessage(player, "&cYou have already doubled down!");
+    }
+
+    public static void dealerHasNotEnoughMoney(Player player, double money)
+    {
+        Messages.sendMessage(player, "&cThe dealer has not enough money for you to bet that high! Bet &6" + Formatter.formatMoney(money) + " max.");
     }
 }

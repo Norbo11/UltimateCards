@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 
 import com.github.norbo11.UltimateCards;
 import com.github.norbo11.game.poker.PokerPhase;
-import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.Messages;
 import com.github.norbo11.util.NumberMethods;
 
@@ -130,8 +129,6 @@ public abstract class CardsTable
         Messages.sendMessage(player, "&6" + UltimateCards.getLineString());
         Messages.sendMessage(player, "&6&nPlayers");
         Messages.sendMessage(player, listPlayers());
-        Messages.sendMessage(player, "Average stack size: &6" + Formatter.formatMoney(getAverageStack()));
-        Messages.sendMessage(player, "&cOFFLINE &f| &6&nACTION&r &f| &6&lCHIP LEADER");
         
         Messages.sendMessage(player, "&6" + UltimateCards.getLineString());
         Messages.sendMessage(player, "&6&nGeneral Details");
@@ -191,22 +188,6 @@ public abstract class CardsTable
     public Deck getDeck()
     {
         return deck;
-    }
-
-    // Returns a list of player that are eliminated
-    public ArrayList<CardsPlayer> getEliminatedPlayers()
-    {
-        ArrayList<CardsPlayer> returnValue = new ArrayList<CardsPlayer>();
-
-        for (CardsPlayer player : players)
-            // Go through all player, if their eliminated flag is true, add them
-            // to the eventually returned value
-            if (player.isEliminated())
-            {
-                returnValue.add(player);
-            }
-
-        return returnValue;
     }
 
     // Find the first empty ID that is closest to 0
@@ -324,6 +305,23 @@ public abstract class CardsTable
     {
         this.actionPlayer = cardsPlayer;
     }
+    
+    public ArrayList<CardsPlayer> getRearrangedPlayers(CardsPlayer startingPlayer)
+    {
+        ArrayList<CardsPlayer> returnValue = new ArrayList<CardsPlayer>(getPlayersThisHand());
+        
+        for (CardsPlayer player : getPlayersThisHand())
+        {
+            if (getPlayers().indexOf(player) < getPlayersThisHand().indexOf(startingPlayer))
+            {
+                CardsPlayer temp = returnValue.get(0);
+                returnValue.remove(0);
+                returnValue.add(temp);
+            }
+        }
+        
+        return returnValue;
+    }
 
     public void setBannedList(ArrayList<String> bannedList)
     {
@@ -400,5 +398,15 @@ public abstract class CardsTable
                 getPlayers().get(i).setID(i);
             }
     }
+
+    public void restoreAllMaps()
+    {
+        for (CardsPlayer player : getPlayers())
+        {
+            UltimateCards.mapMethods.restoreMap(player.getPlayer());
+        }
+    }
+
+    public abstract ArrayList<CardsPlayer> getPlayersThisHand();
 
 }

@@ -68,7 +68,7 @@ public class PokerReveal extends PluginCommand
     public void perform() throws Exception
     {
         pokerPlayer.setRevealed(true);
-        Messages.sendToAllWithinRange(pokerTable.getLocation(), "[" + pokerTable.getID() + "] " + "&6" + getPlayer().getName() + "&f's hand:");
+        Messages.sendToAllWithinRange(pokerTable.getLocation(), "[ID" + pokerPlayer.getID() + "] " + "&6" + getPlayer().getName() + "&f's hand:");
         Messages.sendToAllWithinRange(pokerTable.getLocation(), pokerPlayer.getHand().getHand());
         pokerTable.nextPersonTurn(pokerPlayer);
     }

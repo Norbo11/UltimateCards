@@ -1,6 +1,5 @@
 package com.github.norbo11.commands.table;
 
-import com.github.norbo11.UltimateCards;
 import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.game.cards.CardsPlayer;
 import com.github.norbo11.game.cards.CardsTable;
@@ -45,7 +44,7 @@ public class TableDelete extends PluginCommand
     @Override
     public void perform()
     {
+        cardsPlayer.getTable().restoreAllMaps();
         cardsPlayer.getTable().deleteTable();
-        UltimateCards.mapMethods.restoreMap(getPlayer());
     }
 }

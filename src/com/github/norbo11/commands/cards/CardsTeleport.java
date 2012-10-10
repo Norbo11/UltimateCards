@@ -54,6 +54,6 @@ public class CardsTeleport extends PluginCommand
     public void perform() throws Exception
     {
         getPlayer().teleport(cardsTable.getLocation());
-        Messages.sendMessage(getPlayer(), "You have teleported to table " + "&6" + cardsTable.getName() + "&f, ID #" + "&6" + cardsTable.getID() + "&f. Sit down with " + "&6/poker sit [ID]");
+        Messages.sendMessage(getPlayer(), "You have teleported to table " + "&6" + cardsTable.getName() + "&f, ID #" + "&6" + cardsTable.getID() + "&f. Sit down with " + "&6/cards sit [ID]");
     }
 }

@@ -90,10 +90,10 @@ public class BlackjackTableSettings extends CardsTableSettings
 
     public void setServerDealer(boolean value)
     {
-        if (UltimateCards.getPluginConfig().isServerNeverDealer())
+        if (!UltimateCards.getPluginConfig().isServerNeverDealer())
         {
             BlackjackPlayer owner = (BlackjackPlayer) getTable().getOwner();
-            if (!owner.isPlaying())
+            if (!owner.playingThisHand())
             {
                 serverDealer = value;
                 if (value)

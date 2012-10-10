@@ -107,7 +107,7 @@ public class BlackjackTable extends CardsTable
     public void dealCards()
     {
         // Go through all players, clear their hands and add their cards.
-        for (BlackjackPlayer blackjackPlayer : getPlayersThisHand())
+        for (BlackjackPlayer blackjackPlayer : getBjPlayersThisHand())
         {
             blackjackPlayer.clearHands();
             blackjackPlayer.getHands().get(0).addCards(getDeck().generateCards(2));
@@ -129,7 +129,7 @@ public class BlackjackTable extends CardsTable
 
     public void displayScores()
     {
-        for (BlackjackPlayer player : getPlayersThisHand())
+        for (BlackjackPlayer player : getBjPlayersThisHand())
         {
             player.displayScore();
         }
@@ -147,7 +147,7 @@ public class BlackjackTable extends CardsTable
 
         return true;
     }
-
+    
     public BlackjackPlayer getActionBlackjackPlayer()
     {
         return (BlackjackPlayer) getActionPlayer();
@@ -169,7 +169,7 @@ public class BlackjackTable extends CardsTable
     {
         ArrayList<BlackjackPlayer> returnValue = new ArrayList<BlackjackPlayer>();
 
-        for (BlackjackPlayer blackjackPlayer : getPlayersThisHand())
+        for (BlackjackPlayer blackjackPlayer : getBjPlayersThisHand())
             if (blackjackPlayer.isBustOnAllHands())
             {
                 returnValue.add(blackjackPlayer);
@@ -199,28 +199,42 @@ public class BlackjackTable extends CardsTable
     @Override
     public BlackjackPlayer getNextPlayer(int index)
     {
-        if (index + 1 >= getPlayersThisHand().size()) return getPlayersThisHand().get((index + 1) % getPlayersThisHand().size()); // If
-        else return getPlayersThisHand().get(index + 1); // If the end of the players is not reached simply return the player 1 after the given index
+        if (index + 1 >= getPlayersThisHand().size()) return getBjPlayersThisHand().get((index + 1) % getBjPlayersThisHand().size()); // If
+        else return getBjPlayersThisHand().get(index + 1); // If the end of the players is not reached simply return the player 1 after the given index
     }
-
-    public ArrayList<BlackjackPlayer> getPlayersThisHand()
+    
+    public ArrayList<BlackjackPlayer> getBjPlayersThisHand()
     {
         ArrayList<BlackjackPlayer> returnValue = new ArrayList<BlackjackPlayer>();
-
-        for (BlackjackPlayer blackjackPlayer : getBlackjackPlayers())
-            if (blackjackPlayer.isPlaying())
-            {
-                returnValue.add(blackjackPlayer);
-            }
-
+        
+        for (CardsPlayer player : getPlayersThisHand())
+        {
+            returnValue.add((BlackjackPlayer) player);
+        }
+        
         return returnValue;
     }
 
+    
+    public ArrayList<CardsPlayer> getPlayersThisHand()
+    {
+        ArrayList<CardsPlayer> returnValue = new ArrayList<CardsPlayer>();
+
+        for (BlackjackPlayer player : getBlackjackPlayers())
+        {
+            if (player.playingThisHand())
+            {
+                returnValue.add(player);
+            }
+        }
+        
+        return returnValue;
+    }
     public ArrayList<BlackjackPlayer> getReadyPlayers()
     {
         ArrayList<BlackjackPlayer> returnValue = new ArrayList<BlackjackPlayer>();
 
-        for (BlackjackPlayer player : getPlayersThisHand())
+        for (BlackjackPlayer player : getBjPlayersThisHand())
             if (player.isDoubled() || player.isStayedOnAllHands() || player.isBustOnAllHands())
             {
                 returnValue.add(player);
@@ -239,7 +253,7 @@ public class BlackjackTable extends CardsTable
     {
         ArrayList<BlackjackPlayer> returnValue = new ArrayList<BlackjackPlayer>();
 
-        for (BlackjackPlayer blackjackPlayer : getPlayersThisHand())
+        for (BlackjackPlayer blackjackPlayer : getBjPlayersThisHand())
             if (blackjackPlayer.isStayedOnAllHands())
             {
                 returnValue.add(blackjackPlayer);
@@ -301,12 +315,7 @@ public class BlackjackTable extends CardsTable
     {
         ArrayList<String> list = new ArrayList<String>();
 
-        for (BlackjackPlayer player : getBlackjackPlayers()) // Display all the
-                                                             // players. If the
-                                                             // player is
-                                                             // offline make
-                                                             // their name
-                                                             // appear in red
+        for (BlackjackPlayer player : getBlackjackPlayers())
         {
             BlackjackPlayer blackjackPlayer = player;
             String temp = "[" + blackjackPlayer.getID() + "] ";
@@ -333,6 +342,9 @@ public class BlackjackTable extends CardsTable
             list.add(temp);
         }
 
+        list.add("Average stack size: &6" + Formatter.formatMoney(getAverageStack()));
+        list.add("&cOFFLINE &f| &6&nACTION&r &f| &6&lCHIP LEADER");
+        
         return list;
     }
 
@@ -376,7 +388,7 @@ public class BlackjackTable extends CardsTable
     {
         ArrayList<BlackjackPlayer> pushingPlayers = new ArrayList<BlackjackPlayer>();
 
-        for (BlackjackPlayer blackjackPlayer : getPlayersThisHand())
+        for (BlackjackPlayer blackjackPlayer : getBjPlayersThisHand())
         {
             for (BlackjackHand hand : blackjackPlayer.getHands())
                 if (!hand.isBust())
@@ -412,10 +424,7 @@ public class BlackjackTable extends CardsTable
     {
         Messages.sendToAllWithinRange(getLocation(), "Showdown time!");
         Messages.sendToAllWithinRange(getLocation(), dealer.getHand().getHand());
-        nextPersonTurn(getPlayersThisHand().get(button)); // Get the action of
-                                                          // the player AFTER
-                                                          // the button (the
-                                                          // small blind)
+        nextPersonTurn(getNextPlayer(button));
     }
 
     @Override

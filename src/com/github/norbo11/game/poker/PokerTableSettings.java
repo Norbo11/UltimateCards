@@ -191,19 +191,6 @@ public class PokerTableSettings extends CardsTableSettings
         Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getTable().getOwner().getPlayerName() + "&f has set the " + "&6Big Blind" + "&f to &6" + Formatter.formatMoney(value));
     }
 
-    @Override
-    public void setDisplayTurnsPublicly(boolean value)
-    {
-        setDisplayTurnsPublicly(value);
-        if (value)
-        {
-            Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getTable().getOwner().getPlayerName() + "&f has made turn messages display publicly!");
-        } else
-        {
-            Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getTable().getOwner().getPlayerName() + "&f has made turn messages display privately!");
-        }
-    }
-
     public void setDynamicFrequency(int value)
     {
         // Only allow the player to set the dynamic frequency if the blinds

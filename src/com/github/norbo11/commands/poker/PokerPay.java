@@ -12,7 +12,6 @@ public class PokerPay extends PluginCommand
 {
 
     PokerPlayer owner;
-
     PokerPlayer playerToPay;
     PokerTable pokerTable;
     Pot potToPay;
@@ -20,7 +19,6 @@ public class PokerPay extends PluginCommand
     public PokerPay()
     {
         getAlises().add("pay");
-        getAlises().add("p");
 
         setDescription("Pays the specified pot to the specified player. If only 1 pot exists, pot ID is optional.");
 
@@ -47,10 +45,10 @@ public class PokerPay extends PluginCommand
                     {
                         if (!pokerTable.isInProgress())
                         {
-                            Pot pot = pokerTable.getPot(potID);
-                            if (pot != null)
+                            potToPay = pokerTable.getPot(potID);
+                            if (potToPay != null)
                             {
-                                if (pot.getPot() > 0)
+                                if (potToPay.getPot() > 0)
                                 {
                                     playerToPay = PokerPlayer.getPokerPlayer(playerID, pokerTable);
                                     if (playerToPay != null) return true;
@@ -60,7 +58,7 @@ public class PokerPay extends PluginCommand
                                     }
                                 } else
                                 {
-                                    ErrorMessages.potEmpty(getPlayer(), pot);
+                                    ErrorMessages.potEmpty(getPlayer(), potToPay);
                                 }
                             } else
                             {

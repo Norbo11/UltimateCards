@@ -102,7 +102,7 @@ public class MapMethods
                     int i = 1;
                     x = 5;
                     int y = 98;
-                    for (BlackjackPlayer temp : blackjackPlayer.getBlackjackTable().getPlayersThisHand())
+                    for (BlackjackPlayer temp : blackjackPlayer.getBlackjackTable().getBjPlayersThisHand())
                     {
                         if (i == 9)
                         {
@@ -328,18 +328,6 @@ public class MapMethods
 
     public void giveMap(final Player player, String renderer)
     {
-        //Schedule task
-        redrawTasks.put(player.getName(), Bukkit.getScheduler().scheduleAsyncRepeatingTask(p, new Runnable()
-        {
-
-            @Override
-            public void run()
-            {
-                redrawsNeeded.put(player.getName(), true);
-            }
-
-        }, 0L, 20L));
-
         //Create map
         final MapView map = Bukkit.getServer().createMap(player.getWorld());
         clearRenderers(map);
@@ -362,10 +350,24 @@ public class MapMethods
         if (HelperMethods.hasOpenSlotInInventory(player))
         {
             player.getInventory().addItem(mapItem);
+            player.getInventory().remove(mapItem);
+            player.getInventory().addItem(mapItem);
         } else
         {
             player.getWorld().dropItemNaturally(player.getLocation(), mapItem);
         }
+        
+        //Schedule task
+        redrawTasks.put(player.getName(), Bukkit.getScheduler().scheduleAsyncRepeatingTask(p, new Runnable()
+        {
+
+            @Override
+            public void run()
+            {
+                redrawsNeeded.put(player.getName(), true);
+            }
+
+        }, 20L, 20L));
     }
 
     public void restoreAllMaps()

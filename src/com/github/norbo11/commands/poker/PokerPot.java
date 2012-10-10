@@ -14,7 +14,6 @@ public class PokerPot extends PluginCommand
     {
         getAlises().add("pot");
         getAlises().add("pots");
-        getAlises().add("p");
 
         setDescription("Displays all pots at the table.");
 

@@ -89,11 +89,5 @@ public class CardsRebuy extends PluginCommand
         Log.addToLog(DateMethods.getDate() + " [ECONOMY] Withdrawing " + amount + " from " + getPlayer().getName());
 
         Messages.sendToAllWithinRange(cardsTable.getLocation(), "&6" + getPlayer().getName() + "&f has added &6" + Formatter.formatMoney(amount) + "&f to his stack. New balance: &6" + Formatter.formatMoney(cardsPlayer.getMoney()));
-
-        // If the player was eliminated then get them back into the game
-        if (cardsPlayer.isEliminated()) if (cardsPlayer.canPlay())
-        {
-            Messages.sendToAllWithinRange(cardsTable.getLocation(), "&6" + getPlayer().getName() + "&f is now back in the game!");
-        }
     }
 }

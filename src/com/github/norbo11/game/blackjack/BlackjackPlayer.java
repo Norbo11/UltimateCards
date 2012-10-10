@@ -143,7 +143,7 @@ public class BlackjackPlayer extends CardsPlayer
         return hitted;
     }
 
-    public boolean isPlaying()
+    public boolean playingThisHand()
     {
         for (BlackjackHand hand : hands)
             if (hand.getAmountBet() > 0) return true;

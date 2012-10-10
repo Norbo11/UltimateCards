@@ -59,7 +59,7 @@ public class CardsInvite extends PluginCommand
     @Override
     public void perform() throws Exception
     {
-        Messages.sendMessage(toInvite, "&6" + getPlayer().getName() + " &fhas invited you to his/her poker table! Sit with &6/poker sit " + cardsPlayer.getTable().getID() + " [buy-in]");
+        Messages.sendMessage(toInvite, "&6" + getPlayer().getName() + " &fhas invited you to his/her poker table! Sit with &6/cards sit " + cardsPlayer.getTable().getID() + " [buy-in]");
         Messages.sendMessage(getPlayer(), "You have invited &6" + toInvite + " &fto your table.");
 
     }

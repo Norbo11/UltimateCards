@@ -51,7 +51,7 @@ public abstract class CardsPlayer extends PlayerControlled
     private int ID; // ID of the player every single statistic associated with this player
 
     public abstract boolean canPlay();
-
+    
     public int getID()
     {
         return ID;
@@ -80,11 +80,6 @@ public abstract class CardsPlayer extends PlayerControlled
     public boolean isAction()
     {
         return getTable().getActionPlayer() == this;
-    }
-
-    public boolean isEliminated()
-    {
-        return money <= 0 ? true : false;
     }
 
     public boolean isOnline()
@@ -124,5 +119,15 @@ public abstract class CardsPlayer extends PlayerControlled
             Messages.sendMessage(getPlayer(), ChatColor.DARK_PURPLE + "" + ChatColor.UNDERLINE + "It is your turn to act!");
         }
         Sound.playerTurn(getPlayer());
+    }
+
+    public boolean isEliminated()
+    {
+        return !getTable().getPlayersThisHand().contains(this);
+    }
+    
+    public void giveMoney(double amount)
+    {
+        money += amount;
     }
 }

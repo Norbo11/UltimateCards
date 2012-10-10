@@ -29,7 +29,7 @@ public class PokerHand extends PluginCommand
     @Override
     public boolean conditions()
     {
-        if (getArgs().length == 0)
+        if (getArgs().length == 1)
         {
             pokerPlayer = PokerPlayer.getPokerPlayer(getPlayer().getName());
             if (pokerPlayer != null) if (pokerPlayer.getHand().getCards().size() > 0) return true;

@@ -45,16 +45,22 @@ public class BlackjackBet extends PluginCommand
                         if (blackjackPlayer.getMoney() >= amountToBet)
                         {
                             blackjackTable = blackjackPlayer.getBlackjackTable();
-                            if (amountToBet >= blackjackTable.getSettings().getMinBet())
+                            if (blackjackTable.getOwner().getMoney() >= amountToBet + blackjackPlayer.getTotalAmountBet() || blackjackPlayer.getBlackjackTable().getSettings().isServerDealer())
                             {
-                                if (!blackjackTable.isInProgress()) return true;
-                                else
+                                if (amountToBet >= blackjackTable.getSettings().getMinBet())
                                 {
-                                    ErrorMessages.tableInProgress(getPlayer());
+                                    if (!blackjackTable.isInProgress()) return true;
+                                    else
+                                    {
+                                        ErrorMessages.tableInProgress(getPlayer());
+                                    }
+                                } else
+                                {
+                                    ErrorMessages.tooSmallBet(getPlayer(), blackjackTable.getSettings().getMinBet());
                                 }
-                            } else
+                            } else 
                             {
-                                ErrorMessages.tooSmallBet(getPlayer(), blackjackTable.getSettings().getMinBet());
+                                ErrorMessages.dealerHasNotEnoughMoney(getPlayer(), blackjackTable.getOwner().getMoney());
                             }
                         } else
                         {

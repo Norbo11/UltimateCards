@@ -43,18 +43,14 @@ public class PokerPlayer extends CardsPlayer
         return cardsPlayer instanceof PokerPlayer ? (PokerPlayer) CardsPlayer.getCardsPlayer(name) : null;
     }
 
-    private Pot pot; // This is null if the player is not all in. It turns to an actual pot which represents the pot which the player created by going all in.
-    private boolean acted; // True if the player has acted at least once
+    private Pot pot;            // This is null if the player is not all in. It turns to an actual pot which represents the pot which the player created by going all in.
+    private boolean acted;      // True if the player has acted at least once
     private boolean folded;
     private boolean revealed;
     private double allIn;
-    private double currentBet; // This simply represents the player's
-                               // current bet in the phase. (phase = flop, turn,
-                               // river, etc)
-    private double totalBet; // This is the total amount that the player
-                             // has bet in the hand
+    private double currentBet;  // This simply represents the player's current bet in the phase. (phase = flop, turn, river, etc)
+    private double totalBet;    // This is the total amount that the player  has bet in the hand
 
-    private double wonThisHand;
     private Hand hand = new Hand();
 
     public PokerPlayer(Player player, CardsTable table, double buyin) throws Exception
@@ -96,58 +92,62 @@ public class PokerPlayer extends CardsPlayer
         // Gets all non folded players who have bet at least the amount that the player is going all in for (in that phase) and stores the amounts that they have bet in excess in temp
         for (PokerPlayer pokerPlayer : getPokerTable().getNonFoldedPlayers())
         {
-            if (getCurrentBet() >= getCurrentBet() && pokerPlayer != this)
+            if (pokerPlayer.getCurrentBet() >= getCurrentBet() && pokerPlayer != this)
             {
-                temp[i] = getCurrentBet() - getCurrentBet();
+                System.out.println("[Allin] Player " + pokerPlayer.getPlayerName() + " is true.");
+                temp[i] = pokerPlayer.getCurrentBet() - getCurrentBet();
             }
             i++;
         }
+        System.out.println("[Allin] Temp " + temp);
         // Iterates through temp and makes the sidepot equal to the amount that the player is short (that is, all the current bets of the players that are over the all in amount, summed up)
         for (double temp2 : temp)
         {
             sidePot = sidePot + temp2;
         }
+        
+        System.out.println("[Allin] Sidepot " + sidePot);
 
         boolean sameAmount = false;
         for (Pot pot : getPokerTable().getPots())
-            if (!pot.isMain()) if (pot.getPlayerAllIn().getAllIn() == getAllIn())
+        {
+            if (!pot.isMain()) 
             {
-                double allInCover = 0;
-                for (Pot pot2 : getPokerTable().getPots())
-                    if (!pot2.isMain() && pot2.getPlayerAllIn() != this) if (pot2.getPlayerAllIn().getAllIn() > getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot2) - 1).getContribution(this))
+                if (pot.getPlayerAllIn().getAllIn() == getAllIn())
+                {
+                    double allInCover = 0;
+                    for (Pot pot2 : getPokerTable().getPots())
                     {
-                        allInCover = allInCover + (getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot2) - 1).getContribution(pot2.getPlayerAllIn()) - getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot2) - 1).getContribution(this));
-                        getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot2) - 1).contribute(this, getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot2) - 1).getContribution(pot2.getPlayerAllIn()) - getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot2) - 1).getContribution(this), false);
-                        getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot2) - 1).adjustPot();
+                        if (!pot2.isMain() && pot2.getPlayerAllIn() != this) if (pot2.getPlayerAllIn().getAllIn() > getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot2) - 1).getContribution(this))
+                        {
+                            allInCover = allInCover + (getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot2) - 1).getContribution(pot2.getPlayerAllIn()) - getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot2) - 1).getContribution(this));
+                            getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot2) - 1).contribute(this, getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot2) - 1).getContribution(pot2.getPlayerAllIn()) - getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot2) - 1).getContribution(this), false);
+                            getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot2) - 1).adjustPot();
+                        }
                     }
-                getPokerTable().getPots().get(getPokerTable().getPots().indexOf(getPokerTable().getLatestPot()) - 1).contribute(this, amount - allInCover, false);
-                getPokerTable().getPots().get(getPokerTable().getPots().indexOf(getPokerTable().getLatestPot()) - 1).adjustPot();
-                sameAmount = true;
-                break;
+                    getPokerTable().getPots().get(getPokerTable().getPots().indexOf(getPokerTable().getLatestPot()) - 1).contribute(this, amount - allInCover, false);
+                    getPokerTable().getPots().get(getPokerTable().getPots().indexOf(getPokerTable().getLatestPot()) - 1).adjustPot();
+                    sameAmount = true;
+                    break;
+                }
             }
+        }
         if (sidePot > 0 && !sameAmount)
         {
-            // Makes a new pot with the obtained sidepot amount, adds the pot to
-            // the list of table pots, and sets the latestPot variable to the
-            // created pot.
+            // Makes a new pot with the obtained sidepot amount, adds the pot to the list of table pots, and sets the latestPot variable to the created pot.
             setPot(new Pot(this, getPokerTable(), sidePot, getPokerTable().getPots().size()));
             getPokerTable().getPots().add(getPot());
             getPokerTable().setLatestPot(getPot());
-            // This for loop goes through every non folded player. If the
-            // player has bet more on the current phase than the
-            // player going all in,
-            // take how much we are short of their current bet. Then lower their
-            // contribution amount on the pot before the side pot just created,
+            // This for loop goes through every non folded player. If the player has bet more on the current phase than the player going all in,
+            // take how much we are short of their current bet. Then lower their contribution amount on the pot before the side pot just created,
             // created and put it in the side pot.
-            // double boosack = 0;
             for (PokerPlayer pokerPlayer : getPokerTable().getNonFoldedPlayers())
-                if (getCurrentBet() >= this.getCurrentBet() && pokerPlayer != this)
+                if (pokerPlayer.getCurrentBet() >= getCurrentBet() && pokerPlayer != this)
                 {
-                    getPokerTable().getPots().get(getPokerTable().getPots().indexOf(getPot()) - 1).contribute(pokerPlayer, getPokerTable().getPots().get(getPokerTable().getPots().indexOf(getPot()) - 1).getContribution(pokerPlayer) - (getCurrentBet() - this.getCurrentBet()), true);
-                    this.getPot().contribute(pokerPlayer, getCurrentBet() - this.getCurrentBet(), false);
-                    // boosack = boosack + (getCurrentBet() -
-                    // this.getCurrentBet());
+                    getPokerTable().getPots().get(getPokerTable().getPots().indexOf(getPot()) - 1).contribute(pokerPlayer, getPokerTable().getPots().get(getPokerTable().getPots().indexOf(getPot()) - 1).getContribution(pokerPlayer) - (pokerPlayer.getCurrentBet() - getCurrentBet()), true);
+                    getPot().contribute(pokerPlayer, pokerPlayer.getCurrentBet() - this.getCurrentBet(), false);
                 }
+            
             // This goes through every single pot and contributes whatever is
             // needed to each pot (whatever is needed is defined by the
             // player's all in amount of that pot)
@@ -158,12 +158,17 @@ public class PokerPlayer extends CardsPlayer
             // our side pot.
             double allInCover = 0;
             for (Pot pot : getPokerTable().getPots())
-                if (!pot.isMain() && pot.getPlayerAllIn() != this) if (pot.getPlayerAllIn().getAllIn() > getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(this))
+            {
+                if (!pot.isMain() && pot.getPlayerAllIn() != this) 
                 {
-                    allInCover = allInCover + (getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(pot.getPlayerAllIn()) - getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(this));
-                    getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).contribute(this, getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(pot.getPlayerAllIn()) - getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(this), false);
-                    getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).adjustPot();
+                    if (pot.getPlayerAllIn().getAllIn() > getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(this))
+                    {
+                        allInCover += (getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(pot.getPlayerAllIn()) - getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(this));
+                        getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).contribute(this, getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(pot.getPlayerAllIn()) - getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(this), false);
+                        getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).adjustPot();
+                    }
                 }
+            }
             getPokerTable().getPots().get(getPokerTable().getPots().indexOf(getPot()) - 1).contribute(this, amount - allInCover, false);
             getPokerTable().getPots().get(getPokerTable().getPots().indexOf(getPot()) - 1).adjustPot();
         } else if (sidePot == 0 && !sameAmount)
@@ -171,12 +176,17 @@ public class PokerPlayer extends CardsPlayer
             getPokerTable().setCurrentBet(getCurrentBet());
             double allInCover = 0;
             for (Pot pot : getPokerTable().getPots())
-                if (!pot.isMain() && pot.getPlayerAllIn() != this) if (pot.getPlayerAllIn().getAllIn() > getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(this))
+            {
+                if (!pot.isMain() && pot.getPlayerAllIn() != this) 
                 {
-                    allInCover = allInCover + (getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(pot.getPlayerAllIn()) - getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(this));
-                    getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).contribute(this, getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(pot.getPlayerAllIn()) - getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(this), false);
-                    getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).adjustPot();
+                    if (pot.getPlayerAllIn().getAllIn() > getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(this))
+                    {
+                        allInCover += (getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(pot.getPlayerAllIn()) - getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(this));
+                        getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).contribute(this, getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(pot.getPlayerAllIn()) - getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(this), false);
+                        getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).adjustPot();
+                    }
                 }
+            }
             getPokerTable().getLatestPot().contribute(this, amount - allInCover, false);
             getPokerTable().getLatestPot().adjustPot();
         }
@@ -214,7 +224,7 @@ public class PokerPlayer extends CardsPlayer
         setTotalBet(0);
         getPokerTable().adjustPots();
         Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getPlayerName() + "&f folds.");
-        getPokerTable().nextPersonTurn(this);
+        if (getPokerTable().getActionPlayer() == this) getPokerTable().nextPersonTurn(this);
     }
 
     public double getAllIn()
@@ -247,10 +257,10 @@ public class PokerPlayer extends CardsPlayer
         return totalBet;
     }
 
-    public double getWonThisHand()
+    /*public double getWonThisHand()
     {
         return wonThisHand;
-    }
+    }*/
 
     public boolean isActed()
     {
@@ -293,12 +303,15 @@ public class PokerPlayer extends CardsPlayer
             Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f has posted the ante (" + "&6" + Formatter.formatMoney(amount) + "&f)");
         }
 
-        // Set the player's current bet to the blind, add the blind to
-        // their total amount, set the table's current bet to the amount, add
-        // the blind to the main pot, deduct money from the player
-        currentBet = amount;
+
+        //Only update current bet if its not an ante.
+        if (!blind.equals("ante")) 
+        {
+            currentBet = amount;
+            table.setCurrentBet(amount);
+        }
+        
         totalBet = totalBet + amount;
-        table.setCurrentBet(amount);
         table.getLatestPot().contribute(this, amount, false);
         table.getLatestPot().setPot(table.getLatestPot().getPot() + amount);
         setMoney(getMoney() - amount);
@@ -339,10 +352,10 @@ public class PokerPlayer extends CardsPlayer
         this.totalBet = totalBet;
     }
 
-    public void setWonThisHand(double wonThisHand)
+    /*public void setWonThisHand(double wonThisHand)
     {
         this.wonThisHand = wonThisHand;
-    }
+    }*/
 
     public void tableLeave(CardsPlayer cardsPlayer) throws Exception
     {
