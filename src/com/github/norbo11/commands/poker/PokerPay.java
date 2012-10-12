@@ -3,18 +3,12 @@ package com.github.norbo11.commands.poker;
 import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.game.cards.CardsTable;
 import com.github.norbo11.game.poker.PokerPlayer;
-import com.github.norbo11.game.poker.PokerTable;
-import com.github.norbo11.game.poker.Pot;
 import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.NumberMethods;
 
 public class PokerPay extends PluginCommand
 {
-
-    PokerPlayer owner;
     PokerPlayer playerToPay;
-    PokerTable pokerTable;
-    Pot potToPay;
 
     public PokerPay()
     {
@@ -31,102 +25,114 @@ public class PokerPay extends PluginCommand
     @Override
     public boolean conditions()
     {
-        if (getArgs().length == 3)
-        {
-            owner = PokerPlayer.getPokerPlayer(getPlayer().getName());
-            if (CardsTable.isOwnerOfTable(owner))
-            {
-                pokerTable = owner.getPokerTable();
-                int potID = NumberMethods.getInteger(getArgs()[1]);
-                if (potID != -99999)
-                {
-                    int playerID = NumberMethods.getInteger(getArgs()[2]);
-                    if (playerID != -99999)
-                    {
-                        if (!pokerTable.isInProgress())
-                        {
-                            potToPay = pokerTable.getPot(potID);
-                            if (potToPay != null)
-                            {
-                                if (potToPay.getPot() > 0)
-                                {
-                                    playerToPay = PokerPlayer.getPokerPlayer(playerID, pokerTable);
-                                    if (playerToPay != null) return true;
-                                    else
-                                    {
-                                        ErrorMessages.notPlayerID(getPlayer(), playerID);
-                                    }
-                                } else
-                                {
-                                    ErrorMessages.potEmpty(getPlayer(), potToPay);
-                                }
-                            } else
-                            {
-                                ErrorMessages.notPotID(getPlayer(), getArgs()[1]);
-                            }
-                        } else
-                        {
-                            ErrorMessages.tableInProgress(getPlayer());
-                        }
-                    } else
-                    {
-                        ErrorMessages.invalidNumber(getPlayer(), getArgs()[2]);
-                    }
-                } else
-                {
-                    ErrorMessages.invalidNumber(getPlayer(), getArgs()[1]);
-                }
-            } else
-            {
-                ErrorMessages.notOwnerOfAnyTable(getPlayer());
-            }
-        } else if (getArgs().length == 2)
-        {
-            owner = PokerPlayer.getPokerPlayer(getPlayer().getName());
-            if (CardsTable.isOwnerOfTable(owner))
-            {
-                pokerTable = owner.getPokerTable();
-                if (pokerTable.getPots().size() == 1) // If there is only 1 pot (the main one)
-                {
-                    if (pokerTable.getPots().get(0).getPot() > 0) // If the main pot is not 0
-                    {
-                        potToPay = pokerTable.getPots().get(0);
-                        int playerID = NumberMethods.getInteger(getArgs()[1]);
-                        if (playerID != -99999)
-                        {
-                            playerToPay = PokerPlayer.getPokerPlayer(playerID, pokerTable);
-                            if (playerToPay != null) return true;
-                            else
-                            {
-                                ErrorMessages.notPlayerID(getPlayer(), playerID);
-                            }
-                        } else
-                        {
-                            ErrorMessages.invalidNumber(getPlayer(), getArgs()[1]);
-                        }
-                    } else
-                    {
-                        ErrorMessages.potEmpty(getPlayer(), pokerTable.getPots().get(0));
-                    }
-                } else
-                {
-                    ErrorMessages.tableHasMultiplePots(getPlayer());
-                }
-            } else
-            {
-                ErrorMessages.notOwnerOfAnyTable(getPlayer());
-            }
-        } else
-        {
-            showUsage();
-        }
-        return false;
+    	if (getArgs().length != 2) {
+    		showUsage();
+    		return false;
+    	}
+    	
+    	PokerPlayer owner = PokerPlayer.getPokerPlayer(getPlayer().getName());
+    	if  (!CardsTable.isOwnerOfTable(owner)) {
+    		ErrorMessages.notOwnerOfAnyTable(getPlayer());
+    		return false;
+    	}
+
+    	int playerID = NumberMethods.getInteger(getArgs()[1]);
+    	if (playerID == -99999) {
+    		ErrorMessages.invalidNumber(getPlayer(), getArgs()[1]);
+    		return false;
+    	}
+    	playerToPay = PokerPlayer.getPokerPlayer(playerID, owner.getPokerTable());
+    	if (playerToPay == null) {
+    		ErrorMessages.notPlayerID(getPlayer(), playerID);
+    		return false;
+    	}
+    	
+    	return true;
+    	
+//        if (getArgs().length == 3)
+//        {
+//            owner = PokerPlayer.getPokerPlayer(getPlayer().getName());
+//            if (CardsTable.isOwnerOfTable(owner))
+//            {
+//                pokerTable = owner.getPokerTable();
+//                int potID = NumberMethods.getInteger(getArgs()[1]);
+//                if (potID != -99999)
+//                {
+//                    int playerID = NumberMethods.getInteger(getArgs()[2]);
+//                    if (playerID != -99999)
+//                    {
+//                        if (!pokerTable.isInProgress())
+//                        {
+//                            playerToPay = PokerPlayer.getPokerPlayer(playerID, pokerTable);
+//                            if (playerToPay != null) return true;
+//                            else
+//                            {
+//                                ErrorMessages.notPlayerID(getPlayer(), playerID);
+//                            }
+//                        } else
+//                        {
+//                            ErrorMessages.tableInProgress(getPlayer());
+//                        }
+//                    } else
+//                    {
+//                        ErrorMessages.invalidNumber(getPlayer(), getArgs()[2]);
+//                    }
+//                } else
+//                {
+//                    ErrorMessages.invalidNumber(getPlayer(), getArgs()[1]);
+//                }
+//            } else
+//            {
+//                ErrorMessages.notOwnerOfAnyTable(getPlayer());
+//            }
+//        } else if (getArgs().length == 2)
+//        {
+//            owner = PokerPlayer.getPokerPlayer(getPlayer().getName());
+//            if (CardsTable.isOwnerOfTable(owner))
+//            {
+//                pokerTable = owner.getPokerTable();
+//                if (pokerTable.getPots().size() == 1) // If there is only 1 pot (the main one)
+//                {
+//                    if (pokerTable.getPots().get(0).getPot() > 0) // If the main pot is not 0
+//                    {
+//                        potToPay = pokerTable.getPots().get(0);
+//                        int playerID = NumberMethods.getInteger(getArgs()[1]);
+//                        if (playerID != -99999)
+//                        {
+//                            playerToPay = PokerPlayer.getPokerPlayer(playerID, pokerTable);
+//                            if (playerToPay != null) return true;
+//                            else
+//                            {
+//                                ErrorMessages.notPlayerID(getPlayer(), playerID);
+//                            }
+//                        } else
+//                        {
+//                            ErrorMessages.invalidNumber(getPlayer(), getArgs()[1]);
+//                        }
+//                    } else
+//                    {
+//                        ErrorMessages.potEmpty(getPlayer(), pokerTable.getPots().get(0));
+//                    }
+//                } else
+//                {
+//                    ErrorMessages.tableHasMultiplePots(getPlayer());
+//                }
+//            } else
+//            {
+//                ErrorMessages.notOwnerOfAnyTable(getPlayer());
+//            }
+//        } else
+//        {
+//            showUsage();
+//        }
+//        return false;
     }
 
     // Pays the specified pot ID to the specified player ID. The first player argument is the owner typing the /table pay command.
     @Override
     public void perform() throws Exception
     {
-        potToPay.payPot(playerToPay);
+    	playerToPay.payPot();
+        //potToPay.payPot(playerToPay);
     }
 }

@@ -4,10 +4,7 @@ import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.game.poker.PokerPhase;
 import com.github.norbo11.game.poker.PokerPlayer;
 import com.github.norbo11.game.poker.PokerTable;
-import com.github.norbo11.game.poker.Pot;
 import com.github.norbo11.util.ErrorMessages;
-import com.github.norbo11.util.Formatter;
-import com.github.norbo11.util.Messages;
 import com.github.norbo11.util.NumberMethods;
 
 public class PokerBet extends PluginCommand
@@ -117,80 +114,8 @@ public class PokerBet extends PluginCommand
     @Override
     public void perform() throws Exception
     {
-        double tableCurrentBet = pokerTable.getCurrentBet(); // The table
-                                                             // current bet
-                                                             // prior to the
-                                                             // raise
-        double alreadyContributed = pokerPlayer.getCurrentBet(); // The
-                                                                 // amountToBet
-                                                                 // that the
-                                                                 // player
-                                                                 // has already
-                                                                 // put in the
-                                                                 // pop prior to
-                                                                 // the raise
-        double raised = amountToBet - alreadyContributed; // The amountToBet
-                                                          // that is actually
-                                                          // being raised (so,
-                                                          // the amountToBet
-                                                          // over the current
-                                                          // bet of the
-                                                          // player that is
-                                                          // raising)
-
-        // If the player has bet all of their money, go all in instead of
-        // going through this method
-        if (pokerPlayer.getMoney() - raised == 0)
-        {
-            pokerPlayer.allIn();
-            return;
-        }
-
-        pokerPlayer.setActed(true);
-
-        // Set the table current bet to the new amountToBet, add the raised
-        // amountToBet to the player's total, and set the player's
-        // current bet to the amountToBet of the raise/bet
-        pokerPlayer.setCurrentBet(amountToBet);
-        pokerPlayer.setTotalBet(pokerPlayer.getTotalBet() + raised);
-        pokerTable.setCurrentBet(amountToBet);
-
-        if (pokerTable.getPots().size() > 1 && pokerTable.getLatestPot().getPokerPhase() == pokerTable.getCurrentPhase())
-        {
-            double allInCover = 0;
-            for (Pot pot : pokerTable.getPots())
-                if (!pot.isMain() && pot.getPlayerAllIn() != pokerPlayer) if (pot.getPlayerAllIn().getAllIn() > pokerTable.getPots().get(pokerTable.getPots().indexOf(pot) - 1).getContribution(pokerPlayer))
-                {
-                    allInCover = allInCover + (pokerTable.getPots().get(pokerTable.getPots().indexOf(pot) - 1).getContribution(pot.getPlayerAllIn()) - pokerTable.getPots().get(pokerTable.getPots().indexOf(pot) - 1).getContribution(pokerPlayer));
-                    pokerTable.getPots().get(pokerTable.getPots().indexOf(pot) - 1).contribute(pokerPlayer, pokerTable.getPots().get(pokerTable.getPots().indexOf(pot) - 1).getContribution(pot.getPlayerAllIn()) - pokerTable.getPots().get(pokerTable.getPots().indexOf(pot) - 1).getContribution(pokerPlayer), false);
-                    pokerTable.getPots().get(pokerTable.getPots().indexOf(pot) - 1).adjustPot();
-                }
-            pokerTable.getLatestPot().contribute(pokerPlayer, raised - allInCover, false);
-            // if (allInCover == 0)
-            // pokerTable.getPots().get(pokerTable.getPots().indexOf(pot) -
-            // 1).even(this);
-            pokerTable.getLatestPot().adjustPot();
-        } else
-        {
-            pokerTable.getLatestPot().contribute(pokerPlayer, raised, false);
-            pokerTable.getLatestPot().adjustPot();
-        }
-
-        pokerTable.adjustPots();
-        // If the original current bet of the table was 0, say that the
-        // player has "bet" (first time that someone adds money to the pot
-        // during the phase)
-        if (tableCurrentBet == 0)
-        {
-            Messages.sendToAllWithinRange(pokerTable.getLocation(), "&6" + pokerPlayer.getPlayerName() + "&f bets " + "&6" + Formatter.formatMoney(amountToBet) + "&f (Total: " + "&6" + Formatter.formatMoney(pokerPlayer.getTotalBet()) + "&f)");
-        } else
-        {
-            Messages.sendToAllWithinRange(pokerTable.getLocation(), "&6" + pokerPlayer.getPlayerName() + "&f raises to " + "&6" + Formatter.formatMoney(amountToBet) + "&f (Total: " + "&6" + Formatter.formatMoney(pokerPlayer.getTotalBet()) + "&f)");
-        }
-        // Deduct the raised amountToBet from the player's stack
-        pokerPlayer.setMoney(pokerPlayer.getMoney() - raised);
-        pokerTable.nextPersonTurn(pokerPlayer);
-
+    	amountToBet += pokerPlayer.getCurrentBet();
+        pokerPlayer.bet(amountToBet);
     }
 
 }

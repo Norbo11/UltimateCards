@@ -19,7 +19,6 @@ import org.bukkit.entity.Player;
 import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.commands.PluginExecutor;
 import com.github.norbo11.game.poker.PokerPlayer;
-import com.github.norbo11.game.poker.Pot;
 
 public class ErrorMessages
 {
@@ -306,7 +305,7 @@ public class ErrorMessages
         Messages.sendMessage(player, "&cThe player " + "&6" + toCheck + "&c is not currently playing poker!");
     }
 
-    public static void potEmpty(Player player, Pot pot)
+    public static void potEmpty(Player player)
     {
         Messages.sendMessage(player, "&cThat pot has already been paid!");
     }

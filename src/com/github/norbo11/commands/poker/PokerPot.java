@@ -31,11 +31,7 @@ public class PokerPot extends PluginCommand
             pokerPlayer = PokerPlayer.getPokerPlayer(getPlayer().getName());
             if (pokerPlayer != null)
             {
-                if (pokerPlayer.getPokerTable().getPots().size() > 0) return true;
-                else
-                {
-                    ErrorMessages.noPotsOnTable(getPlayer());
-                }
+            	return true;
             } else
             {
                 ErrorMessages.notSittingAtTable(getPlayer());
@@ -51,9 +47,12 @@ public class PokerPot extends PluginCommand
     @Override
     public void perform() throws Exception
     {
-        for (String pot : pokerPlayer.getPokerTable().listPots())
-        {
-            Messages.sendMessage(getPlayer(), pot);
-        }
+    	for (PokerPlayer p : pokerPlayer.getPokerTable().getNonFoldedPlayers()) {
+    		Messages.sendMessage(getPlayer(), p.getPlayerName() + " - " + Double.toString(p.getTotalPot()));
+    	}
+//        for (String pot : pokerPlayer.getPokerTable().listPots())
+//        {
+//            Messages.sendMessage(getPlayer(), pot);
+//        }
     }
 }
