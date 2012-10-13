@@ -17,7 +17,9 @@ public class PokerBet extends PluginCommand
 
     public PokerBet()
     {
+        getAlises().add("raiseto");
         getAlises().add("bet");
+        getAlises().add("raise");
         getAlises().add("b");
 
         setDescription("Bets or raises to the specified amount.");
@@ -47,24 +49,32 @@ public class PokerBet extends PluginCommand
                             {
                                 if (!pokerPlayer.isFolded())
                                 {
-                                    if (pokerPlayer.getAllIn() == 0)
+                                    if (!pokerPlayer.isAllIn())
                                     {
                                         amountToBet = NumberMethods.getDouble(getArgs()[1]);
                                         if (amountToBet != -99999)
                                         {
-                                        	System.out.println("********" + amountToBet + ", " + pokerPlayer.getCurrentBet());
-                                            if (pokerPlayer.hasMoney(amountToBet))
+                                            System.out.println("********" + amountToBet + ", " + pokerPlayer.getCurrentBet());
+                                            if (pokerPlayer.hasMoney(amountToBet - pokerPlayer.getCurrentBet()))
                                             {
-                                                if (pokerPlayer.getPokerTable().getCallablePlayers(amountToBet, pokerPlayer).size() >= 1)
+                                                //Raise
+                                                if (amountToBet > pokerTable.getCurrentBet())
                                                 {
-                                                    if (amountToBet + pokerPlayer.getCurrentBet() >= pokerTable.getCurrentBet() + pokerTable.getSettings().getMinRaise()) return true;
+                                                    if (amountToBet - pokerTable.getCurrentBet() >= pokerTable.getSettings().getMinRaise())
+                                                    {
+                                                        return true;
+                                                    }
                                                     else
                                                     {
-                                                        ErrorMessages.cantRaise(getPlayer(), pokerTable.getSettings().getMinRaise(), pokerTable.getCurrentBet());
+                                                        ErrorMessages.betBelowMinRaise(getPlayer(), pokerTable.getSettings().getMinRaise(), pokerTable.getCurrentBet());
                                                     }
+                                                //Call
+                                                } else if (amountToBet == pokerTable.getCurrentBet())
+                                                {
+                                                    return true; 
                                                 } else
                                                 {
-                                                    ErrorMessages.tableHasNoCallers(getPlayer(), getArgs()[1], pokerTable.getHighestCallingAmount(pokerPlayer));
+                                                    ErrorMessages.betBelowCurrentBet(getPlayer());
                                                 }
                                             } else
                                             {
@@ -115,8 +125,7 @@ public class PokerBet extends PluginCommand
     @Override
     public void perform() throws Exception
     {
-    	amountToBet += pokerPlayer.getCurrentBet();
-        pokerPlayer.bet(amountToBet);
+        pokerPlayer.bet(amountToBet, null);
     }
 
 }

@@ -75,7 +75,7 @@ public class CardsLeave extends PluginCommand
         Log.addToLog(DateMethods.getDate() + " [ECONOMY] Depositing " + money + " to " + getPlayer().getName());
 
         // Message
-        Messages.sendToAllWithinRange(cardsTable.getLocation(), "&6" + getPlayer().getName() + "&f has left the table with his/her stack of " + "&6" + Formatter.formatMoney(money));
+        Messages.sendToAllWithinRange(cardsTable.getLocation(), "&6" + getPlayer().getName() + "&f has left the table with their stack of " + "&6" + Formatter.formatMoney(money));
 
         // Teleport
         Bukkit.getPlayer(getPlayer().getName()).teleport(cardsPlayer.getStartLocation());

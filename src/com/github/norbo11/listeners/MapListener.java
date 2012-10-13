@@ -21,8 +21,7 @@ public class MapListener implements Listener
         {
             if (e.getCurrentItem().getType() == Material.MAP)
             {
-                ItemStack itemStack = null;
-                itemStack = new ItemStack(Material.MAP, 1, MapMethods.getSavedMaps().get(e.getWhoClicked().getName()));
+                ItemStack itemStack = MapMethods.getSavedMaps().get(e.getWhoClicked().getName());
                 if (itemStack != null && e.getCurrentItem().equals(itemStack))
                 {
                     e.setCancelled(true);
@@ -41,8 +40,7 @@ public class MapListener implements Listener
         {
             if (e.getItemDrop().getItemStack().getType() == Material.MAP)
             {
-                ItemStack itemStack = null;
-                itemStack = new ItemStack(Material.MAP, 1, MapMethods.getSavedMaps().get(e.getPlayer().getName()));
+                ItemStack itemStack = MapMethods.getSavedMaps().get(e.getPlayer().getName());
                 if (itemStack != null && e.getItemDrop().getItemStack().equals(itemStack))
                 {
                     e.setCancelled(true);

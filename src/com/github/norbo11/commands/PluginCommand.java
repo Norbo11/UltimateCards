@@ -51,6 +51,15 @@ public abstract class PluginCommand
         return argumentsString;
     }
 
+    public String getCommandString()
+    {
+        if (PluginExecutor.commandsCards.contains(this)) return "&6/cards " + getAlises().get(0);
+        else if (PluginExecutor.commandsTable.contains(this)) return "&6/table " + getAlises().get(0);
+        else if (PluginExecutor.commandsPoker.contains(this)) return "&6/poker " + getAlises().get(0);
+        else if (PluginExecutor.commandsBlackjack.contains(this)) return "&6/bj " + getAlises().get(0);
+        else return "&6ERROR";
+    }
+
     public String getDescription()
     {
         return description;
@@ -80,13 +89,6 @@ public abstract class PluginCommand
 
     public abstract void perform() throws Exception;
 
-    public void perform(String[] args, Player player) throws Exception
-    {
-        setArgs(args);
-        setPlayer(player);
-        perform();
-    }
-
     public void setArgs(String[] args)
     {
         this.args = args;
@@ -115,5 +117,14 @@ public abstract class PluginCommand
     public void showUsage()
     {
         Messages.sendMessage(player, getUsage());
+    }
+
+    public boolean containsAlias(String action)
+    {
+        for (String alias : aliases)
+        {
+            if (alias.equalsIgnoreCase(action)) return true;
+        }
+        return false;
     }
 }

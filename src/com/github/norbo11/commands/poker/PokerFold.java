@@ -44,7 +44,7 @@ public class PokerFold extends PluginCommand
                         {
                             if (!pokerPlayer.isFolded())
                             {
-                                if (pokerPlayer.getAllIn() == 0 || pokerTable.getCurrentPhase() == PokerPhase.SHOWDOWN) return true;
+                                if (!pokerPlayer.isAllIn() || pokerTable.getCurrentPhase() == PokerPhase.SHOWDOWN) return true;
                                 else
                                 {
                                     ErrorMessages.playerIsAllIn(getPlayer());

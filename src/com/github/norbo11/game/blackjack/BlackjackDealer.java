@@ -7,6 +7,7 @@ import com.github.norbo11.game.cards.Card;
 import com.github.norbo11.game.cards.Hand;
 import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.Messages;
+import com.github.norbo11.util.Sound;
 
 public class BlackjackDealer
 {
@@ -109,6 +110,7 @@ public class BlackjackDealer
             blackjackPlayer.setPushing(0);
         }
         Messages.sendToAllWithinRange(table.getLocation(), "&6" + "The dealer (" + score + ")&f wins &6" + Formatter.formatMoney(hand.getAmountBet()) + "&f from &6" + blackjackPlayer.getPlayerName() + " (" + hand.getScore() + ")");
+        Sound.lost(blackjackPlayer.getPlayer());
     }
 
     public void recalculateScore()

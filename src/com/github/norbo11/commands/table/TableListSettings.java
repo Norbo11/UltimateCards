@@ -2,6 +2,7 @@ package com.github.norbo11.commands.table;
 
 import com.github.norbo11.UltimateCards;
 import com.github.norbo11.commands.PluginCommand;
+import com.github.norbo11.commands.PluginExecutor;
 import com.github.norbo11.game.blackjack.BlackjackTable;
 import com.github.norbo11.game.cards.CardsPlayer;
 import com.github.norbo11.game.cards.CardsTable;
@@ -20,7 +21,7 @@ public class TableListSettings extends PluginCommand
         getAlises().add("listsettings");
         getAlises().add("ls");
 
-        setDescription("Lists all available settings for /table set.");
+        setDescription("Lists all available settings for this table.");
 
         setArgumentString("");
 
@@ -80,6 +81,6 @@ public class TableListSettings extends PluginCommand
         Messages.sendMessage(getPlayer(), "&6maxBuy [number] - &fThe maximum (re)buy-in amount.");
         Messages.sendMessage(getPlayer(), "&6displayTurnsPublicly [true|false] - &fIf true, the player turn announcments will be displayed publicly.");
 
-        Messages.sendMessage(getPlayer(), "&cUsage: /table set [setting] [value]");
+        Messages.sendMessage(getPlayer(), "&cUsage: " + PluginExecutor.tableSet.getCommandString() + " [setting] [value]");
     }
 }

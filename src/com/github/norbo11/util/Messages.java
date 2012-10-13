@@ -33,17 +33,17 @@ public class Messages
         return message;
     }
 
-    public static void sendMessage(Player player, String message)
-    {
-        player.sendMessage(convertColors(message));
-    }
-
     public static void sendMessage(Player player, ArrayList<String> messages)
     {
         for (String message : messages)
         {
             sendMessage(player, message);
         }
+    }
+
+    public static void sendMessage(Player player, String message)
+    {
+        player.sendMessage(convertColors(message));
     }
 
     public static void sendMessage(String player, String message)

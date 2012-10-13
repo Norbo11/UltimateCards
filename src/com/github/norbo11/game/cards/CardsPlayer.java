@@ -41,17 +41,13 @@ public abstract class CardsPlayer extends PlayerControlled
         return null; // If no match is found, or table doesnt exist, return null
     }
 
-    private Location startLocation; // Used to teleport the player back to the
-                                    // location where he/she joined
-
-    private CardsTable table; // This holds the table that the player is sitting
-                              // at
-
-    protected double money; // This is the player's stack
-    private int ID; // ID of the player every single statistic associated with this player
+    private Location startLocation; // Used to teleport the player back to the location where he/she joined
+    private CardsTable table;       // This holds the table that the player is sitting at
+    protected double money;         // This is the player's stack
+    private int ID;                 // ID of the player every single statistic associated with this player
 
     public abstract boolean canPlay();
-    
+
     public int getID()
     {
         return ID;
@@ -72,9 +68,14 @@ public abstract class CardsPlayer extends PlayerControlled
         return table;
     }
 
+    public void giveMoney(double amount)
+    {
+        money += amount;
+    }
+
     public boolean hasMoney(double amount)
     {
-    	System.out.println(getPlayerName() + "s money: " + getMoney());
+        System.out.println(getPlayerName() + "s money: " + getMoney());
         return getMoney() >= amount;
     }
 
@@ -83,9 +84,19 @@ public abstract class CardsPlayer extends PlayerControlled
         return getTable().getActionPlayer() == this;
     }
 
+    public boolean isEliminated()
+    {
+        return !getTable().getPlayersThisHand().contains(this);
+    }
+
     public boolean isOnline()
     {
         return getPlayer() != null;
+    }
+
+    public void removeMoney(double amount)
+    {
+        money -= amount;
     }
 
     public void setID(int ID)
@@ -119,16 +130,7 @@ public abstract class CardsPlayer extends PlayerControlled
         {
             Messages.sendMessage(getPlayer(), ChatColor.DARK_PURPLE + "" + ChatColor.UNDERLINE + "It is your turn to act!");
         }
-        Sound.playerTurn(getPlayer());
-    }
-
-    public boolean isEliminated()
-    {
-        return !getTable().getPlayersThisHand().contains(this);
-    }
-    
-    public void giveMoney(double amount)
-    {
-        money += amount;
+        table.playTurnSounds(getPlayer());
+        Sound.turn(getPlayer());
     }
 }

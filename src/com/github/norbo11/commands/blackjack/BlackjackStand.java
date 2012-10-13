@@ -23,7 +23,7 @@ public class BlackjackStand extends PluginCommand
         setDescription("Keeps your current score, and stands.");
 
         setArgumentString("(hand ID)");
-        
+
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "blackjack");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "blackjack." + getAlises().get(0));
     }
@@ -35,7 +35,7 @@ public class BlackjackStand extends PluginCommand
         if (getArgs().length == 1 || getArgs().length == 2)
         {
             blackjackPlayer = BlackjackPlayer.getBlackjackPlayer(getPlayer().getName());
-            
+
             if (getArgs().length == 2)
             {
                 if (blackjackPlayer.isSplit())
@@ -51,7 +51,7 @@ public class BlackjackStand extends PluginCommand
                     ErrorMessages.cannotSpecifyHand(getPlayer());
                     return false;
                 }
-            } else 
+            } else
             {
                 if (blackjackPlayer.isSplit())
                 {

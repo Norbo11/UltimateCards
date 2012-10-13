@@ -3,7 +3,9 @@ package com.github.norbo11.game.poker;
 import java.util.ArrayList;
 
 import com.github.norbo11.UltimateCards;
+import com.github.norbo11.commands.PluginExecutor;
 import com.github.norbo11.game.cards.CardsTableSettings;
+import com.github.norbo11.game.poker.PokerTable;
 import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.Messages;
 
@@ -19,51 +21,8 @@ public class PokerTableSettings extends CardsTableSettings
     private double minRaise = UltimateCards.getPluginConfig().getMinRaise();
 
     private boolean rakeFixed = false;
-
-    private int dynamicFrequency = UltimateCards.getPluginConfig().getDynamicFrequency(); // This
-                                                                                          // represents
-                                                                                          // every
-                                                                                          // how
-                                                                                          // many
-                                                                                          // hands
-                                                                                          // will
-                                                                                          // the
-                                                                                          // antes
-                                                                                          // go
-                                                                                          // up
-                                                                                          // by
-                                                                                          // the
-                                                                                          // amount
-                                                                                          // that
-                                                                                          // they
-                                                                                          // were
-                                                                                          // last
-                                                                                          // set
-                                                                                          // to.
-
-    private boolean minRaiseAlwaysBB = UltimateCards.getPluginConfig().isMinRaiseAlwaysBB(); // If
-                                                                                             // this
-                                                                                             // is
-                                                                                             // true
-                                                                                             // players
-                                                                                             // wont
-                                                                                             // be
-                                                                                             // able
-                                                                                             // to
-                                                                                             // set
-                                                                                             // their
-                                                                                             // own
-                                                                                             // minraise.
-                                                                                             // The
-                                                                                             // minraise
-                                                                                             // will
-                                                                                             // always
-                                                                                             // be
-                                                                                             // equal
-                                                                                             // to
-                                                                                             // the
-                                                                                             // big
-                                                                                             // blind.
+    private int dynamicFrequency = UltimateCards.getPluginConfig().getDynamicFrequency(); 
+    private boolean minRaiseAlwaysBB = UltimateCards.getPluginConfig().isMinRaiseAlwaysBB(); 
 
     public PokerTableSettings(PokerTable table)
     {
@@ -90,6 +49,7 @@ public class PokerTableSettings extends CardsTableSettings
         } else
         {
             rake = UltimateCards.getPluginConfig().getRake();
+            rakeFixed = false;
         }
     }
 
@@ -220,8 +180,13 @@ public class PokerTableSettings extends CardsTableSettings
             Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getTable().getOwner().getPlayerName() + "&f has set the " + "&6Minimum Raise" + "&f to &6" + Formatter.formatMoney(value));
         } else
         {
-            Messages.sendMessage(getTable().getOwner().getPlayer(), "&cThis table's minimum raise is currently set to always be equal to the big blind! Change this with " + "&6/table set minRaiseAlwaySBB false.");
+            Messages.sendMessage(getTable().getOwner().getPlayer(), "&cThis table's minimum raise is currently set to always be equal to the big blind! Change this with " + PluginExecutor.tableSet.getCommandString() + " minRaiseAlwaySBB false.");
         }
+    }
+    
+    public void updateMinRaise()
+    {
+        minRaise = getBb();
     }
 
     public void setMinRaiseAlwaysBB(boolean value)
@@ -239,7 +204,7 @@ public class PokerTableSettings extends CardsTableSettings
 
     public void setRake(double value)
     {
-        if (rakeFixed == false)
+        if (!rakeFixed)
         {
             rake = value;
             Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getTable().getOwner().getPlayerName() + "&f has set the " + "&6Rake" + "&f to &6" + Formatter.convertToPercentage(value));
@@ -311,7 +276,14 @@ public class PokerTableSettings extends CardsTableSettings
             }
         } else
         {
-            Messages.sendMessage(getTable().getOwner().getPlayer(), "&cInvalid setting. Check available settings with /table listsettings");
+            Messages.sendMessage(getTable().getOwner().getPlayer(), "&cInvalid setting. Check available settings with " + PluginExecutor.tableListSettings.getCommandString() + ".");
         }
+    }
+
+    public void raiseBlinds()
+    {
+        ante += getOriginalAnte();
+        bb += getOriginalBB();
+        sb += getOriginalSB();
     }
 }

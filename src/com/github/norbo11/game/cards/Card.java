@@ -1,16 +1,3 @@
-/* ==================================================================================================
- * UltimatePoker v1.1 - By Norbo11
- * Copyright (C) 2012
- * You may NOT modify this file in any way, or use any of it's code for personal projects. 
- * You may, however, read and learn from it if you like. All rights blah blah and shit. 
- * Basically just respect my hard work, please :)
- * 
- * File notes: Card.java
- * -Class file that holds a simple card
- * -Contains a toString() method which automatically returns a colored string representing the card.
- * ===================================================================================================
- */
-
 package com.github.norbo11.game.cards;
 
 import java.awt.image.BufferedImage;

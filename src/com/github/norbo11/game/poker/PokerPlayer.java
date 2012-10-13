@@ -1,18 +1,3 @@
-/* ==================================================================================================
- * UltimatePoker v1.1 - By Norbo11
- * Copyright (C) 2012
- * You may NOT modify this file in any way, or use any of it's code for personal projects. 
- * You may, however, read and learn from it if you like. All rights blah blah and shit. 
- * Basically just respect my hard work, please :)
- * 
- * File notes: PokerPlayer.java
- * -Provides necessary methods which are called when the plaeyr is playing
- * -Stuff like calling, folding, checking, going all in, and much more are all in here
- * -Note: all checks for the methods (for example, checking if the getPlayer() has enough money to
- * call) are done in the MethodsHand class.
- * ===================================================================================================
- */
-
 package com.github.norbo11.game.poker;
 
 import org.bukkit.entity.Player;
@@ -26,6 +11,7 @@ import com.github.norbo11.util.DateMethods;
 import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.Log;
 import com.github.norbo11.util.Messages;
+import com.github.norbo11.util.Sound;
 
 public class PokerPlayer extends CardsPlayer
 {
@@ -45,13 +31,11 @@ public class PokerPlayer extends CardsPlayer
         return cardsPlayer instanceof PokerPlayer ? (PokerPlayer) CardsPlayer.getCardsPlayer(name) : null;
     }
 
-    private boolean acted;      // True if the player has acted at least once
+    private boolean acted; // True if the player has acted at least once
     private boolean folded;
     private boolean revealed;
-    private double allIn;
-    private double currentBet;  // This simply represents the player's current bet in the phase. (phase = flop, turn, river, etc)
-    private double totalBet;    // This is the total amount that the player  has bet in the hand
-    
+    private double currentBet; // This simply represents the player's current bet in the phase. (phase = flop, turn, river, etc)
+    private double totalBet; // This is the total amount that the player  has bet in the hand
     private double pot; // This players personal pot
     private double deltaPot; // This players personal pot this round
 
@@ -75,90 +59,40 @@ public class PokerPlayer extends CardsPlayer
             Messages.sendMessage(getPlayer(), "You have been dealt the " + card.toString());
         }
     }
-    
-    public void updatePot() {
-    	for (PokerPlayer p : getPokerTable().getNonFoldedPlayers()) {
-    		System.out.println("Comparing " + this.getPlayerName() + "s current bet of " + this.getCurrentBet() + " with " + p.getPlayerName() + "s current bet of " + p.getCurrentBet());
-    		if (p.getCurrentBet() >= this.getCurrentBet()) {
-    			this.deltaPot += this.getCurrentBet();
-    		} else {
-    			this.deltaPot += p.getCurrentBet();
-    		}
-    		System.out.println("Outcome resulted in: " + this.deltaPot);
-    	}
-    }
-    
-    public void phaseOver() {
-    	this.pot += this.deltaPot;
-    	this.deltaPot = 0;
-    	
-    	setTotalBet(getTotalBet() + getCurrentBet());
-    	setCurrentBet(0);
-    	setMoney(getMoney() - getTotalBet());
-    }
-    
-    public void payPot()
+
+    public void bet(double bet, String blind)
     {
-        double rake = 0;
-        PokerTable pokerTable = getPokerTable();
-        if (pokerTable.getSettings().getRake() > 0)
+        System.out.println("herping: " + (getMoney() - bet));
+        if (blind != null)
         {
-            rake = getPot() * pokerTable.getSettings().getRake();
-            
-            if (!UltimateCards.getPluginConfig().isRakeToStack())
-            {
-                UltimateCards.getEconomy().depositPlayer(pokerTable.getOwner().getPlayerName(), rake); 
-                Log.addToLog(DateMethods.getDate() + " [ECONOMY] Depositing " + rake + " to " + pokerTable.getOwner().getPlayerName());
-            } else 
-            {
-                pokerTable.getOwner().giveMoney(rake);
-            }
-            
-            Messages.sendToAllWithinRange(pokerTable.getLocation(), "&6" + pokerTable.getOwner().getPlayerName() + "&f has been paid a rake of " + "&6" + Formatter.formatMoney(rake));
+            Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f has posted the " + blind + " (" + Formatter.formatMoney(bet) + "&f)");
+        } else if (money - bet == 0)
+        {
+            Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f went all in with " + "&6" + Formatter.formatMoney(bet) + "&f (Total: " + "&6" + Formatter.formatMoney(bet + getTotalBet()) + "&f)");
+        } else if (getPokerTable().noBetsThisRound())
+        {
+            Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f bets " + "&6" + Formatter.formatMoney(bet) + "&f (Total: " + "&6" + Formatter.formatMoney(bet + getTotalBet()) + "&f)");
+        } else if (bet > getPokerTable().getCurrentBet())
+        {
+            Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f raises to " + "&6" + Formatter.formatMoney(bet) + "&f (Total: " + "&6" + Formatter.formatMoney(bet + getTotalBet()) + "&f)");
+        } else if (bet == getPokerTable().getCurrentBet())
+        {
+            Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f calls " + "&6" + Formatter.formatMoney(bet) + "&f (Total: " + "&6" + Formatter.formatMoney(bet + getTotalBet()) + "&f)");
         }
 
-        Messages.sendToAllWithinRange(pokerTable.getLocation(), "&6" + getPlayerName() + "&f has won the pot of " + "&6" + Formatter.formatMoney(getPot() - rake));
-       
-        // Get the actual amount that the player wins by subtracting the rake from the pot, then give it to the player's stack
-        giveMoney(getPot() - rake);
+        setCurrentBet(bet);
 
-        double potAmount = this.getPot();
-        boolean roundOver = true;
-        for (PokerPlayer p : pokerTable.getNonFoldedPlayers()) {
-        	p.setPot(p.getPot() - potAmount);
-        	if (p.getPot() > 0) {
-        		roundOver = false;
-        	}
+        for (PokerPlayer p : getPokerTable().getNonFoldedPlayers())
+        {
+            p.resetDeltaPot();
+            p.updatePot();
         }
-        
-        if (roundOver) pokerTable.endHand();
-    }
-    
-    public void resetDeltaPot() {
-    	this.deltaPot = 0;
-    }
-    
-    public void bet(double bet)
-    {
-    	if (getPokerTable().noBetsThisRound()) {
-    		Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f bet " + "&6" + Formatter.formatMoney(bet) + "&f (Total: " + "&6" + Formatter.formatMoney(bet + getTotalBet()) + "&f)");
-    	} else if (bet > getPokerTable().getCurrentBet()) {
-    		Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f raised to " + "&6" + Formatter.formatMoney(bet) + "&f (Total: " + "&6" + Formatter.formatMoney(bet + getTotalBet()) + "&f)");
-    	} else if (bet == getPokerTable().getCurrentBet()) {
-    		Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f called a bet of " + "&6" + Formatter.formatMoney(bet) + "&f (Total: " + "&6" + Formatter.formatMoney(bet + getTotalBet()) + "&f)");
-    	} else {
-    		Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f went all in with " + "&6" + Formatter.formatMoney(bet) + "&f (Total: " + "&6" + Formatter.formatMoney(bet + getTotalBet()) + "&f)");
-    	}
-    	
-    	setCurrentBet(bet);
-    	setActed(true);
-    	
-    	for (PokerPlayer p : getPokerTable().getNonFoldedPlayers()) {
-    		p.resetDeltaPot();
-    		p.updatePot();
-    	}
-    	
-    	getPokerTable().nextPersonTurn(this);
+
+        if (blind == null)
+        {
+            setActed(true);
+            getPokerTable().nextPersonTurn(this);
+        }
     }
 
     @Override
@@ -179,12 +113,11 @@ public class PokerPlayer extends CardsPlayer
         setFolded(true);
         setTotalBet(0);
         Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getPlayerName() + "&f folds.");
-        if (getPokerTable().getActionPlayer() == this) getPokerTable().nextPersonTurn(this);
-    }
-
-    public double getAllIn()
-    {
-        return allIn;
+        if (getPokerTable().getActionPlayer() == this)
+        {
+            getPokerTable().nextPersonTurn(this);
+        }
+        Sound.lost(getPlayer());
     }
 
     public double getCurrentBet()
@@ -197,6 +130,13 @@ public class PokerPlayer extends CardsPlayer
         return hand;
     }
 
+    @Override
+    public double getMoney()
+    {
+        System.out.println(getPlayerName() + ": " + money);
+        return money - getCurrentBet();
+    }
+
     public PokerTable getPokerTable()
     {
         return (PokerTable) getTable();
@@ -206,24 +146,25 @@ public class PokerPlayer extends CardsPlayer
     {
         return pot;
     }
-    
-    public double getTotalPot() {
-    	return pot + deltaPot;
-    }
 
     public double getTotalBet()
     {
         return totalBet;
     }
 
-    /*public double getWonThisHand()
+    public double getTotalPot()
     {
-        return wonThisHand;
-    }*/
+        return pot + deltaPot;
+    }
 
     public boolean isActed()
     {
         return acted;
+    }
+
+    public boolean isAllIn()
+    {
+        return money == 0;
     }
 
     public boolean isFolded()
@@ -235,10 +176,58 @@ public class PokerPlayer extends CardsPlayer
     {
         return revealed;
     }
-    
-    @Override
-    public double getMoney() {
-    	return money - getCurrentBet();
+
+    public void payPot()
+    {
+        double rake = 0;
+        PokerTable pokerTable = getPokerTable();
+        if (pokerTable.getSettings().getRake() > 0)
+        {
+            rake = getPot() * pokerTable.getSettings().getRake();
+
+            if (!UltimateCards.getPluginConfig().isRakeToStack())
+            {
+                UltimateCards.getEconomy().depositPlayer(pokerTable.getOwner().getPlayerName(), rake);
+                Log.addToLog(DateMethods.getDate() + " [ECONOMY] Depositing " + rake + " to " + pokerTable.getOwner().getPlayerName());
+            } else
+            {
+                pokerTable.getOwner().giveMoney(rake);
+            }
+
+            Messages.sendToAllWithinRange(pokerTable.getLocation(), "&6" + pokerTable.getOwner().getPlayerName() + "&f has been paid a rake of " + "&6" + Formatter.formatMoney(rake));
+        }
+
+        Messages.sendToAllWithinRange(pokerTable.getLocation(), "&6" + getPlayerName() + "&f has won the pot of " + "&6" + Formatter.formatMoney(getPot() - rake));
+
+        // Get the actual amount that the player wins by subtracting the rake from the pot, then give it to the player's stack
+        giveMoney(getPot() - rake);
+
+        double potAmount = this.getPot();
+        boolean roundOver = true;
+        for (PokerPlayer p : pokerTable.getNonFoldedPlayers())
+        {
+            p.setPot(p.getPot() - potAmount);
+            if (p.getPot() > 0)
+            {
+                roundOver = false;
+            }
+        }
+
+        if (roundOver)
+        {
+            pokerTable.endHand();
+        }
+        Sound.won(getPlayer());
+    }
+
+    public void phaseOver()
+    {
+        this.pot += this.deltaPot;
+        this.deltaPot = 0;
+
+        setTotalBet(getTotalBet() + getCurrentBet());
+        removeMoney(getCurrentBet());
+        setCurrentBet(0);
     }
 
     // Makes this player posts a blind. The argument should be one of the
@@ -248,41 +237,31 @@ public class PokerPlayer extends CardsPlayer
     {
         PokerTable table = getPokerTable();
         PokerTableSettings settings = (PokerTableSettings) table.getCardsTableSettings();
-        // Go through all possible blind types and set the amount variable to
-        // the corresponding value in the table settings
+
         double amount = 0;
         if (blind.equals("small blind"))
         {
-            amount += settings.getSb();
-            Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f has posted the small blind (" + "&6" + Formatter.formatMoney(amount) + "&f)");
-        } 
-        else if (blind.equals("big blind"))
+            amount = settings.getSb();
+        } else if (blind.equals("big blind"))
         {
             amount = settings.getBb();
-            Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f has posted the big blind (" + "&6" + Formatter.formatMoney(amount) + "&f)");
         }
         if (blind.equals("ante"))
         {
-            amount += settings.getAnte();
-            Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f has posted the ante (" + "&6" + Formatter.formatMoney(amount) + "&f)");
+            amount = settings.getAnte();
         }
 
-        currentBet = amount;
-        
-        for (PokerPlayer p : getPokerTable().getNonFoldedPlayers()) {
-    		p.resetDeltaPot();
-    		p.updatePot();
-    	}
+        bet(amount, blind);
+    }
+
+    public void resetDeltaPot()
+    {
+        this.deltaPot = 0;
     }
 
     public void setActed(boolean acted)
     {
         this.acted = acted;
-    }
-
-    public void setAllIn(double allIn)
-    {
-        this.allIn = allIn;
     }
 
     public void setCurrentBet(double currentBet)
@@ -310,17 +289,28 @@ public class PokerPlayer extends CardsPlayer
         this.totalBet = totalBet;
     }
 
-    /*public void setWonThisHand(double wonThisHand)
-    {
-        this.wonThisHand = wonThisHand;
-    }*/
-
     public void tableLeave(CardsPlayer cardsPlayer) throws Exception
     {
         PokerPlayer pokerPlayer = (PokerPlayer) cardsPlayer;
         if (pokerPlayer.getTable().isInProgress() && !pokerPlayer.isFolded() && !pokerPlayer.isEliminated())
         {
             fold();
+        }
+    }
+
+    public void updatePot()
+    {
+        for (PokerPlayer p : getPokerTable().getNonFoldedPlayers())
+        {
+            System.out.println("Comparing " + this.getPlayerName() + "s current bet of " + this.getCurrentBet() + " with " + p.getPlayerName() + "s current bet of " + p.getCurrentBet());
+            if (p.getCurrentBet() >= this.getCurrentBet())
+            {
+                this.deltaPot += this.getCurrentBet();
+            } else
+            {
+                this.deltaPot += p.getCurrentBet();
+            }
+            System.out.println("Outcome resulted in: " + this.deltaPot);
         }
     }
 }

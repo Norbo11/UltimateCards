@@ -1,23 +1,7 @@
-/* ==================================================================================================
- * UltimatePoker v1.1 - By Norbo11
- * Copyright (C) 2012
- * You may NOT modify this file in any way, or use any of it's code for personal projects. 
- * You may, however, read and learn from it if you like. All rights blah blah and shit. 
- * Basically just respect my hard work, please :)
- * 
- * File notes: UltimatePoker.java
- * -Main class of the plugin
- * -On enable, hooks into Vault and an ECONOMY system, sets command executors and creates the config
- * and log file.
- * -Contains a few useful variables such as commonly used colors, the list of tables, VERSION, 
- * directory, log file.
- * -Contains a useful method getDate()
- * ===================================================================================================
- */
-
 package com.github.norbo11;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import net.milkbowl.vault.Vault;
@@ -123,42 +107,11 @@ public class UltimateCards extends JavaPlugin
 
     public void addPermissions()
     {
-        for (int i = 0; i < PluginExecutor.commands.length; i++)
+        for (ArrayList<PluginCommand> commandGroup : PluginExecutor.commands)
         {
-            //Cards
-            if (i == 0)
+            for (PluginCommand cmd : commandGroup)
             {
-                for (PluginCommand cmd : PluginExecutor.commands[i])
-                {
-                    getServer().getPluginManager().addPermission(new Permission(cmd.getPermissionNodes().get(1), PermissionDefault.OP));
-                }
-            }
-
-            //Table
-            if (i == 1)
-            {
-                for (PluginCommand cmd : PluginExecutor.commands[i])
-                {
-                    getServer().getPluginManager().addPermission(new Permission(cmd.getPermissionNodes().get(1), PermissionDefault.OP));
-                }
-            }
-
-            //Poker
-            if (i == 2)
-            {
-                for (PluginCommand cmd : PluginExecutor.commands[i])
-                {
-                    getServer().getPluginManager().addPermission(new Permission(cmd.getPermissionNodes().get(1), PermissionDefault.OP));
-                }
-            }
-
-            //Blackjack
-            if (i == 3)
-            {
-                for (PluginCommand cmd : PluginExecutor.commands[i])
-                {
-                    getServer().getPluginManager().addPermission(new Permission(cmd.getPermissionNodes().get(1), PermissionDefault.OP));
-                }
+                getServer().getPluginManager().addPermission(new Permission(cmd.getPermissionNodes().get(1), PermissionDefault.OP));
             }
         }
     }
@@ -214,7 +167,7 @@ public class UltimateCards extends JavaPlugin
         filePluginDir = getDataFolder();
         filePluginConfig = new File(filePluginDir, "config.yml");
         fileLog = new File(filePluginDir, "log.txt");
-        
+
         // Creates all files
         if (!createFiles()) return;
 
@@ -227,12 +180,15 @@ public class UltimateCards extends JavaPlugin
         pluginConfig.load();
 
         // Update
-        
-        Updater updater; 
-        if (pluginConfig.isAutoUpdate()) 
-        { 
-            updater = new Updater(this, "ultimatecards", this.getFile(), Updater.UpdateType.DEFAULT, true); 
-            if (updater.getResult() == Updater.UpdateResult.SUCCESS) log.info("To apply the update, reload/restart your server."); 
+
+        Updater updater;
+        if (pluginConfig.isAutoUpdate())
+        {
+            updater = new Updater(this, "ultimatecards", this.getFile(), Updater.UpdateType.DEFAULT, true);
+            if (updater.getResult() == Updater.UpdateResult.SUCCESS)
+            {
+                log.info("To apply the update, reload/restart your server.");
+            }
         }
 
         // Set all listeners and create classes

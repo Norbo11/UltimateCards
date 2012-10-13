@@ -25,40 +25,45 @@ public class PokerPay extends PluginCommand
     @Override
     public boolean conditions()
     {
-    	if (getArgs().length != 2) {
-    		showUsage();
-    		return false;
-    	}
-    	
-    	PokerPlayer owner = PokerPlayer.getPokerPlayer(getPlayer().getName());
-    	if  (!CardsTable.isOwnerOfTable(owner)) {
-    		ErrorMessages.notOwnerOfAnyTable(getPlayer());
-    		return false;
-    	}
+        if (getArgs().length != 2)
+        {
+            showUsage();
+            return false;
+        }
 
-    	int playerID = NumberMethods.getInteger(getArgs()[1]);
-    	if (playerID == -99999) {
-    		ErrorMessages.invalidNumber(getPlayer(), getArgs()[1]);
-    		return false;
-    	}
-    	playerToPay = PokerPlayer.getPokerPlayer(playerID, owner.getPokerTable());
-    	if (playerToPay == null) {
-    		ErrorMessages.notPlayerID(getPlayer(), playerID);
-    		return false;
-    	}
-    	
-    	if (playerToPay.getPot() <= 0) {
-    		ErrorMessages.cantPay(getPlayer());
-    		return false;
-    	}
-    	
-    	return true;
+        PokerPlayer owner = PokerPlayer.getPokerPlayer(getPlayer().getName());
+        if (!CardsTable.isOwnerOfTable(owner))
+        {
+            ErrorMessages.notOwnerOfAnyTable(getPlayer());
+            return false;
+        }
+
+        int playerID = NumberMethods.getInteger(getArgs()[1]);
+        if (playerID == -99999)
+        {
+            ErrorMessages.invalidNumber(getPlayer(), getArgs()[1]);
+            return false;
+        }
+        playerToPay = PokerPlayer.getPokerPlayer(playerID, owner.getPokerTable());
+        if (playerToPay == null)
+        {
+            ErrorMessages.notPlayerID(getPlayer(), playerID);
+            return false;
+        }
+
+        if (playerToPay.getPot() <= 0)
+        {
+            ErrorMessages.cantPay(getPlayer());
+            return false;
+        }
+
+        return true;
     }
 
     // Pays the specified pot ID to the specified player ID. The first player argument is the owner typing the /table pay command.
     @Override
     public void perform() throws Exception
     {
-    	playerToPay.payPot();
+        playerToPay.payPot();
     }
 }

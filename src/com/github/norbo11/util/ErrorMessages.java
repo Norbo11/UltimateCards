@@ -1,17 +1,6 @@
-/* ==================================================================================================
- * UltimatePoker v1.1 - By Norbo11
- * Copyright (C) 2012
- * You may NOT modify this file in any way, or use any of it's code for personal projects. 
- * You may, however, read and learn from it if you like. All rights blah blah and shit. 
- * Basically just respect my hard work, please :)
- * 
- * File notes: MethodsError.java
- * -Contains LOTS of methods which simply display a single message to the user.
- * -These methods are called throughout the whole plugin to show misuse.
- * ===================================================================================================
- */
-
 package com.github.norbo11.util;
+
+import java.util.ArrayList;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -28,18 +17,9 @@ public class ErrorMessages
         Messages.sendMessage(player, "&cYou cannot specify a hand ID right now!");
     }
 
-    public static void cantAllIn(Player player)
-    {
-        Messages.sendMessage(player, "&cYou have enough money to call/raise the current bet! If you wish to bet all of your stack, simply " + "&6/poker bet [your stack]" + "&c (check with " + "&6/cards money" + "&c)");
-    }
-
     public static void cantCall(Player player)
     {
         Messages.sendMessage(player, "&cYou have already contributed the required amount to this pot!");
-    }
-    
-    public static void cantPay(Player player) {
-    	Messages.sendMessage(player, "&cYou can't pay that player, his pot is 0!");
     }
 
     public static void cantCheck(PokerPlayer player)
@@ -52,7 +32,12 @@ public class ErrorMessages
         Messages.sendMessage(player, "&cYou can't continue the hand right now!");
     }
 
-    public static void cantRaise(Player player, double minRaise, double currentBet)
+    public static void cantPay(Player player)
+    {
+        Messages.sendMessage(player, "&cYou can't pay that player, his pot is 0!");
+    }
+
+    public static void betBelowMinRaise(Player player, double minRaise, double currentBet)
     {
         Messages.sendMessage(player, "&cYou cannot raise that amount. Min Raise: " + "&6" + Formatter.formatMoney(minRaise) + "&c (on top of the current bet of " + "&6" + Formatter.formatMoney(currentBet) + "&c)");
     }
@@ -62,13 +47,21 @@ public class ErrorMessages
         Messages.sendMessage(player, "&cYou cannot reveal your hand right now!");
     }
 
+    public static void dealerHasNotEnoughMoney(Player player, double money)
+    {
+        Messages.sendMessage(player, "&cThe dealer has not enough money for you to bet that high! Bet &6" + Formatter.formatMoney(money) + " at maximum.");
+    }
+
     public static void displayHelp(Player player, String command)
     {
         if (command.equalsIgnoreCase("cards") || command.equalsIgnoreCase("c"))
         {
             for (PluginCommand pluginCommand : PluginExecutor.commandsCards)
             {
-                if (pluginCommand.hasPermission(player)) Messages.sendMessage(player, "&6/cards " + pluginCommand.getAliasesString() + " &b" + pluginCommand.getArgumentsString());
+                if (pluginCommand.hasPermission(player))
+                {
+                    Messages.sendMessage(player, "&6/cards " + pluginCommand.getAliasesString() + " &b" + pluginCommand.getArgumentsString());
+                }
             }
 
             Messages.sendMessage(player, "&6/cards help &b[command]");
@@ -76,30 +69,39 @@ public class ErrorMessages
         {
             for (PluginCommand pluginCommand : PluginExecutor.commandsTable)
             {
-                if (pluginCommand.hasPermission(player)) Messages.sendMessage(player, "&6/table " + pluginCommand.getAliasesString() + " &b" + pluginCommand.getArgumentsString());
+                if (pluginCommand.hasPermission(player))
+                {
+                    Messages.sendMessage(player, "&6/table " + pluginCommand.getAliasesString() + " &b" + pluginCommand.getArgumentsString());
+                }
             }
-            
+
             Messages.sendMessage(player, "&6/table help &b[command]");
         } else if (command.equalsIgnoreCase("poker") || command.equalsIgnoreCase("p"))
         {
             for (PluginCommand pluginCommand : PluginExecutor.commandsPoker)
             {
-                if (pluginCommand.hasPermission(player)) Messages.sendMessage(player, "&6/poker " + pluginCommand.getAliasesString() + " &b" + pluginCommand.getArgumentsString());
+                if (pluginCommand.hasPermission(player))
+                {
+                    Messages.sendMessage(player, "&6/poker " + pluginCommand.getAliasesString() + " &b" + pluginCommand.getArgumentsString());
+                }
             }
-            
+
             Messages.sendMessage(player, "&6/poker help &b[command]");
         } else if (command.equalsIgnoreCase("blackjack") || command.equalsIgnoreCase("bj"))
         {
             for (PluginCommand pluginCommand : PluginExecutor.commandsBlackjack)
             {
-                if (pluginCommand.hasPermission(player)) Messages.sendMessage(player, "&6/blackjack " + pluginCommand.getAliasesString() + " &b" + pluginCommand.getArgumentsString());
+                if (pluginCommand.hasPermission(player))
+                {
+                    Messages.sendMessage(player, "&6/blackjack " + pluginCommand.getAliasesString() + " &b" + pluginCommand.getArgumentsString());
+                }
             }
-            
+
             Messages.sendMessage(player, "&6/blackjack help &b[command]");
             Messages.sendMessage(player, "&6/blackjack&b can be replaced with &6/bj&b.");
         } else
         {
-            for (PluginCommand[] commandGroup : PluginExecutor.commands)
+            for (ArrayList<PluginCommand> commandGroup : PluginExecutor.commands)
             {
                 for (PluginCommand pluginCommand : commandGroup)
                 {
@@ -128,6 +130,11 @@ public class ErrorMessages
         Messages.sendMessage(player, "&cPlease specify a value between 0 and 1. Example: &60.05 = 5%");
     }
 
+    public static void needToSpecifyHand(Player player)
+    {
+        Messages.sendMessage(player, "&cYou need to specify a hand!");
+    }
+
     public static void noPermission(Player player)
     {
         Messages.sendMessage(player, "&cYou don't have permission to do this.");
@@ -151,11 +158,6 @@ public class ErrorMessages
     public static void noStatsAvailable(Player player, String toCheck)
     {
         Messages.sendMessage(player, "&cThe player " + "&6" + toCheck + "&c doesn't have any poker stats!");
-    }
-
-    public static void noSuchTopStat(Player player)
-    {
-        Messages.sendMessage(player, "&cThat is not a valid statistic type! Check statistic types with " + "&6/cards stats types");
     }
 
     public static void noTablesAvailable(Player player)
@@ -201,7 +203,7 @@ public class ErrorMessages
 
     public static void notSittingAtTable(Player player)
     {
-        Messages.sendMessage(player, "&cYou are not currently sitting at any table! Sit with &6/cards sit [id] [buy-in]&c.");
+        Messages.sendMessage(player, "&cYou are not currently sitting at any table! Sit with " + PluginExecutor.cardsSit.getCommandString() + " [id] [buy-in]&c.");
     }
 
     public static void notTable(Player player, String id)
@@ -222,6 +224,11 @@ public class ErrorMessages
     public static void playerAlreadyBanned(Player player, String toBan)
     {
         Messages.sendMessage(player, "&6" + toBan + "&c is already banned from the table!");
+    }
+
+    public static void playerAlreadyDoubled(Player player)
+    {
+        Messages.sendMessage(player, "&cYou have already doubled down!");
     }
 
     public static void playerAlreadyHit(Player player)
@@ -251,7 +258,7 @@ public class ErrorMessages
 
     public static void playerIsBlackjackDealer(Player player)
     {
-        Messages.sendMessage(player, "&cYou are the dealer of this blackjack table, you cannot play! Set the table dealer to be the server by using &6/table set serverDealer true&f.");
+        Messages.sendMessage(player, "&cYou are the dealer of this blackjack table, you cannot play! Set the table dealer to be the server by using " + PluginExecutor.tableSet.getCommandString() + " serverDealer true&f.");
     }
 
     public static void playerIsBust(Player player)
@@ -277,6 +284,11 @@ public class ErrorMessages
     public static void playerIsOwnerSpecific(Player player)
     {
         Messages.sendMessage(player, "&cYou are the owner of this table! If you wish to leave, delete the table.");
+    }
+
+    public static void playerIsSplit(Player player)
+    {
+        Messages.sendMessage(player, "&cYou have already split!");
     }
 
     public static void playerIsStayed(Player player)
@@ -331,7 +343,7 @@ public class ErrorMessages
 
     public static void tableAtShowdown(Player player)
     {
-        Messages.sendMessage(player, "&cThe table is currently at showdown! Reveal your hand with " + "&6/poker reveal");
+        Messages.sendMessage(player, "&cThe table is currently at showdown! Reveal your hand with " + PluginExecutor.pokerReveal.getCommandString() + ".");
     }
 
     public static void tableDoesntAllowRebuys(Player player)
@@ -342,11 +354,6 @@ public class ErrorMessages
     public static void tableHasMultiplePots(Player player)
     {
         Messages.sendMessage(player, "&cThere is more than one pot on your table, please specify the pot ID!");
-    }
-
-    public static void tableHasNoCallers(Player player, String amount, double highestBalance)
-    {
-        Messages.sendMessage(player, "&cNobody on the table can call a raise of " + "&6" + Formatter.formatMoney(Double.parseDouble(amount)) + "&c! Raise to " + Formatter.formatMoney(highestBalance) + "&c at most, or call.");
     }
 
     public static void tableHasPots(Player player)
@@ -374,23 +381,8 @@ public class ErrorMessages
         Messages.sendMessage(player, "&cThat bet is too small! You need to bet at least " + Formatter.formatMoney(minBet));
     }
 
-    public static void needToSpecifyHand(Player player)
+    public static void betBelowCurrentBet(Player player)
     {
-        Messages.sendMessage(player, "&cYou need to specify a hand!");
-    }
-
-    public static void playerIsSplit(Player player)
-    {
-        Messages.sendMessage(player, "&cYou have already split!");
-    }
-
-    public static void playerAlreadyDoubled(Player player)
-    {
-        Messages.sendMessage(player, "&cYou have already doubled down!");
-    }
-
-    public static void dealerHasNotEnoughMoney(Player player, double money)
-    {
-        Messages.sendMessage(player, "&cThe dealer has not enough money for you to bet that high! Bet &6" + Formatter.formatMoney(money) + " max.");
+        Messages.sendMessage(player, "&cYou need to bet more than the current table bet! Or simply " + PluginExecutor.pokerCall.getCommandString() + "&f.");
     }
 }

@@ -45,7 +45,7 @@ public class BlackjackBet extends PluginCommand
                         if (blackjackPlayer.getMoney() >= amountToBet)
                         {
                             blackjackTable = blackjackPlayer.getBlackjackTable();
-                            if (blackjackTable.getOwner().getMoney() >= amountToBet + blackjackPlayer.getTotalAmountBet() || blackjackPlayer.getBlackjackTable().getSettings().isServerDealer())
+                            if (amountToBet <= blackjackTable.getOwner().getMoney() / ((blackjackTable.getPlayers().size() - 1) * 2) || blackjackPlayer.getBlackjackTable().getSettings().isServerDealer())
                             {
                                 if (amountToBet >= blackjackTable.getSettings().getMinBet())
                                 {
@@ -58,9 +58,9 @@ public class BlackjackBet extends PluginCommand
                                 {
                                     ErrorMessages.tooSmallBet(getPlayer(), blackjackTable.getSettings().getMinBet());
                                 }
-                            } else 
+                            } else
                             {
-                                ErrorMessages.dealerHasNotEnoughMoney(getPlayer(), blackjackTable.getOwner().getMoney());
+                                ErrorMessages.dealerHasNotEnoughMoney(getPlayer(), blackjackTable.getOwner().getMoney() / ((blackjackTable.getPlayers().size() - 1)* 2));
                             }
                         } else
                         {
@@ -88,7 +88,7 @@ public class BlackjackBet extends PluginCommand
     @Override
     public void perform() throws Exception
     {
-        blackjackPlayer.setMoney(blackjackPlayer.getMoney() - amountToBet);
+        blackjackPlayer.removeMoney(amountToBet);
         blackjackPlayer.getHands().get(0).setAmountBet(blackjackPlayer.getHands().get(0).getAmountBet() + amountToBet);
         Messages.sendToAllWithinRange(blackjackTable.getLocation(), "&6" + blackjackPlayer.getPlayerName() + "&f bets &6" + Formatter.formatMoney(blackjackPlayer.getHands().get(0).getAmountBet()));
 

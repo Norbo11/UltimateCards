@@ -3,6 +3,7 @@ package com.github.norbo11.commands.cards;
 import org.bukkit.ChatColor;
 
 import com.github.norbo11.commands.PluginCommand;
+import com.github.norbo11.commands.PluginExecutor;
 import com.github.norbo11.game.blackjack.BlackjackTable;
 import com.github.norbo11.game.cards.CardsTable;
 import com.github.norbo11.game.poker.PokerTable;
@@ -27,10 +28,8 @@ public class CardsTables extends PluginCommand
     @Override
     public boolean conditions()
     {
-        if (getArgs().length == 1)
-        {
-            return true;
-        } else
+        if (getArgs().length == 1) return true;
+        else
         {
             showUsage();
         }
@@ -41,7 +40,7 @@ public class CardsTables extends PluginCommand
     public void perform() throws Exception
     {
         Messages.sendMessage(getPlayer(), "List of currently created card tables:");
-        
+
         for (CardsTable table : CardsTable.getTables()) // Goes through all tables and lists them. Displays the name in red if the table is closed, or green if its open.
         {
             String color = "";
@@ -64,8 +63,8 @@ public class CardsTables extends PluginCommand
 
             Messages.sendMessage(getPlayer(), color + "[" + table.getID() + "] " + table.getName() + " - " + type);
         }
-        
+
         Messages.sendMessage(getPlayer(), ChatColor.GREEN + "GREEN = Open. &cRED = Closed.");
-        Messages.sendMessage(getPlayer(), "Use " + "&6/cards sit [table ID] [buy-in] " + "&fto join a table.");
+        Messages.sendMessage(getPlayer(), "Use " + PluginExecutor.cardsSit.getCommandString() + " [table ID] [buy-in] " + "&fto join a table.");
     }
 }

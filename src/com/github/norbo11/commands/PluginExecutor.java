@@ -1,18 +1,6 @@
-/* ==================================================================================================
- * UltimatePoker v1.1 - By Norbo11
- * Copyright (C) 2012
- * You may NOT modify this file in any way, or use any of it's code for personal projects. 
- * You may, however, read and learn from it if you like. All rights blah blah and shit. 
- * Basically just respect my hard work, please :)
- * 
- * File notes: ListenerCommandExecutor.java
- * -Listens for commands typed by the user and handles them accordingly
- * -Every command is surrounded with a try/catch statement which spits out the error log
- * to the console and logs it to the log.txt file. It also displays the simplified error to the user.
- * ===================================================================================================
- */
-
 package com.github.norbo11.commands;
+
+import java.util.ArrayList;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -103,15 +91,59 @@ public class PluginExecutor implements CommandExecutor
     public static BlackjackSplit blackjackSplit = new BlackjackSplit();
     public static BlackjackDouble blackjackDouble = new BlackjackDouble();
 
-    public static PluginCommand[] commandsCards = { cardsDetails, cardsInvite, cardsLeave, cardsMoney, cardsPlayers, cardsRebuy, cardsSit, cardsTables, cardsTeleport, cardsWithdraw, cardsReload };
+    public static ArrayList<PluginCommand> commandsCards = new ArrayList<PluginCommand>();
+    public static ArrayList<PluginCommand> commandsTable = new ArrayList<PluginCommand>();
+    public static ArrayList<PluginCommand> commandsPoker = new ArrayList<PluginCommand>();
+    public static ArrayList<PluginCommand> commandsBlackjack = new ArrayList<PluginCommand>();
+    public static ArrayList<ArrayList<PluginCommand>> commands = new ArrayList<ArrayList<PluginCommand>>();
 
-    public static PluginCommand[] commandsTable = { tableBan, tableClose, tableCreate, tableDelete, tableKick, tableListSettings, tableOpen, tableSet, tableStart, tableUnban };
+    static
+    {
+        commandsCards.add(cardsDetails);
+        commandsCards.add(cardsInvite);
+        commandsCards.add(cardsLeave);
+        commandsCards.add(cardsMoney);
+        commandsCards.add(cardsPlayers);
+        commandsCards.add(cardsRebuy);
+        commandsCards.add(cardsSit);
+        commandsCards.add(cardsTables);
+        commandsCards.add(cardsTeleport);
+        commandsCards.add(cardsWithdraw);
+        commandsCards.add(cardsReload);
 
-    public static PluginCommand[] commandsPoker = { pokerHand, pokerReveal, pokerAllin, pokerBet, pokerBoard, pokerCall, pokerCheck, pokerFold, pokerPay, pokerPot, };
+        commandsTable.add(tableBan);
+        commandsTable.add(tableClose);
+        commandsTable.add(tableCreate);
+        commandsTable.add(tableDelete);
+        commandsTable.add(tableKick);
+        commandsTable.add(tableListSettings);
+        commandsTable.add(tableOpen);
+        commandsTable.add(tableSet);
+        commandsTable.add(tableStart);
+        commandsTable.add(tableUnban);
 
-    public static PluginCommand[] commandsBlackjack = { blackjackHit, blackjackStand, blackjackBet, blackjackSplit, blackjackDouble };
+        commandsPoker.add(pokerHand);
+        commandsPoker.add(pokerReveal);
+        commandsPoker.add(pokerAllin);
+        commandsPoker.add(pokerBet);
+        commandsPoker.add(pokerBoard);
+        commandsPoker.add(pokerCall);
+        commandsPoker.add(pokerCheck);
+        commandsPoker.add(pokerFold);
+        commandsPoker.add(pokerPay);
+        commandsPoker.add(pokerPot);
 
-    public static PluginCommand[][] commands = { commandsCards, commandsTable, commandsPoker, commandsBlackjack };
+        commandsBlackjack.add(blackjackHit);
+        commandsBlackjack.add(blackjackStand);
+        commandsBlackjack.add(blackjackBet);
+        commandsBlackjack.add(blackjackSplit);
+        commandsBlackjack.add(blackjackDouble);
+
+        commands.add(commandsCards);
+        commands.add(commandsTable);
+        commands.add(commandsPoker);
+        commands.add(commandsBlackjack);
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
@@ -121,7 +153,7 @@ public class PluginExecutor implements CommandExecutor
             if (sender instanceof Player)
             {
                 Player player = (Player) sender;
-                
+
                 if (args.length >= 1)
                 {
                     String action = args[0];
@@ -162,7 +194,7 @@ public class PluginExecutor implements CommandExecutor
                             if (performChecks(cmd, args, player, action)) return true;
                         Messages.sendMessage(player, "&cNo such blackjack command. Check help with &6/blackjack help.");
                     }
-                } else 
+                } else
                 {
                     ErrorMessages.displayHelp(player, command.getName());
                 }
@@ -179,18 +211,21 @@ public class PluginExecutor implements CommandExecutor
 
     private boolean performChecks(PluginCommand cmd, String[] args, Player player, String action) throws Exception
     {
-        if (cmd.getAlises().contains(action)) if (cmd.hasPermission(player) || player.hasPermission(PluginCommand.PERMISSIONS_BASE_NODE + "*"))
+        if (cmd.containsAlias(action)) 
         {
-            cmd.setArgs(args);
-            cmd.setPlayer(player);
-            if (cmd.conditions())
+            if (cmd.hasPermission(player) || player.hasPermission(PluginCommand.PERMISSIONS_BASE_NODE + "*"))
             {
-                cmd.perform();
+                cmd.setArgs(args);
+                cmd.setPlayer(player);
+                if (cmd.conditions())
+                {
+                    cmd.perform();
+                }
+                return true;
+            } else
+            {
+                ErrorMessages.noPermission(player);
             }
-            return true;
-        } else
-        {
-            ErrorMessages.noPermission(player);
         }
         return false;
     }

@@ -3,6 +3,7 @@ package com.github.norbo11.game.blackjack;
 import java.util.ArrayList;
 
 import com.github.norbo11.UltimateCards;
+import com.github.norbo11.commands.PluginExecutor;
 import com.github.norbo11.game.cards.CardsTableSettings;
 import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.Formatter;
@@ -146,7 +147,7 @@ public class BlackjackTableSettings extends CardsTableSettings
             }
         } else
         {
-            Messages.sendMessage(getTable().getOwner().getPlayer(), "&cInvalid setting. Check available settings with /table listsettings");
+            Messages.sendMessage(getTable().getOwner().getPlayer(), "&cInvalid setting. Check available settings with " + PluginExecutor.tableListSettings.getCommandString() + ".");
         }
     }
 

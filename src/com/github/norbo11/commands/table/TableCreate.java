@@ -2,6 +2,7 @@ package com.github.norbo11.commands.table;
 
 import com.github.norbo11.UltimateCards;
 import com.github.norbo11.commands.PluginCommand;
+import com.github.norbo11.commands.PluginExecutor;
 import com.github.norbo11.game.blackjack.BlackjackTable;
 import com.github.norbo11.game.cards.CardsPlayer;
 import com.github.norbo11.game.cards.CardsTable;
@@ -75,7 +76,6 @@ public class TableCreate extends PluginCommand
         return false;
     }
 
-
     @Override
     public void perform() throws Exception
     {
@@ -92,7 +92,7 @@ public class TableCreate extends PluginCommand
         // Send messages
         Messages.sendToAllWithinRange(newTable.getLocation(), "&6" + getPlayer().getName() + " &fhas created a &6" + gameType + "&f table named " + "&6'" + newTable.getName() + "'&f, ID " + "&6" + Integer.toString(newTable.getID()));
         Messages.sendToAllWithinRange(newTable.getLocation(), "Bought in for " + "&6" + Formatter.formatMoney(buyin));
-        Messages.sendMessage(getPlayer(), "Edit the rules of your table with " + "&6'/table set' &f, and open it with " + "&6'/table open' &fwhen ready!");
+        Messages.sendMessage(getPlayer(), "Edit the rules of your table with " + PluginExecutor.tableSet.getCommandString() + "&f, and open it with " + PluginExecutor.tableOpen.getCommandString() + "&f when ready!");
 
         // Take money
         UltimateCards.getEconomy().withdrawPlayer(getPlayer().getName(), buyin);

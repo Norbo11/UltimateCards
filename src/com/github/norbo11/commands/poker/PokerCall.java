@@ -46,10 +46,10 @@ public class PokerCall extends PluginCommand
                             {
                                 if (!pokerPlayer.isFolded())
                                 {
-                                    if (pokerPlayer.getAllIn() == 0)
+                                    if (!pokerPlayer.isAllIn())
                                     {
-                                    	System.out.println(pokerPlayer.getPlayerName() + " currentBet: " + pokerPlayer.getCurrentBet());
-                                    	System.out.println("Table currentBet: " + pokerTable.getCurrentBet());
+                                        System.out.println(pokerPlayer.getPlayerName() + " currentBet: " + pokerPlayer.getCurrentBet());
+                                        System.out.println("Table currentBet: " + pokerTable.getCurrentBet());
                                         if (pokerPlayer.getCurrentBet() < pokerTable.getCurrentBet()) // Check if the player hasn't already called
                                         {
                                             if (pokerPlayer.hasMoney(pokerTable.getCurrentBet() - pokerPlayer.getCurrentBet())) return true;
@@ -100,7 +100,7 @@ public class PokerCall extends PluginCommand
     @Override
     public void perform() throws Exception
     {
-        double amountCalled = pokerTable.getCurrentBet(); 
-        pokerPlayer.bet(amountCalled);
+        double amountCalled = pokerTable.getCurrentBet();
+        pokerPlayer.bet(amountCalled, null);
     }
 }

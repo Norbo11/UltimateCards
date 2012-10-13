@@ -221,7 +221,7 @@ public class PluginConfig
 
         // Poker
         rakeToStack = config.getBoolean("options.poker.rakeToStack", config.getDefaults().getBoolean("options.poker.rakeToStack"));
-        fixRake = config.getDouble("options.poker.defaults.fixRake", config.getDefaults().getDouble("options.poker.defaults.fixRake"));
+        fixRake = config.getDouble("options.poker.fixRake", config.getDefaults().getDouble("options.poker.fixRake"));
 
         minRaiseAlwaysBB = config.getBoolean("options.poker.defaults.minRaiseIsAlwaysbb", config.getDefaults().getBoolean("options.poker.defaults.minRaiseIsAlwaysbb"));
         minBuy = config.getDouble("options.poker.defaults.minBuy", config.getDefaults().getDouble("options.poker.defaults.minBuy"));

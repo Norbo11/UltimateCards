@@ -13,7 +13,7 @@ public class TableSet extends PluginCommand
     {
         getAlises().add("set");
 
-        setDescription("Sets the [setting] to the [value]. List available settings with /table listsettings | ls.");
+        setDescription("Sets the [setting] to the [value]");
 
         setArgumentString("[setting] [value]");
 

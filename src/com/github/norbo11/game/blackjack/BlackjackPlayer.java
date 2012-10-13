@@ -8,6 +8,7 @@ import com.github.norbo11.UltimateCards;
 import com.github.norbo11.game.cards.CardsPlayer;
 import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.Messages;
+import com.github.norbo11.util.Sound;
 
 public class BlackjackPlayer extends CardsPlayer
 {
@@ -143,13 +144,6 @@ public class BlackjackPlayer extends CardsPlayer
         return hitted;
     }
 
-    public boolean playingThisHand()
-    {
-        for (BlackjackHand hand : hands)
-            if (hand.getAmountBet() > 0) return true;
-        return false;
-    }
-
     public boolean isPushing()
     {
         return pushing > 0;
@@ -163,12 +157,15 @@ public class BlackjackPlayer extends CardsPlayer
     public boolean isStayedOnAllHands()
     {
         int handsStayed = 0;
-        
+
         for (BlackjackHand hand : hands)
         {
-            if (hand.isStayed() || hand.isBust()) handsStayed++;
+            if (hand.isStayed() || hand.isBust())
+            {
+                handsStayed++;
+            }
         }
-        
+
         return handsStayed == hands.size();
     }
 
@@ -187,6 +184,14 @@ public class BlackjackPlayer extends CardsPlayer
 
         setMoney(getMoney() + hand.getAmountBet() * multiplayer);
         Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getPlayerName() + "&f has won &6" + Formatter.formatMoney(hand.getAmountBet() * multiplayer) + "&f (" + multiplayer + "x) for hand score &6" + hand.getScore());
+        Sound.won(getPlayer());
+    }
+
+    public boolean playingThisHand()
+    {
+        for (BlackjackHand hand : hands)
+            if (hand.getAmountBet() > 0) return true;
+        return false;
     }
 
     public void recalculateScore()

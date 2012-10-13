@@ -75,13 +75,13 @@ public class CardsSit extends PluginCommand
                                         notNearEnough = true;
                                     }
                                 }
-                                
+
                                 if (notNearEnough)
                                 {
                                     ErrorMessages.playerNotNearEnough(getPlayer());
                                     return false;
                                 }
-                                
+
                                 // Check if the table is open
                                 if (cardsTable.isOpen())
                                 {

@@ -262,17 +262,17 @@ public class MapMethods
 
     private final HashMap<String, Integer> redrawTasks = new HashMap<String, Integer>();
     private final HashMap<String, Boolean> redrawsNeeded = new HashMap<String, Boolean>();
-    private static HashMap<String, Short> savedMaps = new HashMap<String, Short>();
+    private static HashMap<String, ItemStack> savedMaps = new HashMap<String, ItemStack>();
 
-    public static HashMap<String, Short> getSavedMaps()
+    public static HashMap<String, ItemStack> getSavedMaps()
     {
         return savedMaps;
     }
 
     public static String mapExists(ItemStack itemStack)
     {
-        for (Entry<String, Short> entry : savedMaps.entrySet())
-            if (entry.getValue() == itemStack.getDurability()) return entry.getKey();
+        for (Entry<String, ItemStack> entry : savedMaps.entrySet())
+            if (entry == itemStack) return entry.getKey();
         return "";
     }
 
@@ -330,7 +330,7 @@ public class MapMethods
     public void giveMap(final Player player, String renderer)
     {
         //Create map
-        final MapView map = Bukkit.getServer().createMap(player.getWorld());
+        MapView map = Bukkit.getServer().createMap(player.getWorld());
         clearRenderers(map);
         if (renderer.equalsIgnoreCase("poker"))
         {
@@ -340,24 +340,14 @@ public class MapMethods
             map.addRenderer(blackjackRenderer);
         }
 
-        //Add to lists
-        redrawsNeeded.put(player.getName(), true);
-        savedMaps.put(player.getName(), map.getId());
-        createdMaps.add(map.getId());
-
         //Give map
         ItemStack mapItem = new ItemStack(Material.MAP, 1, map.getId());
-
-        if (HelperMethods.hasOpenSlotInInventory(player))
-        {
-            player.getInventory().addItem(mapItem);
-            player.getInventory().remove(mapItem);
-            player.getInventory().addItem(mapItem);
-        } else
-        {
-            player.getWorld().dropItemNaturally(player.getLocation(), mapItem);
-        }
         
+        //Add to lists
+        redrawsNeeded.put(player.getName(), true);
+        savedMaps.put(player.getName(), mapItem);
+        createdMaps.add(map.getId());
+
         //Schedule task
         redrawTasks.put(player.getName(), Bukkit.getScheduler().scheduleAsyncRepeatingTask(p, new Runnable()
         {
@@ -368,37 +358,36 @@ public class MapMethods
                 redrawsNeeded.put(player.getName(), true);
             }
 
-        }, 20L, 20L));
+        }, 0L, 20L));
+        
+        if (HelperMethods.hasOpenSlotInInventory(player))
+        {
+            player.getInventory().addItem(mapItem);
+        } else
+        {
+            player.getWorld().dropItemNaturally(player.getLocation(), mapItem);
+        }
+        
     }
 
     public void restoreAllMaps()
     {
-        for (Entry<String, Short> entry : savedMaps.entrySet())
+        for (Entry<String, ItemStack> entry : savedMaps.entrySet())
         {
             Player player = Bukkit.getPlayer(entry.getKey());
             if (player != null)
             {
-                ItemStack mapItem = new ItemStack(Material.MAP, 1, savedMaps.get(player.getName()));
-                if (player.getInventory().contains(mapItem))
-                {
-                    player.getInventory().remove(mapItem);
-                    createdMaps.remove(new Short(mapItem.getDurability()));
-                }
-                savedMaps.remove(player.getName());
-                Bukkit.getScheduler().cancelTask(redrawTasks.get(player.getName()));
-                redrawTasks.remove(player.getName());
+                restoreMap(player);
             }
         }
     }
 
     public void restoreMap(Player player)
     {
-        ItemStack mapItem = new ItemStack(Material.MAP, 1, savedMaps.get(player.getName()));
-        if (player.getInventory().contains(mapItem))
-        {
-            player.getInventory().remove(mapItem);
-            createdMaps.remove(new Short(mapItem.getDurability()));
-        }
+        ItemStack mapItem = savedMaps.get(player.getName());
+        player.getInventory().remove(mapItem);
+
+        createdMaps.remove(new Short(mapItem.getDurability()));
         savedMaps.remove(player.getName());
         Bukkit.getScheduler().cancelTask(redrawTasks.get(player.getName()));
         redrawTasks.remove(player.getName());

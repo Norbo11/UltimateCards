@@ -9,6 +9,7 @@ import com.github.norbo11.UltimateCards;
 import com.github.norbo11.game.poker.PokerPhase;
 import com.github.norbo11.util.Messages;
 import com.github.norbo11.util.NumberMethods;
+import com.github.norbo11.util.Sound;
 
 public abstract class CardsTable
 {
@@ -27,45 +28,22 @@ public abstract class CardsTable
         return allowedDetailTypes;
     }
 
-    private CardsPlayer owner; // Owner of the table. A PokerPlayer object
-                               // should be created right after the creation of
-                               // the table
+    private CardsPlayer owner; // Owner of the table. A PokerPlayer object should be created right after the creation of the table
     private String name;
-    private CardsPlayer actionPlayer; // The player that is currently supposed
-                                      // to act
+    private CardsPlayer actionPlayer; // The player that is currently supposed to act
     private CardsTableSettings cardsTableSettings;
     private Location location; // The location at which the table was created
     private Deck deck = new Deck(1); // Stores the deck assigned to this table
-
-    private PokerPhase currentPhase; // Represents the current phase of the
-                                     // hand. 0 = preflop, 1 = flop, 2 = turn, 3
-                                     // = river, 4 = showdown, 5 = once everyone
-                                     // has showed their hand
+    private PokerPhase currentPhase;
     private int ID;
-
-    private int handNumber; // The amount of hands played/the hand number
-                            // currently being played at this table
-    private boolean inProgress; // True if the hand is currently in progress.
-                                // Its false if the table hasen't even started
-                                // or is currently in showdown
+    private int handNumber; // The amount of hands played/the hand number currently being played at this table
+    private boolean inProgress; // True if the hand is currently in progress. Its false if the table hasen't even started or is currently in showdown
     private boolean open; // Decides if player can join or not
 
     private boolean toBeContinued;
     private static ArrayList<String> allowedDetailTypes;
-    private ArrayList<CardsPlayer> players = new ArrayList<CardsPlayer>(); // Stores
-                                                                           // all
-                                                                           // player
-                                                                           // sitting
-                                                                           // at
-                                                                           // the
-                                                                           // table
-    private ArrayList<String> bannedList = new ArrayList<String>(); // Stores
-                                                                    // all
-                                                                    // banned
-                                                                    // player
-                                                                    // from the
-                                                                    // table
-
+    private ArrayList<CardsPlayer> players = new ArrayList<CardsPlayer>();
+    private ArrayList<String> bannedList = new ArrayList<String>();
     private static ArrayList<CardsTable> tables = new ArrayList<CardsTable>();
 
     public static int getFreeTableID()
@@ -111,6 +89,16 @@ public abstract class CardsTable
     {
         CardsTable.tables = tables;
     }
+    
+    public void playTurnSounds(Player player)
+    {
+        for (CardsPlayer p : getPlayersThisHand())
+        {
+            if (!player.getName().equals(p.getPlayerName())) Sound.otherTurn(p.getPlayer());
+        }
+    }
+
+    public abstract boolean canDeal();
 
     public abstract void clearPlayerVars();
 
@@ -125,11 +113,11 @@ public abstract class CardsTable
         Messages.sendMessage(player, "&6" + UltimateCards.getLineString());
         Messages.sendMessage(player, "&6&nSettings");
         Messages.sendMessage(player, getSettings().listSettings());
-        
+
         Messages.sendMessage(player, "&6" + UltimateCards.getLineString());
         Messages.sendMessage(player, "&6&nPlayers");
         Messages.sendMessage(player, listPlayers());
-        
+
         Messages.sendMessage(player, "&6" + UltimateCards.getLineString());
         Messages.sendMessage(player, "&6&nGeneral Details");
         Messages.sendMessage(player, "Owner: &6" + getOwner().getPlayerName());
@@ -138,8 +126,6 @@ public abstract class CardsTable
         Messages.sendMessage(player, "In progress: " + "&6" + isInProgress());
         Messages.sendMessage(player, "Location: " + "&6X: &f" + Math.round(getLocation().getX()) + "&6 Z: &f" + Math.round(getLocation().getZ()) + "&6 Y: &f" + Math.round(getLocation().getY()) + "&6 World: &f" + getLocation().getWorld().getName());
     }
-    
-    public abstract boolean canDeal();
 
     public CardsPlayer getActionPlayer()
     {
@@ -150,12 +136,11 @@ public abstract class CardsTable
     {
         double average = 0;
         int players = 0;
-        for (CardsPlayer player : this.players)
-            if (!player.isEliminated())
-            {
-                average = average + player.getMoney();
-                players++;
-            }
+        for (CardsPlayer player : getPlayers())
+        {
+            average += player.getMoney();
+            players++;
+        }
         return NumberMethods.roundDouble(average / players, 2);
     }
 
@@ -267,6 +252,25 @@ public abstract class CardsTable
         return players;
     }
 
+    public abstract ArrayList<CardsPlayer> getPlayersThisHand();
+
+    public ArrayList<CardsPlayer> getRearrangedPlayers(CardsPlayer startingPlayer)
+    {
+        ArrayList<CardsPlayer> returnValue = new ArrayList<CardsPlayer>(getPlayersThisHand());
+
+        for (CardsPlayer player : getPlayersThisHand())
+        {
+            if (getPlayers().indexOf(player) < getPlayersThisHand().indexOf(startingPlayer))
+            {
+                CardsPlayer temp = returnValue.get(0);
+                returnValue.remove(0);
+                returnValue.add(temp);
+            }
+        }
+
+        return returnValue;
+    }
+
     public abstract CardsTableSettings getSettings();
 
     public boolean isInProgress()
@@ -299,28 +303,19 @@ public abstract class CardsTable
         players.remove(cardsPlayer);
     }
 
+    public void restoreAllMaps()
+    {
+        for (CardsPlayer player : getPlayers())
+        {
+            UltimateCards.mapMethods.restoreMap(player.getPlayer());
+        }
+    }
+
     public abstract void returnMoney(CardsPlayer player);
 
     public void setActionPlayer(CardsPlayer cardsPlayer)
     {
         this.actionPlayer = cardsPlayer;
-    }
-    
-    public ArrayList<CardsPlayer> getRearrangedPlayers(CardsPlayer startingPlayer)
-    {
-        ArrayList<CardsPlayer> returnValue = new ArrayList<CardsPlayer>(getPlayersThisHand());
-        
-        for (CardsPlayer player : getPlayersThisHand())
-        {
-            if (getPlayers().indexOf(player) < getPlayersThisHand().indexOf(startingPlayer))
-            {
-                CardsPlayer temp = returnValue.get(0);
-                returnValue.remove(0);
-                returnValue.add(temp);
-            }
-        }
-        
-        return returnValue;
     }
 
     public void setBannedList(ArrayList<String> bannedList)
@@ -398,15 +393,5 @@ public abstract class CardsTable
                 getPlayers().get(i).setID(i);
             }
     }
-
-    public void restoreAllMaps()
-    {
-        for (CardsPlayer player : getPlayers())
-        {
-            UltimateCards.mapMethods.restoreMap(player.getPlayer());
-        }
-    }
-
-    public abstract ArrayList<CardsPlayer> getPlayersThisHand();
 
 }

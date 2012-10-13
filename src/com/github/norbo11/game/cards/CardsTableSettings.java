@@ -102,13 +102,13 @@ public abstract class CardsTableSettings
     public ArrayList<String> listSettings()
     {
         ArrayList<String> messages = new ArrayList<String>();
-        
+
         messages.add("Minimum Buy-in: &6" + Formatter.formatMoney(minBuy));
         messages.add("Maximum Buy-in: &6" + Formatter.formatMoney(maxBuy));
         messages.add("Display turns publicly: &6" + displayTurnsPublicly);
         messages.add("Allow rebuys: &6" + allowRebuys);
         messages.addAll(listTableSpecificSettings());
-        
+
         return messages;
     }
 

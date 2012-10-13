@@ -47,16 +47,8 @@ public class PokerAllin extends PluginCommand
                             {
                                 if (!pokerPlayer.isFolded())
                                 {
-                                    if (pokerPlayer.getAllIn() == 0) // Check if the player is not already all in
-                                    {
-                                        // Check if the player has enough money to call. This is done by taking their current bet away from the table current bet,
-                                        // effectively getting the amount that they need to call. Then add the minimum raise to it.
-                                        if (pokerTable.getCurrentBet() - pokerPlayer.getCurrentBet() + pokerTable.getSettings().getMinRaise() > pokerPlayer.getMoney()) return true;
-                                        else
-                                        {
-                                            ErrorMessages.cantAllIn(getPlayer());
-                                        }
-                                    } else
+                                    if (!pokerPlayer.isAllIn()) return true;
+                                    else
                                     {
                                         ErrorMessages.playerIsAllIn(getPlayer());
                                     }
@@ -95,7 +87,7 @@ public class PokerAllin extends PluginCommand
     @Override
     public void perform() throws Exception
     {
-    	double betAmount = pokerPlayer.getMoney() + pokerPlayer.getCurrentBet();
-        pokerPlayer.bet(betAmount);
+        double betAmount = pokerPlayer.getMoney() + pokerPlayer.getCurrentBet();
+        pokerPlayer.bet(betAmount, null);
     }
 }

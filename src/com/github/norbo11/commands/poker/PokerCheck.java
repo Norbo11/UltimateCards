@@ -46,7 +46,7 @@ public class PokerCheck extends PluginCommand
                             {
                                 if (!pokerPlayer.isFolded())
                                 {
-                                    if (pokerPlayer.getAllIn() == 0)
+                                    if (!pokerPlayer.isAllIn())
                                     {
                                         if (pokerPlayer.getCurrentBet() == pokerTable.getCurrentBet()) return true;
                                         else

@@ -8,18 +8,10 @@ public class BlackjackHand
 {
     private Hand hand = new Hand();
     private boolean stayed;
-    public boolean isStayed()
-    {
-        return stayed;
-    }
-
-    public void setStayed(boolean stayed)
-    {
-        this.stayed = stayed;
-    }
-
     private double amountBet;
+
     private int score = 0;
+
     private int id;
     private BlackjackPlayer player;
 
@@ -27,7 +19,7 @@ public class BlackjackHand
     {
         this.player = player;
         this.amountBet = amountBet;
-        this.id = player.getHands().size(); 
+        this.id = player.getHands().size();
     }
 
     public void addCards(Card[] cards)
@@ -76,6 +68,11 @@ public class BlackjackHand
         return score > 21;
     }
 
+    public boolean isStayed()
+    {
+        return stayed;
+    }
+
     public void recalculateScore()
     {
         int newScore = 0;
@@ -100,5 +97,10 @@ public class BlackjackHand
     public void setAmountBet(double amountBet)
     {
         this.amountBet = amountBet;
+    }
+
+    public void setStayed(boolean stayed)
+    {
+        this.stayed = stayed;
     }
 }

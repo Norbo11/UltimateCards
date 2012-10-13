@@ -49,7 +49,7 @@ public class BlackjackHit extends PluginCommand
                     ErrorMessages.cannotSpecifyHand(getPlayer());
                     return false;
                 }
-            } else 
+            } else
             {
                 if (blackjackPlayer.isSplit())
                 {
@@ -57,7 +57,7 @@ public class BlackjackHit extends PluginCommand
                     return false;
                 }
             }
-        
+
             if (blackjackPlayer != null)
             {
                 blackjackTable = blackjackPlayer.getBlackjackTable();
@@ -67,10 +67,8 @@ public class BlackjackHit extends PluginCommand
                     {
                         if (!blackjackPlayer.getHands().get(hand).isBust())
                         {
-                            if (!blackjackPlayer.getHands().get(hand).isStayed())
-                            {
-                                return true;
-                            } else
+                            if (!blackjackPlayer.getHands().get(hand).isStayed()) return true;
+                            else
                             {
                                 ErrorMessages.playerIsStayed(getPlayer());
                             }
