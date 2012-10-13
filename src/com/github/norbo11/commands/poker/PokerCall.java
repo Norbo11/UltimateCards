@@ -4,10 +4,7 @@ import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.game.poker.PokerPhase;
 import com.github.norbo11.game.poker.PokerPlayer;
 import com.github.norbo11.game.poker.PokerTable;
-import com.github.norbo11.game.poker.Pot;
 import com.github.norbo11.util.ErrorMessages;
-import com.github.norbo11.util.Formatter;
-import com.github.norbo11.util.Messages;
 
 public class PokerCall extends PluginCommand
 {
@@ -51,6 +48,8 @@ public class PokerCall extends PluginCommand
                                 {
                                     if (pokerPlayer.getAllIn() == 0)
                                     {
+                                    	System.out.println(pokerPlayer.getPlayerName() + " currentBet: " + pokerPlayer.getCurrentBet());
+                                    	System.out.println("Table currentBet: " + pokerTable.getCurrentBet());
                                         if (pokerPlayer.getCurrentBet() < pokerTable.getCurrentBet()) // Check if the player hasn't already called
                                         {
                                             if (pokerPlayer.hasMoney(pokerTable.getCurrentBet() - pokerPlayer.getCurrentBet())) return true;
@@ -101,47 +100,7 @@ public class PokerCall extends PluginCommand
     @Override
     public void perform() throws Exception
     {
-
-        //Amount being called
-        double called = pokerTable.getCurrentBet() - pokerPlayer.getCurrentBet(); 
-        
-        if (pokerPlayer.getMoney() - called == 0)
-        {
-            pokerPlayer.allIn();
-            return;
-        }
-
-        pokerPlayer.setActed(true);
-
-        // Call, by simply adding the amount of money being called to the
-        // player's current and total bet
-        pokerPlayer.setCurrentBet(pokerPlayer.getCurrentBet() + called);
-        pokerPlayer.setTotalBet(pokerPlayer.getTotalBet() + called);
-
-        // If there is more than 1 pot (effectively, if there is a side pot) and
-        // that pot was created during the current phase
-        if (pokerTable.getPots().size() > 1 && pokerTable.getLatestPot().getPokerPhase() == pokerTable.getCurrentPhase())
-        {
-            double allInCover = 0;
-            for (Pot pot : pokerTable.getPots())
-                if (!pot.isMain() && pot.getPlayerAllIn() != pokerPlayer) if (pot.getPlayerAllIn().getAllIn() > pokerTable.getPots().get(pokerTable.getPots().indexOf(pot) - 1).getContribution(pokerPlayer))
-                {
-                    allInCover = allInCover + (pokerTable.getPots().get(pokerTable.getPots().indexOf(pot) - 1).getContribution(pot.getPlayerAllIn()) - pokerTable.getPots().get(pokerTable.getPots().indexOf(pot) - 1).getContribution(pokerPlayer));
-                    pokerTable.getPots().get(pokerTable.getPots().indexOf(pot) - 1).contribute(pokerPlayer, pokerTable.getPots().get(pokerTable.getPots().indexOf(pot) - 1).getContribution(pot.getPlayerAllIn()) - pokerTable.getPots().get(pokerTable.getPots().indexOf(pot) - 1).getContribution(pokerPlayer), false);
-                    pokerTable.getPots().get(pokerTable.getPots().indexOf(pot) - 1).adjustPot();
-                }
-            pokerTable.getLatestPot().contribute(pokerPlayer, called - allInCover, false);
-            pokerTable.getLatestPot().adjustPot();
-        } else
-        {
-            pokerTable.getLatestPot().contribute(pokerPlayer, called, false);
-            pokerTable.getLatestPot().adjustPot();
-        }
-
-        pokerTable.adjustPots();
-        pokerPlayer.setMoney(pokerPlayer.getMoney() - called);
-        Messages.sendToAllWithinRange(pokerTable.getLocation(), "&6" + pokerPlayer.getPlayerName() + "&f calls " + "&6" + Formatter.formatMoney(called) + "&f (Total: " + "&6" + Formatter.formatMoney(pokerPlayer.getTotalBet()) + "&f)");
-        pokerTable.nextPersonTurn(pokerPlayer);
-
+        double amountCalled = pokerTable.getCurrentBet(); 
+        pokerPlayer.bet(amountCalled);
     }
 }
