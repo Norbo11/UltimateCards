@@ -92,7 +92,7 @@ public class PokerPlayer extends CardsPlayer
     	this.pot += this.deltaPot;
     	this.deltaPot = 0;
     	
-    	setTotalBet(getCurrentBet());
+    	setTotalBet(getTotalBet() + getCurrentBet());
     	setCurrentBet(0);
     	setMoney(getMoney() - getTotalBet());
     }
@@ -120,11 +120,12 @@ public class PokerPlayer extends CardsPlayer
         Messages.sendToAllWithinRange(pokerTable.getLocation(), "&6" + getPlayerName() + "&f has won the pot of " + "&6" + Formatter.formatMoney(getPot() - rake));
        
         // Get the actual amount that the player wins by subtracting the rake from the pot, then give it to the player's stack
-        giveMoney(getPot() - rake); 
+        giveMoney(getPot() - rake);
 
+        double potAmount = this.getPot();
         boolean roundOver = true;
         for (PokerPlayer p : pokerTable.getNonFoldedPlayers()) {
-        	p.setPot(p.getPot() - this.getPot());
+        	p.setPot(p.getPot() - potAmount);
         	if (p.getPot() > 0) {
         		roundOver = false;
         	}
@@ -145,7 +146,7 @@ public class PokerPlayer extends CardsPlayer
     		Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f raised to " + "&6" + Formatter.formatMoney(bet) + "&f (Total: " + "&6" + Formatter.formatMoney(bet + getTotalBet()) + "&f)");
     	} else if (bet == getPokerTable().getCurrentBet()) {
     		Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f called a bet of " + "&6" + Formatter.formatMoney(bet) + "&f (Total: " + "&6" + Formatter.formatMoney(bet + getTotalBet()) + "&f)");
-    	} else if (getMoney() == 0) {
+    	} else {
     		Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f went all in with " + "&6" + Formatter.formatMoney(bet) + "&f (Total: " + "&6" + Formatter.formatMoney(bet + getTotalBet()) + "&f)");
     	}
     	
@@ -252,29 +253,26 @@ public class PokerPlayer extends CardsPlayer
         double amount = 0;
         if (blind.equals("small blind"))
         {
-            amount = settings.getSb();
+            amount += settings.getSb();
             Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f has posted the small blind (" + "&6" + Formatter.formatMoney(amount) + "&f)");
-        }
-        if (blind.equals("big blind"))
+        } 
+        else if (blind.equals("big blind"))
         {
             amount = settings.getBb();
             Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f has posted the big blind (" + "&6" + Formatter.formatMoney(amount) + "&f)");
         }
         if (blind.equals("ante"))
         {
-            amount = settings.getAnte();
+            amount += settings.getAnte();
             Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f has posted the ante (" + "&6" + Formatter.formatMoney(amount) + "&f)");
         }
 
-
-        //Only update current bet if its not an ante.
-        if (!blind.equals("ante")) 
-        {
-            currentBet = amount;
-        }
+        currentBet = amount;
         
-        totalBet = totalBet + amount;
-        setMoney(getMoney() - amount);
+        for (PokerPlayer p : getPokerTable().getNonFoldedPlayers()) {
+    		p.resetDeltaPot();
+    		p.updatePot();
+    	}
     }
 
     public void setActed(boolean acted)

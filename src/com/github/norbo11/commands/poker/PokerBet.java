@@ -52,11 +52,12 @@ public class PokerBet extends PluginCommand
                                         amountToBet = NumberMethods.getDouble(getArgs()[1]);
                                         if (amountToBet != -99999)
                                         {
-                                            if (pokerPlayer.hasMoney(amountToBet - pokerPlayer.getCurrentBet()))
+                                        	System.out.println("********" + amountToBet + ", " + pokerPlayer.getCurrentBet());
+                                            if (pokerPlayer.hasMoney(amountToBet))
                                             {
                                                 if (pokerPlayer.getPokerTable().getCallablePlayers(amountToBet, pokerPlayer).size() >= 1)
                                                 {
-                                                    if (amountToBet >= pokerTable.getCurrentBet() + pokerTable.getSettings().getMinRaise()) return true;
+                                                    if (amountToBet + pokerPlayer.getCurrentBet() >= pokerTable.getCurrentBet() + pokerTable.getSettings().getMinRaise()) return true;
                                                     else
                                                     {
                                                         ErrorMessages.cantRaise(getPlayer(), pokerTable.getSettings().getMinRaise(), pokerTable.getCurrentBet());

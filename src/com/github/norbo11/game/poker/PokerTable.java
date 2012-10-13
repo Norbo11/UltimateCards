@@ -250,7 +250,7 @@ public class PokerTable extends CardsTable
         ArrayList<PokerPlayer> returnValue = new ArrayList<PokerPlayer>();
         for (PokerPlayer player : getNonFoldedPlayers())
             // Go through all players, if their money is 0, add them to the eventually returned value
-            if (player.getAllIn() > 0)
+            if (player.getMoney() <= 0)
             {
                 returnValue.add(player);
             }
@@ -598,21 +598,13 @@ public class PokerTable extends CardsTable
     public void phaseHandEnd()
     {
         setCurrentPhase(PokerPhase.HAND_END);
-        // If there is only 1 pot, display this specific message.
-//        if (true) // IF ALL POTS ARE THE SAME
-//        {
-//            Messages.sendToAllWithinRange(getLocation(), "Pot: UPDATE THIS SHIET&6" + Formatter.formatMoney(0));
-//            Messages.sendToAllWithinRange(getLocation(), "Table owner: Please use " + "&6/poker pay [player ID]" + "&f to pay the winner. You can now also modify settings of the table.");
-//        } else
-        // If there are side pots, list them all with a different message at the
-        // end
-        {
-            Messages.sendToAllWithinRange(getLocation(), "List of pots:");
-            for (PokerPlayer p : getNonFoldedPlayers()) {
-            	Messages.sendToAllWithinRange(getLocation(), p.getPlayerName() + " - " + p.getTotalPot());
-            }
-            Messages.sendToAllWithinRange(getLocation(), "Table owner: Please use " + "&6/poker pay [pot ID] [player ID]" + "&f to pay the winner(s). You can now also modify settings of the table.");
+        Messages.sendToAllWithinRange(getLocation(), "List of pots:");
+        int i = 0;
+        for (PokerPlayer p : getNonFoldedPlayers()) {
+        	Messages.sendToAllWithinRange(getLocation(), "[ID: " + i + "] " + p.getPlayerName() + " - " + Formatter.formatMoney(p.getTotalPot()));
+        	i++;
         }
+        Messages.sendToAllWithinRange(getLocation(), "Table owner: Please use " + "&6/poker pay [player ID]" + "&f to pay the winner(s). You can now also modify settings of the table.");
         Messages.sendToAllWithinRange(getLocation(), "Players: use " + "&6/cards rebuy [amount]" + "&f to add more money to your stacks.");
         raiseBlinds();
 
@@ -624,6 +616,11 @@ public class PokerTable extends CardsTable
     {
         setCurrentPhase(PokerPhase.PREFLOP);
         postBlinds();
+        int i = 0;
+        for (PokerPlayer p : getNonFoldedPlayers()) {
+        	Messages.sendToAllWithinRange(getLocation(), "[ID: " + i + "] " + p.getPlayerName() + " - " + Formatter.formatMoney(p.getTotalPot()));
+        	i++;
+        }
         Messages.sendToAllWithinRange(getLocation(), "Total amount in pots: &6" + Formatter.formatMoney(getHighestPot()));
         nextPersonTurn(getNextPlayer(button + 1));
     }
@@ -795,19 +792,7 @@ public class PokerTable extends CardsTable
         setToBeContinued(true);
         Messages.sendToAllWithinRange(getLocation(), "Everybody except &6" + player.getPlayerName() + "&f folded!");
 
-        
-        Messages.sendToAllWithinRange(getLocation(), "&6UPDATE THIS SHIET");
-//        ArrayList<Pot> potsToRemove = new ArrayList<Pot>();
-//
-//        // Pay all pots to the winner
-//        for (Pot pot : pots)
-//        {
-//            pot.payPot(player);
-//            if (!pot.isMain())
-//            {
-//                potsToRemove.add(pot);
-//            }
-//        }
+        player.payPot();
     }
 
     public ArrayList<PokerPlayer> getCallablePlayers(double amountToBet, PokerPlayer exclude)
@@ -841,7 +826,7 @@ public class PokerTable extends CardsTable
     public double getHighestPot() {
     	double highest = 0;
     	for (PokerPlayer p : getNonFoldedPlayers()) {
-    		if (p.getPot() > highest) {
+    		if (p.getTotalPot() > highest) {
     			highest = p.getTotalPot();
     		}
     	}

@@ -3,6 +3,7 @@ package com.github.norbo11.commands.poker;
 import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.game.poker.PokerPlayer;
 import com.github.norbo11.util.ErrorMessages;
+import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.Messages;
 
 public class PokerPot extends PluginCommand
@@ -48,11 +49,11 @@ public class PokerPot extends PluginCommand
     public void perform() throws Exception
     {
     	for (PokerPlayer p : pokerPlayer.getPokerTable().getNonFoldedPlayers()) {
-    		Messages.sendMessage(getPlayer(), p.getPlayerName() + " - " + Double.toString(p.getTotalPot()));
+    		double pot = 0;
+    		if (p.getTotalPot() > 0) {
+    			pot = p.getTotalPot();
+    		}
+    		Messages.sendMessage(getPlayer(), "If &6" + p.getPlayerName() + "&f wins, he will win &6" + Formatter.formatMoney(pot) + "&f.");
     	}
-//        for (String pot : pokerPlayer.getPokerTable().listPots())
-//        {
-//            Messages.sendMessage(getPlayer(), pot);
-//        }
     }
 }

@@ -47,85 +47,12 @@ public class PokerPay extends PluginCommand
     		return false;
     	}
     	
-    	return true;
+    	if (playerToPay.getPot() <= 0) {
+    		ErrorMessages.cantPay(getPlayer());
+    		return false;
+    	}
     	
-//        if (getArgs().length == 3)
-//        {
-//            owner = PokerPlayer.getPokerPlayer(getPlayer().getName());
-//            if (CardsTable.isOwnerOfTable(owner))
-//            {
-//                pokerTable = owner.getPokerTable();
-//                int potID = NumberMethods.getInteger(getArgs()[1]);
-//                if (potID != -99999)
-//                {
-//                    int playerID = NumberMethods.getInteger(getArgs()[2]);
-//                    if (playerID != -99999)
-//                    {
-//                        if (!pokerTable.isInProgress())
-//                        {
-//                            playerToPay = PokerPlayer.getPokerPlayer(playerID, pokerTable);
-//                            if (playerToPay != null) return true;
-//                            else
-//                            {
-//                                ErrorMessages.notPlayerID(getPlayer(), playerID);
-//                            }
-//                        } else
-//                        {
-//                            ErrorMessages.tableInProgress(getPlayer());
-//                        }
-//                    } else
-//                    {
-//                        ErrorMessages.invalidNumber(getPlayer(), getArgs()[2]);
-//                    }
-//                } else
-//                {
-//                    ErrorMessages.invalidNumber(getPlayer(), getArgs()[1]);
-//                }
-//            } else
-//            {
-//                ErrorMessages.notOwnerOfAnyTable(getPlayer());
-//            }
-//        } else if (getArgs().length == 2)
-//        {
-//            owner = PokerPlayer.getPokerPlayer(getPlayer().getName());
-//            if (CardsTable.isOwnerOfTable(owner))
-//            {
-//                pokerTable = owner.getPokerTable();
-//                if (pokerTable.getPots().size() == 1) // If there is only 1 pot (the main one)
-//                {
-//                    if (pokerTable.getPots().get(0).getPot() > 0) // If the main pot is not 0
-//                    {
-//                        potToPay = pokerTable.getPots().get(0);
-//                        int playerID = NumberMethods.getInteger(getArgs()[1]);
-//                        if (playerID != -99999)
-//                        {
-//                            playerToPay = PokerPlayer.getPokerPlayer(playerID, pokerTable);
-//                            if (playerToPay != null) return true;
-//                            else
-//                            {
-//                                ErrorMessages.notPlayerID(getPlayer(), playerID);
-//                            }
-//                        } else
-//                        {
-//                            ErrorMessages.invalidNumber(getPlayer(), getArgs()[1]);
-//                        }
-//                    } else
-//                    {
-//                        ErrorMessages.potEmpty(getPlayer(), pokerTable.getPots().get(0));
-//                    }
-//                } else
-//                {
-//                    ErrorMessages.tableHasMultiplePots(getPlayer());
-//                }
-//            } else
-//            {
-//                ErrorMessages.notOwnerOfAnyTable(getPlayer());
-//            }
-//        } else
-//        {
-//            showUsage();
-//        }
-//        return false;
+    	return true;
     }
 
     // Pays the specified pot ID to the specified player ID. The first player argument is the owner typing the /table pay command.
@@ -133,6 +60,5 @@ public class PokerPay extends PluginCommand
     public void perform() throws Exception
     {
     	playerToPay.payPot();
-        //potToPay.payPot(playerToPay);
     }
 }

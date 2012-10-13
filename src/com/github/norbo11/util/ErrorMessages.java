@@ -37,6 +37,10 @@ public class ErrorMessages
     {
         Messages.sendMessage(player, "&cYou have already contributed the required amount to this pot!");
     }
+    
+    public static void cantPay(Player player) {
+    	Messages.sendMessage(player, "&cYou can't pay that player, his pot is 0!");
+    }
 
     public static void cantCheck(PokerPlayer player)
     {

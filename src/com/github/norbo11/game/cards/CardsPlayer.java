@@ -74,6 +74,7 @@ public abstract class CardsPlayer extends PlayerControlled
 
     public boolean hasMoney(double amount)
     {
+    	System.out.println(getPlayerName() + "s money: " + getMoney());
         return getMoney() >= amount;
     }
 
