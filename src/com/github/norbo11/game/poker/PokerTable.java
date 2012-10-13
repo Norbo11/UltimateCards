@@ -34,12 +34,9 @@ public class PokerTable extends CardsTable
     // Generic vars set by constructor
 
     // Generic vars
-    private double currentBet;  // The current bet at the table, in the current phase
     private int button;         // Represents the index of the player that is on the button (in the list 'players')
-    private Pot latestPot;      // Represents the latest pot that was created. For all in purposes.
 
     private ArrayList<Card> board = new ArrayList<Card>(); 
-    private ArrayList<Pot> pots = new ArrayList<Pot>();
     private ArrayList<PokerPlayer> showdownPlayers = new ArrayList<PokerPlayer>();
     private ArrayList<PokerPlayer> playersThisHand = new ArrayList<PokerPlayer>();
 
@@ -51,23 +48,11 @@ public class PokerTable extends CardsTable
         setID(ID);
         setLocation(location);
 
-        // Set all the required settings
-        pots.add(new Pot(null, this, 0, 0));
-        pots.get(0).setMain(true);
-        latestPot = pots.get(0);
-
         getPlayers().add(getOwner()); // Add the owner to the sitting
                                       // player list
         setCardsTableSettings(new PokerTableSettings(this));
     }
 
-    public void adjustPots()
-    {
-        for (Pot pot : pots)
-        {
-            pot.adjustEligible();
-        }
-    }
 
     public boolean canPlay(CardsPlayer player)
     {
@@ -94,35 +79,17 @@ public class PokerTable extends CardsTable
             pokerPlayer.clearBet();
             pokerPlayer.setFolded(false);
             pokerPlayer.setRevealed(false);
-            pokerPlayer.setPot(null);
+            pokerPlayer.setPot(0);
             pokerPlayer.setAllIn(0);
             pokerPlayer.setTotalBet(0);
         }
     }
 
-    // Clears all the pots at the table and adds a new pot main pot
-    public void clearPots()
-    {
-        pots.clear();
-        pots.add(new Pot(null, this, 0, 0));
-        pots.get(0).setMain(true);
-        latestPot = pots.get(0);
-    }
 
     public void continueHand()
     {
         setToBeContinued(false);
         deal();
-    }
-
-    public double countPotAmounts()
-    {
-        double returnValue = 0;
-        for (Pot pot : pots)
-        {
-            returnValue = returnValue + pot.getPot();
-        }
-        return returnValue;
     }
 
     // Method to deal a brand new hand
@@ -143,7 +110,6 @@ public class PokerTable extends CardsTable
             
             getDeck().shuffle(); // Shuffle the deck
             board.clear(); // Clear the community cards
-            clearPots(); // Clears all the pots at the table and adds a new pot  main pot
             clearPlayerVars(); // Goes through every player and clears their bets/pots/acted status, etc
             moveButton();
             dealCards();
@@ -180,7 +146,7 @@ public class PokerTable extends CardsTable
     @Override
     public void deleteTable()
     {
-        if (getCurrentPhase() != PokerPhase.HAND_END || countPotAmounts() == 0)
+        if (getCurrentPhase() != PokerPhase.HAND_END)
         {
             // Displays a message, returns money for every player, and removes
             // the table
@@ -284,7 +250,7 @@ public class PokerTable extends CardsTable
         ArrayList<PokerPlayer> returnValue = new ArrayList<PokerPlayer>();
         for (PokerPlayer player : getNonFoldedPlayers())
             // Go through all players, if their money is 0, add them to the eventually returned value
-            if (player.getAllIn() > 0)
+            if (player.getMoney() <= 0)
             {
                 returnValue.add(player);
             }
@@ -303,13 +269,13 @@ public class PokerTable extends CardsTable
 
     public ArrayList<PokerPlayer> getContributedPlayers()
     {
-        ArrayList<PokerPlayer> contributed = new ArrayList<PokerPlayer>(); // List to hold all the players that have contributed the required amount
+    	ArrayList<PokerPlayer> contributed = new ArrayList<PokerPlayer>(); // List to hold all the players that have contributed the required amount
 
         // Go through all players that have not folded
         for (PokerPlayer nonFolded : getNonFoldedPlayers())
             // And add the person to contributed list if they have contributed
             // the right amount, or if they are all in
-            if (nonFolded.getCurrentBet() == currentBet || nonFolded.getAllIn() > 0)
+            if (nonFolded.getCurrentBet() == getCurrentBet() || nonFolded.getMoney() == 0)
             {
                 contributed.add(nonFolded);
             }
@@ -319,7 +285,8 @@ public class PokerTable extends CardsTable
 
     public double getCurrentBet()
     {
-        return currentBet;
+    	return getHighestCurrentBet();
+        //return currentBet;
     }
 
     public double getHighestBlind()
@@ -358,10 +325,6 @@ public class PokerTable extends CardsTable
         return playersThisHand;
     }
 
-    public Pot getLatestPot()
-    {
-        return latestPot;
-    }
 
     @Override
     public int getMinPlayers()
@@ -410,18 +373,6 @@ public class PokerTable extends CardsTable
     public PokerTableSettings getPokerSettings()
     {
         return (PokerTableSettings) getCardsTableSettings();
-    }
-
-    public Pot getPot(int potID)
-    {
-        for (Pot pot : pots)
-            if (potID == pot.getId()) return pot;
-        return null;
-    }
-
-    public ArrayList<Pot> getPots()
-    {
-        return pots;
     }
 
     private ArrayList<PokerPlayer> getRevealedPlayers()
@@ -515,20 +466,6 @@ public class PokerTable extends CardsTable
         return list;
     }
 
-    // Returns an array of strings, which represent each pot on this table
-    public String[] listPots()
-    {
-        String[] returnValue = new String[pots.size() + 1];
-        int i = 0;
-        for (Pot pot : pots)
-        {
-            returnValue[i] = pot.toString();
-            i++;
-        }
-        returnValue[pots.size()] = "Total amount in pots: &6" + Formatter.formatMoney(countPotAmounts());
-        return returnValue;
-    }
-
     // Moves the button to the next player (call this when starting a new
     // hand)
     public void moveButton()
@@ -603,6 +540,9 @@ public class PokerTable extends CardsTable
     // Go to the next phase depending on what the current phase is
     public void nextPhase()
     {
+    	for (PokerPlayer p : getNonFoldedPlayers()) {
+        	p.phaseOver();
+        }
         if (getCurrentPhase() == PokerPhase.PREFLOP)
         {
             phaseFlop();
@@ -634,34 +574,37 @@ public class PokerTable extends CardsTable
     public void phaseFlop()
     {
         setCurrentPhase(PokerPhase.FLOP);
-        currentBet = 0;
         clearBets();
         Card[] cards = getDeck().generateCards(3);
         board.add(cards[0]);
         board.add(cards[1]);
         board.add(cards[2]);
         displayBoard(null); // Specifying null in the argument displays the board to everyone
-        Messages.sendToAllWithinRange(getLocation(), "Total amount in pots: &6" + Formatter.formatMoney(countPotAmounts()));
+        Messages.sendToAllWithinRange(getLocation(), "Total amount in pots: &6" + Formatter.formatMoney(getHighestPot()));
         nextPersonTurn(getPokerPlayersThisHand().get(button)); // Take the action from the player AFTER the button (that would be the small blind)
+    }
+    
+    public boolean noBetsThisRound() {
+    	boolean noBetsThisRound = true;
+    	for (PokerPlayer p : getNonFoldedPlayers()) {
+    		if (p.getCurrentBet() > 0) {
+    			noBetsThisRound = false;
+    		}
+    	}
+    	return noBetsThisRound;
     }
 
     // This is called once everyone has revealed their hand
     public void phaseHandEnd()
     {
         setCurrentPhase(PokerPhase.HAND_END);
-        // If there is only 1 pot, display this specific message.
-        if (pots.size() == 1)
-        {
-            Messages.sendToAllWithinRange(getLocation(), "Pot: &6" + Formatter.formatMoney(pots.get(0).getPot()));
-            Messages.sendToAllWithinRange(getLocation(), "Table owner: Please use " + "&6/poker pay [player ID]" + "&f to pay the winner. You can now also modify settings of the table.");
-        } else
-        // If there are side pots, list them all with a different message at the
-        // end
-        {
-            Messages.sendToAllWithinRange(getLocation(), "List of pots:");
-            Messages.sendToAllWithinRange(getLocation(), listPots());
-            Messages.sendToAllWithinRange(getLocation(), "Table owner: Please use " + "&6/poker pay [pot ID] [player ID]" + "&f to pay the winner(s). You can now also modify settings of the table.");
+        Messages.sendToAllWithinRange(getLocation(), "List of pots:");
+        int i = 0;
+        for (PokerPlayer p : getNonFoldedPlayers()) {
+        	Messages.sendToAllWithinRange(getLocation(), "[ID: " + i + "] " + p.getPlayerName() + " - " + Formatter.formatMoney(p.getTotalPot()));
+        	i++;
         }
+        Messages.sendToAllWithinRange(getLocation(), "Table owner: Please use " + "&6/poker pay [player ID]" + "&f to pay the winner(s). You can now also modify settings of the table.");
         Messages.sendToAllWithinRange(getLocation(), "Players: use " + "&6/cards rebuy [amount]" + "&f to add more money to your stacks.");
         raiseBlinds();
 
@@ -672,9 +615,13 @@ public class PokerTable extends CardsTable
     public void phasePreflop()
     {
         setCurrentPhase(PokerPhase.PREFLOP);
-        currentBet = 0;
         postBlinds();
-        Messages.sendToAllWithinRange(getLocation(), "Total amount in pots: &6" + Formatter.formatMoney(countPotAmounts()));
+        int i = 0;
+        for (PokerPlayer p : getNonFoldedPlayers()) {
+        	Messages.sendToAllWithinRange(getLocation(), "[ID: " + i + "] " + p.getPlayerName() + " - " + Formatter.formatMoney(p.getTotalPot()));
+        	i++;
+        }
+        Messages.sendToAllWithinRange(getLocation(), "Total amount in pots: &6" + Formatter.formatMoney(getHighestPot()));
         nextPersonTurn(getNextPlayer(button + 1));
     }
 
@@ -682,12 +629,11 @@ public class PokerTable extends CardsTable
     public void phaseRiver()
     {
         setCurrentPhase(PokerPhase.RIVER);
-        currentBet = 0;
         clearBets();
         board.add(getDeck().generateCards(1)[0]);
         displayBoard(null); // Null in the argument makes it display the board
                             // to everyone
-        Messages.sendToAllWithinRange(getLocation(), "Total amount in pots: &6" + Formatter.formatMoney(countPotAmounts()));
+        Messages.sendToAllWithinRange(getLocation(), "Total amount in pots: &6" + Formatter.formatMoney(getHighestPot()));
         nextPersonTurn(getPokerPlayersThisHand().get(button));
     }
 
@@ -723,11 +669,10 @@ public class PokerTable extends CardsTable
     public void phaseTurn()
     {
         setCurrentPhase(PokerPhase.TURN);
-        currentBet = 0;
         clearBets();
         board.add(getDeck().generateCards(1)[0]);
         displayBoard(null); // Specifying null displays the board to everyone
-        Messages.sendToAllWithinRange(getLocation(), "Total amount in pots: &6" + Formatter.formatMoney(countPotAmounts()));
+        Messages.sendToAllWithinRange(getLocation(), "Total amount in pots: &6" + Formatter.formatMoney(getHighestPot()));
         nextPersonTurn(getPokerPlayersThisHand().get(button));
     }
 
@@ -786,13 +731,6 @@ public class PokerTable extends CardsTable
         }
     }
 
-    public void removePots(ArrayList<Pot> pots)
-    {
-        for (Pot pot : pots)
-        {
-            this.pots.remove(pot);
-        }
-    }
 
     @Override
     public void returnMoney(CardsPlayer cardsPlayer)
@@ -805,16 +743,6 @@ public class PokerTable extends CardsTable
         }
         UltimateCards.getEconomy().depositPlayer(pokerPlayer.getPlayerName(), pokerPlayer.getMoney() + pokerPlayer.getTotalBet());
         Log.addToLog(DateMethods.getDate() + " [ECONOMY] Depositing " + Double.toString(pokerPlayer.getMoney() + pokerPlayer.getTotalBet()) + " to " + pokerPlayer.getPlayerName());
-    }
-
-    public void setCurrentBet(double currentBet)
-    {
-        this.currentBet = currentBet;
-    }
-
-    public void setLatestPot(Pot latestPot)
-    {
-        this.latestPot = latestPot;
     }
 
     public void setNewActionPlayer(boolean ignoreAllIn, PokerPlayer lastPlayer)
@@ -864,17 +792,7 @@ public class PokerTable extends CardsTable
         setToBeContinued(true);
         Messages.sendToAllWithinRange(getLocation(), "Everybody except &6" + player.getPlayerName() + "&f folded!");
 
-        ArrayList<Pot> potsToRemove = new ArrayList<Pot>();
-
-        // Pay all pots to the winner
-        for (Pot pot : pots)
-        {
-            pot.payPot(player);
-            if (!pot.isMain())
-            {
-                potsToRemove.add(pot);
-            }
-        }
+        player.payPot();
     }
 
     public ArrayList<PokerPlayer> getCallablePlayers(double amountToBet, PokerPlayer exclude)
@@ -903,5 +821,25 @@ public class PokerTable extends CardsTable
         }
         
         return returnValue;
+    }
+    
+    public double getHighestPot() {
+    	double highest = 0;
+    	for (PokerPlayer p : getNonFoldedPlayers()) {
+    		if (p.getTotalPot() > highest) {
+    			highest = p.getTotalPot();
+    		}
+    	}
+    	return highest;
+    }
+    
+    public double getHighestCurrentBet() {
+    	double highest = 0;
+    	for (PokerPlayer p : getNonFoldedPlayers()) {
+    		if (p.getCurrentBet() > highest) {
+    			highest = p.getCurrentBet();
+    		}
+    	}
+    	return highest;
     }
 }

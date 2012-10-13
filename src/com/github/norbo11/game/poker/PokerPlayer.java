@@ -22,7 +22,9 @@ import com.github.norbo11.game.cards.Card;
 import com.github.norbo11.game.cards.CardsPlayer;
 import com.github.norbo11.game.cards.CardsTable;
 import com.github.norbo11.game.cards.Hand;
+import com.github.norbo11.util.DateMethods;
 import com.github.norbo11.util.Formatter;
+import com.github.norbo11.util.Log;
 import com.github.norbo11.util.Messages;
 
 public class PokerPlayer extends CardsPlayer
@@ -43,13 +45,15 @@ public class PokerPlayer extends CardsPlayer
         return cardsPlayer instanceof PokerPlayer ? (PokerPlayer) CardsPlayer.getCardsPlayer(name) : null;
     }
 
-    private Pot pot;            // This is null if the player is not all in. It turns to an actual pot which represents the pot which the player created by going all in.
     private boolean acted;      // True if the player has acted at least once
     private boolean folded;
     private boolean revealed;
     private double allIn;
     private double currentBet;  // This simply represents the player's current bet in the phase. (phase = flop, turn, river, etc)
     private double totalBet;    // This is the total amount that the player  has bet in the hand
+    
+    private double pot; // This players personal pot
+    private double deltaPot; // This players personal pot this round
 
     private Hand hand = new Hand();
 
@@ -71,138 +75,90 @@ public class PokerPlayer extends CardsPlayer
             Messages.sendMessage(getPlayer(), "You have been dealt the " + card.toString());
         }
     }
-
-    public void allIn()
+    
+    public void updatePot() {
+    	for (PokerPlayer p : getPokerTable().getNonFoldedPlayers()) {
+    		System.out.println("Comparing " + this.getPlayerName() + "s current bet of " + this.getCurrentBet() + " with " + p.getPlayerName() + "s current bet of " + p.getCurrentBet());
+    		if (p.getCurrentBet() >= this.getCurrentBet()) {
+    			this.deltaPot += this.getCurrentBet();
+    		} else {
+    			this.deltaPot += p.getCurrentBet();
+    		}
+    		System.out.println("Outcome resulted in: " + this.deltaPot);
+    	}
+    }
+    
+    public void phaseOver() {
+    	this.pot += this.deltaPot;
+    	this.deltaPot = 0;
+    	
+    	setTotalBet(getTotalBet() + getCurrentBet());
+    	setCurrentBet(0);
+    	setMoney(getMoney() - getTotalBet());
+    }
+    
+    public void payPot()
     {
-        double amount = getMoney(); // Amount that the player is going all in for (all his stack)
-
-        setAllIn(getTotalBet() + amount);
-        setActed(true);
-
-        // Bet
-        setTotalBet(getTotalBet() + amount); // Increase his total bet by that amount also
-        setCurrentBet(getCurrentBet() + amount); // Increase the player's current bet my the amount that he's going all in for
-
-        double sidePot = 0; // This variable decides what the sidepot amount is
-                            // going to be
-
-        double[] temp = new double[getPokerTable().getPlayers().size()]; // New array of doubles, with the size of the  amount of players.
-                                                                         // It holds all players that have bet at least the amount that the player is going all in for in that phase
-        int i = 0;
-        // Gets all non folded players who have bet at least the amount that the player is going all in for (in that phase) and stores the amounts that they have bet in excess in temp
-        for (PokerPlayer pokerPlayer : getPokerTable().getNonFoldedPlayers())
+        double rake = 0;
+        PokerTable pokerTable = getPokerTable();
+        if (pokerTable.getSettings().getRake() > 0)
         {
-            if (pokerPlayer.getCurrentBet() >= getCurrentBet() && pokerPlayer != this)
+            rake = getPot() * pokerTable.getSettings().getRake();
+            
+            if (!UltimateCards.getPluginConfig().isRakeToStack())
             {
-                System.out.println("[Allin] Player " + pokerPlayer.getPlayerName() + " is true.");
-                temp[i] = pokerPlayer.getCurrentBet() - getCurrentBet();
+                UltimateCards.getEconomy().depositPlayer(pokerTable.getOwner().getPlayerName(), rake); 
+                Log.addToLog(DateMethods.getDate() + " [ECONOMY] Depositing " + rake + " to " + pokerTable.getOwner().getPlayerName());
+            } else 
+            {
+                pokerTable.getOwner().giveMoney(rake);
             }
-            i++;
+            
+            Messages.sendToAllWithinRange(pokerTable.getLocation(), "&6" + pokerTable.getOwner().getPlayerName() + "&f has been paid a rake of " + "&6" + Formatter.formatMoney(rake));
         }
-        System.out.println("[Allin] Temp " + temp);
-        // Iterates through temp and makes the sidepot equal to the amount that the player is short (that is, all the current bets of the players that are over the all in amount, summed up)
-        for (double temp2 : temp)
-        {
-            sidePot = sidePot + temp2;
+
+        Messages.sendToAllWithinRange(pokerTable.getLocation(), "&6" + getPlayerName() + "&f has won the pot of " + "&6" + Formatter.formatMoney(getPot() - rake));
+       
+        // Get the actual amount that the player wins by subtracting the rake from the pot, then give it to the player's stack
+        giveMoney(getPot() - rake);
+
+        double potAmount = this.getPot();
+        boolean roundOver = true;
+        for (PokerPlayer p : pokerTable.getNonFoldedPlayers()) {
+        	p.setPot(p.getPot() - potAmount);
+        	if (p.getPot() > 0) {
+        		roundOver = false;
+        	}
         }
         
-        System.out.println("[Allin] Sidepot " + sidePot);
-
-        boolean sameAmount = false;
-        for (Pot pot : getPokerTable().getPots())
-        {
-            if (!pot.isMain()) 
-            {
-                if (pot.getPlayerAllIn().getAllIn() == getAllIn())
-                {
-                    double allInCover = 0;
-                    for (Pot pot2 : getPokerTable().getPots())
-                    {
-                        if (!pot2.isMain() && pot2.getPlayerAllIn() != this) if (pot2.getPlayerAllIn().getAllIn() > getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot2) - 1).getContribution(this))
-                        {
-                            allInCover = allInCover + (getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot2) - 1).getContribution(pot2.getPlayerAllIn()) - getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot2) - 1).getContribution(this));
-                            getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot2) - 1).contribute(this, getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot2) - 1).getContribution(pot2.getPlayerAllIn()) - getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot2) - 1).getContribution(this), false);
-                            getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot2) - 1).adjustPot();
-                        }
-                    }
-                    getPokerTable().getPots().get(getPokerTable().getPots().indexOf(getPokerTable().getLatestPot()) - 1).contribute(this, amount - allInCover, false);
-                    getPokerTable().getPots().get(getPokerTable().getPots().indexOf(getPokerTable().getLatestPot()) - 1).adjustPot();
-                    sameAmount = true;
-                    break;
-                }
-            }
-        }
-        if (sidePot > 0 && !sameAmount)
-        {
-            // Makes a new pot with the obtained sidepot amount, adds the pot to the list of table pots, and sets the latestPot variable to the created pot.
-            setPot(new Pot(this, getPokerTable(), sidePot, getPokerTable().getPots().size()));
-            getPokerTable().getPots().add(getPot());
-            getPokerTable().setLatestPot(getPot());
-            // This for loop goes through every non folded player. If the player has bet more on the current phase than the player going all in,
-            // take how much we are short of their current bet. Then lower their contribution amount on the pot before the side pot just created,
-            // created and put it in the side pot.
-            for (PokerPlayer pokerPlayer : getPokerTable().getNonFoldedPlayers())
-                if (pokerPlayer.getCurrentBet() >= getCurrentBet() && pokerPlayer != this)
-                {
-                    getPokerTable().getPots().get(getPokerTable().getPots().indexOf(getPot()) - 1).contribute(pokerPlayer, getPokerTable().getPots().get(getPokerTable().getPots().indexOf(getPot()) - 1).getContribution(pokerPlayer) - (pokerPlayer.getCurrentBet() - getCurrentBet()), true);
-                    getPot().contribute(pokerPlayer, pokerPlayer.getCurrentBet() - this.getCurrentBet(), false);
-                }
-            
-            // This goes through every single pot and contributes whatever is
-            // needed to each pot (whatever is needed is defined by the
-            // player's all in amount of that pot)
-            // We have to match that amount so we set our contribution level to
-            // that amount. We also store the total amount of money we covered
-            // so that we can take it
-            // away from our all in amount once we contribute to the pot before
-            // our side pot.
-            double allInCover = 0;
-            for (Pot pot : getPokerTable().getPots())
-            {
-                if (!pot.isMain() && pot.getPlayerAllIn() != this) 
-                {
-                    if (pot.getPlayerAllIn().getAllIn() > getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(this))
-                    {
-                        allInCover += (getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(pot.getPlayerAllIn()) - getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(this));
-                        getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).contribute(this, getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(pot.getPlayerAllIn()) - getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(this), false);
-                        getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).adjustPot();
-                    }
-                }
-            }
-            getPokerTable().getPots().get(getPokerTable().getPots().indexOf(getPot()) - 1).contribute(this, amount - allInCover, false);
-            getPokerTable().getPots().get(getPokerTable().getPots().indexOf(getPot()) - 1).adjustPot();
-        } else if (sidePot == 0 && !sameAmount)
-        {
-            getPokerTable().setCurrentBet(getCurrentBet());
-            double allInCover = 0;
-            for (Pot pot : getPokerTable().getPots())
-            {
-                if (!pot.isMain() && pot.getPlayerAllIn() != this) 
-                {
-                    if (pot.getPlayerAllIn().getAllIn() > getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(this))
-                    {
-                        allInCover += (getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(pot.getPlayerAllIn()) - getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(this));
-                        getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).contribute(this, getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(pot.getPlayerAllIn()) - getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).getContribution(this), false);
-                        getPokerTable().getPots().get(getPokerTable().getPots().indexOf(pot) - 1).adjustPot();
-                    }
-                }
-            }
-            getPokerTable().getLatestPot().contribute(this, amount - allInCover, false);
-            getPokerTable().getLatestPot().adjustPot();
-        }
-
-        getPokerTable().adjustPots();
-        // Since the player is going all in, deduct all of his money
-        setMoney(0);
-
-        // Send messages
-        Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f is all in for " + "&6" + Formatter.formatMoney(amount) + "&f! (Total: " + "&6" + Formatter.formatMoney(getTotalBet()) + "&f)");
-        if (sidePot > 0 && !sameAmount)
-        {
-            Messages.sendToAllWithinRange(getPokerTable().getLocation(), "Created side pot of " + "&6" + Formatter.formatMoney(sidePot) + "&f!");
-        }
-
-        getPokerTable().nextPersonTurn(this); // Go to the next person's turn
+        if (roundOver) pokerTable.endHand();
+    }
+    
+    public void resetDeltaPot() {
+    	this.deltaPot = 0;
+    }
+    
+    public void bet(double bet)
+    {
+    	if (getPokerTable().noBetsThisRound()) {
+    		Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f bet " + "&6" + Formatter.formatMoney(bet) + "&f (Total: " + "&6" + Formatter.formatMoney(bet + getTotalBet()) + "&f)");
+    	} else if (bet > getPokerTable().getCurrentBet()) {
+    		Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f raised to " + "&6" + Formatter.formatMoney(bet) + "&f (Total: " + "&6" + Formatter.formatMoney(bet + getTotalBet()) + "&f)");
+    	} else if (bet == getPokerTable().getCurrentBet()) {
+    		Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f called a bet of " + "&6" + Formatter.formatMoney(bet) + "&f (Total: " + "&6" + Formatter.formatMoney(bet + getTotalBet()) + "&f)");
+    	} else {
+    		Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f went all in with " + "&6" + Formatter.formatMoney(bet) + "&f (Total: " + "&6" + Formatter.formatMoney(bet + getTotalBet()) + "&f)");
+    	}
+    	
+    	setCurrentBet(bet);
+    	setActed(true);
+    	
+    	for (PokerPlayer p : getPokerTable().getNonFoldedPlayers()) {
+    		p.resetDeltaPot();
+    		p.updatePot();
+    	}
+    	
+    	getPokerTable().nextPersonTurn(this);
     }
 
     @Override
@@ -222,7 +178,6 @@ public class PokerPlayer extends CardsPlayer
         setActed(true);
         setFolded(true);
         setTotalBet(0);
-        getPokerTable().adjustPots();
         Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getPlayerName() + "&f folds.");
         if (getPokerTable().getActionPlayer() == this) getPokerTable().nextPersonTurn(this);
     }
@@ -247,9 +202,13 @@ public class PokerPlayer extends CardsPlayer
         return (PokerTable) getTable();
     }
 
-    public Pot getPot()
+    public double getPot()
     {
         return pot;
+    }
+    
+    public double getTotalPot() {
+    	return pot + deltaPot;
     }
 
     public double getTotalBet()
@@ -276,6 +235,11 @@ public class PokerPlayer extends CardsPlayer
     {
         return revealed;
     }
+    
+    @Override
+    public double getMoney() {
+    	return money - getCurrentBet();
+    }
 
     // Makes this player posts a blind. The argument should be one of the
     // three: "small" - for the small blind "big" - for the big blind "ante" -
@@ -289,32 +253,26 @@ public class PokerPlayer extends CardsPlayer
         double amount = 0;
         if (blind.equals("small blind"))
         {
-            amount = settings.getSb();
+            amount += settings.getSb();
             Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f has posted the small blind (" + "&6" + Formatter.formatMoney(amount) + "&f)");
-        }
-        if (blind.equals("big blind"))
+        } 
+        else if (blind.equals("big blind"))
         {
             amount = settings.getBb();
             Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f has posted the big blind (" + "&6" + Formatter.formatMoney(amount) + "&f)");
         }
         if (blind.equals("ante"))
         {
-            amount = settings.getAnte();
+            amount += settings.getAnte();
             Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f has posted the ante (" + "&6" + Formatter.formatMoney(amount) + "&f)");
         }
 
-
-        //Only update current bet if its not an ante.
-        if (!blind.equals("ante")) 
-        {
-            currentBet = amount;
-            table.setCurrentBet(amount);
-        }
+        currentBet = amount;
         
-        totalBet = totalBet + amount;
-        table.getLatestPot().contribute(this, amount, false);
-        table.getLatestPot().setPot(table.getLatestPot().getPot() + amount);
-        setMoney(getMoney() - amount);
+        for (PokerPlayer p : getPokerTable().getNonFoldedPlayers()) {
+    		p.resetDeltaPot();
+    		p.updatePot();
+    	}
     }
 
     public void setActed(boolean acted)
@@ -337,7 +295,7 @@ public class PokerPlayer extends CardsPlayer
         this.folded = folded;
     }
 
-    public void setPot(Pot pot)
+    public void setPot(double pot)
     {
         this.pot = pot;
     }

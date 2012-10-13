@@ -216,7 +216,8 @@ public class MapMethods
                     mapCanvas.drawText(55, 95, MinecraftFont.Font, "§16;" + Formatter.formatMoneyWithoutCurrency(pokerPlayer.getPokerTable().getCurrentBet()));
 
                     // Draw total in pots
-                    mapCanvas.drawText(55, 115, MinecraftFont.Font, "§16;" + Formatter.formatMoneyWithoutCurrency(pokerPlayer.getPokerTable().countPotAmounts()));
+                    // TODO: UPDATE
+                    mapCanvas.drawText(55, 115, MinecraftFont.Font, "§16;" + Formatter.formatMoneyWithoutCurrency(pokerPlayer.getPokerTable().getHighestPot()));
 
                     redrawsNeeded.put(player.getName(), false);
                     player.sendMap(mapView);

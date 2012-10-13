@@ -95,6 +95,7 @@ public class PokerAllin extends PluginCommand
     @Override
     public void perform() throws Exception
     {
-        pokerPlayer.allIn();
+    	double betAmount = pokerPlayer.getMoney() + pokerPlayer.getCurrentBet();
+        pokerPlayer.bet(betAmount);
     }
 }

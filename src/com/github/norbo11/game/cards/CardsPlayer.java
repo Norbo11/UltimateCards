@@ -47,7 +47,7 @@ public abstract class CardsPlayer extends PlayerControlled
     private CardsTable table; // This holds the table that the player is sitting
                               // at
 
-    private double money; // This is the player's stack
+    protected double money; // This is the player's stack
     private int ID; // ID of the player every single statistic associated with this player
 
     public abstract boolean canPlay();
@@ -74,7 +74,8 @@ public abstract class CardsPlayer extends PlayerControlled
 
     public boolean hasMoney(double amount)
     {
-        return money >= amount;
+    	System.out.println(getPlayerName() + "s money: " + getMoney());
+        return getMoney() >= amount;
     }
 
     public boolean isAction()
