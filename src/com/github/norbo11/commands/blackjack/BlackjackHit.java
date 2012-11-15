@@ -9,10 +9,6 @@ import com.github.norbo11.util.NumberMethods;
 public class BlackjackHit extends PluginCommand
 {
 
-    BlackjackPlayer blackjackPlayer;
-    BlackjackTable blackjackTable;
-    int hand = 0;
-
     public BlackjackHit()
     {
         getAlises().add("hit");
@@ -26,6 +22,11 @@ public class BlackjackHit extends PluginCommand
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "blackjack");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "blackjack." + getAlises().get(0));
     }
+
+    BlackjackPlayer blackjackPlayer;
+    BlackjackTable blackjackTable;
+
+    int hand = 0;
 
     @Override
     public boolean conditions()

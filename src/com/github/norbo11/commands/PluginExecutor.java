@@ -166,33 +166,80 @@ public class PluginExecutor implements CommandExecutor
                         return true;
                     }
 
-                    if (command.getName().equalsIgnoreCase("cards"))// || command.getName().equalsIgnoreCase("c"))
+                    if (command.getName().equalsIgnoreCase("cards"))
                     {
-
                         for (PluginCommand cmd : commandsCards)
-                            if (performChecks(cmd, args, player, action)) return true;
-                        Messages.sendMessage(player, "&cNo such cards command. Check help with &6/cards help.");
+                        {
+                            if (cmd.containsAlias(action))
+                            {
+                                if (cmd.hasPermission(player) || player.hasPermission(PluginCommand.PERMISSIONS_BASE_NODE))
+                                {
+                                    performCommand(cmd, args, player);
+                                } else
+                                {
+                                    ErrorMessages.noPermission(player);
+                                }
+                                return true;
+                            }
+                        }
+                        Messages.sendMessage(player, "&cNo such cards command. Check help with &6/cards help&c.");
                     }
 
-                    if (command.getName().equalsIgnoreCase("table"))// || command.getName().equalsIgnoreCase("t"))
+                    if (command.getName().equalsIgnoreCase("table"))
                     {
                         for (PluginCommand cmd : commandsTable)
-                            if (performChecks(cmd, args, player, action)) return true;
-                        Messages.sendMessage(player, "&cNo such table command. Check help with &6/table help.");
+                        {
+                            if (cmd.containsAlias(action))
+                            {
+                                if (cmd.hasPermission(player) || player.hasPermission(PluginCommand.PERMISSIONS_BASE_NODE))
+                                {
+                                    performCommand(cmd, args, player);
+                                } else
+                                {
+                                    ErrorMessages.noPermission(player);
+                                }
+                                return true;
+                            }
+                        }
+                        Messages.sendMessage(player, "&cNo such table command. Check help with &6/table help&c.");
                     }
 
-                    if (command.getName().equalsIgnoreCase("poker"))// || command.getName().equalsIgnoreCase("p"))
+                    if (command.getName().equalsIgnoreCase("poker"))
                     {
                         for (PluginCommand cmd : commandsPoker)
-                            if (performChecks(cmd, args, player, action)) return true;
-                        Messages.sendMessage(player, "&cNo such poker command. Check help with &6/poker help.");
+                        {
+                            if (cmd.containsAlias(action))
+                            {
+                                if (cmd.hasPermission(player) || player.hasPermission(PluginCommand.PERMISSIONS_BASE_NODE))
+                                {
+                                    performCommand(cmd, args, player);
+                                } else
+                                {
+                                    ErrorMessages.noPermission(player);
+                                }
+                                return true;
+                            }
+                        }
+                        Messages.sendMessage(player, "&cNo such poker command. Check help with &6/poker help&c.");
                     }
 
                     if (command.getName().equalsIgnoreCase("blackjack") || command.getName().equalsIgnoreCase("bj"))
                     {
                         for (PluginCommand cmd : commandsBlackjack)
-                            if (performChecks(cmd, args, player, action)) return true;
-                        Messages.sendMessage(player, "&cNo such blackjack command. Check help with &6/blackjack help.");
+                        {
+                            if (cmd.containsAlias(action))
+                            {
+                                if (cmd.hasPermission(player) || player.hasPermission(PluginCommand.PERMISSIONS_BASE_NODE))
+                                {
+                                    performCommand(cmd, args, player);
+                                } else
+                                {
+                                    ErrorMessages.noPermission(player);
+                                }
+                                return true;
+                            }
+                        }
+                        Messages.sendMessage(player, "&cNo such blackjack command. Check help with &6/blackjack | /bj help&c.");
                     }
                 } else
                 {
@@ -209,24 +256,13 @@ public class PluginExecutor implements CommandExecutor
         return true;
     }
 
-    private boolean performChecks(PluginCommand cmd, String[] args, Player player, String action) throws Exception
+    public void performCommand(PluginCommand cmd, String[] args, Player player) throws Exception
     {
-        if (cmd.containsAlias(action)) 
+        cmd.setArgs(args);
+        cmd.setPlayer(player);
+        if (cmd.conditions())
         {
-            if (cmd.hasPermission(player) || player.hasPermission(PluginCommand.PERMISSIONS_BASE_NODE + "*"))
-            {
-                cmd.setArgs(args);
-                cmd.setPlayer(player);
-                if (cmd.conditions())
-                {
-                    cmd.perform();
-                }
-                return true;
-            } else
-            {
-                ErrorMessages.noPermission(player);
-            }
+            cmd.perform();
         }
-        return false;
     }
 }

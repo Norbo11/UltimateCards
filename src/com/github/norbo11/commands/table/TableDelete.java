@@ -7,8 +7,6 @@ import com.github.norbo11.util.ErrorMessages;
 
 public class TableDelete extends PluginCommand
 {
-    CardsPlayer cardsPlayer;
-
     public TableDelete()
     {
         getAlises().add("delete");
@@ -23,13 +21,17 @@ public class TableDelete extends PluginCommand
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table." + getAlises().get(0));
     }
 
+    CardsPlayer cardsPlayer;
+
     @Override
     public boolean conditions()
     {
         if (getArgs().length == 1)
         {
-            if (CardsTable.isOwnerOfTable(cardsPlayer = CardsPlayer.getCardsPlayer(getPlayer().getName()))) return true;
-            else
+            if (CardsTable.isOwnerOfTable(cardsPlayer = CardsPlayer.getCardsPlayer(getPlayer().getName())))
+            {
+                if (cardsPlayer.getTable().canBeDeleted()) return true;
+            } else
             {
                 ErrorMessages.notOwnerOfAnyTable(getPlayer());
             }

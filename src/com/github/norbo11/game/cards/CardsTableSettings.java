@@ -10,16 +10,17 @@ import com.github.norbo11.util.NumberMethods;
 
 public abstract class CardsTableSettings
 {
-    private boolean allowRebuys = UltimateCards.getPluginConfig().isAllowRebuys();
-    private boolean displayTurnsPublicly = UltimateCards.getPluginConfig().isDisplayTurnsPublicly();
-    private double minBuy = UltimateCards.getPluginConfig().getMinBuy();
-    private double maxBuy = UltimateCards.getPluginConfig().getMaxBuy();
-    private CardsTable table;
-
     public CardsTableSettings(CardsTable table)
     {
         this.table = table;
     }
+
+    private boolean allowRebuys = UltimateCards.getPluginConfig().isAllowRebuys();
+    private boolean displayTurnsPublicly = UltimateCards.getPluginConfig().isDisplayTurnsPublicly();
+    private double minBuy = UltimateCards.getPluginConfig().getMinBuy();
+    private double maxBuy = UltimateCards.getPluginConfig().getMaxBuy();
+
+    private CardsTable table;
 
     public String checkBoolean(String v)
     {

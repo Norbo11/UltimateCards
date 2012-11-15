@@ -13,10 +13,6 @@ import com.github.norbo11.util.NumberMethods;
 public class CardsWithdraw extends PluginCommand
 {
 
-    CardsPlayer cardsPlayer;
-
-    double amountToWithdraw;
-
     public CardsWithdraw()
     {
         getAlises().add("withdraw");
@@ -30,6 +26,10 @@ public class CardsWithdraw extends PluginCommand
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "cards");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "cards." + getAlises().get(0));
     }
+
+    CardsPlayer cardsPlayer;
+
+    double amountToWithdraw;
 
     // cards withdraw <amount>
     @Override
@@ -68,6 +68,9 @@ public class CardsWithdraw extends PluginCommand
             {
                 ErrorMessages.notSittingAtTable(getPlayer());
             }
+        } else
+        {
+            showUsage();
         }
         return false;
     }

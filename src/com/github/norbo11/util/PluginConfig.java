@@ -6,39 +6,39 @@ import com.github.norbo11.UltimateCards;
 
 public class PluginConfig
 {
+    public PluginConfig(UltimateCards p)
+    {
+        this.p = p;
+    }
+
     private UltimateCards p;
 
     // Options --------------------------------------------------
     private FileConfiguration config;
 
-    // Update
-    private boolean autoUpdate;
-
+    // General
+    private boolean autoUpdate, cleanupOnDisable;
     // Log
     private boolean enableLog;
-    private String dateFormat;
 
+    private String dateFormat;
     // Chat
     private boolean displayTag;
+
     private String colorTag, colorNormalMessage, colorErrorMessage, colorHighlight;
 
     // General
     private boolean displayTurnsPublicly, allowRebuys;
-
     // Poker
     private int chatRange, dynamicFrequency;
     private double maxBuy, sb, bb, ante, minRaise, fixRake, minBuy, rake;
-    private boolean rakeToStack, minRaiseAlwaysBB;
 
+    private boolean rakeToStack, minRaiseAlwaysBB;
     // Blackjack
     private boolean allowDoubleDown, serverDealer, serverNeverDealer;
     private double minBet;
-    private int amountOfDecks;
 
-    public PluginConfig(UltimateCards p)
-    {
-        this.p = p;
-    }
+    private int amountOfDecks;
 
     public int getAmountOfDecks()
     {
@@ -145,6 +145,11 @@ public class PluginConfig
         return autoUpdate;
     }
 
+    public boolean isCleanupOnDisable()
+    {
+        return cleanupOnDisable;
+    }
+
     public boolean isDisplayTag()
     {
         return displayTag;
@@ -200,7 +205,8 @@ public class PluginConfig
 
     private void setValues()
     {
-        // Update
+        // General
+        cleanupOnDisable = config.getBoolean("options.general.cleanupOnDisable", config.getDefaults().getBoolean("options.general.cleanupOnDisable"));
         autoUpdate = config.getBoolean("options.general.autoUpdate", config.getDefaults().getBoolean("options.general.autoUpdate"));
 
         // Log

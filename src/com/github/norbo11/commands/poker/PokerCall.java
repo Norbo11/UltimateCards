@@ -9,10 +9,6 @@ import com.github.norbo11.util.ErrorMessages;
 public class PokerCall extends PluginCommand
 {
 
-    PokerPlayer pokerPlayer;
-
-    PokerTable pokerTable;
-
     public PokerCall()
     {
         getAlises().add("call");
@@ -26,6 +22,10 @@ public class PokerCall extends PluginCommand
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "poker");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "poker." + getAlises().get(0));
     }
+
+    PokerPlayer pokerPlayer;
+
+    PokerTable pokerTable;
 
     @Override
     public boolean conditions()
@@ -48,8 +48,6 @@ public class PokerCall extends PluginCommand
                                 {
                                     if (!pokerPlayer.isAllIn())
                                     {
-                                        System.out.println(pokerPlayer.getPlayerName() + " currentBet: " + pokerPlayer.getCurrentBet());
-                                        System.out.println("Table currentBet: " + pokerTable.getCurrentBet());
                                         if (pokerPlayer.getCurrentBet() < pokerTable.getCurrentBet()) // Check if the player hasn't already called
                                         {
                                             if (pokerPlayer.hasMoney(pokerTable.getCurrentBet() - pokerPlayer.getCurrentBet())) return true;

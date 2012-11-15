@@ -19,6 +19,15 @@ public abstract class PluginCommand
 
     public abstract boolean conditions();
 
+    public boolean containsAlias(String action)
+    {
+        for (String alias : aliases)
+        {
+            if (alias.equalsIgnoreCase(action)) return true;
+        }
+        return false;
+    }
+
     public String getAliasesString()
     {
         String returnValue = "";
@@ -117,14 +126,5 @@ public abstract class PluginCommand
     public void showUsage()
     {
         Messages.sendMessage(player, getUsage());
-    }
-
-    public boolean containsAlias(String action)
-    {
-        for (String alias : aliases)
-        {
-            if (alias.equalsIgnoreCase(action)) return true;
-        }
-        return false;
     }
 }

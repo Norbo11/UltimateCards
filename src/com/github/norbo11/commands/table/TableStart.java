@@ -8,8 +8,6 @@ import com.github.norbo11.util.ErrorMessages;
 public class TableStart extends PluginCommand
 {
 
-    CardsTable cardsTable;
-
     public TableStart()
     {
         getAlises().add("start");
@@ -23,6 +21,8 @@ public class TableStart extends PluginCommand
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table." + getAlises().get(0));
     }
+
+    CardsTable cardsTable;
 
     // Starts the player's table if they are the owner.
     // table start

@@ -9,8 +9,6 @@ import com.github.norbo11.util.NumberMethods;
 
 public class CardsPlayers extends PluginCommand
 {
-    CardsTable cardsTable;
-
     public CardsPlayers()
     {
         getAlises().add("players");
@@ -24,6 +22,8 @@ public class CardsPlayers extends PluginCommand
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "cards");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "cards." + getAlises().get(0));
     }
+
+    CardsTable cardsTable;
 
     @Override
     public boolean conditions()

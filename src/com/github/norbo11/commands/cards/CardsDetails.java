@@ -8,8 +8,6 @@ import com.github.norbo11.util.NumberMethods;
 
 public class CardsDetails extends PluginCommand
 {
-    CardsTable cardsTable;
-
     public CardsDetails()
     {
         getAlises().add("details");
@@ -23,6 +21,8 @@ public class CardsDetails extends PluginCommand
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "cards");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "cards." + getAlises().get(0));
     }
+
+    CardsTable cardsTable;
 
     // Lists the specified details type of the specified table. If no table is specified, lists details of the table that the player is sitting on.
     @Override

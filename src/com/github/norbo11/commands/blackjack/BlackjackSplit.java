@@ -12,9 +12,6 @@ import com.github.norbo11.util.Messages;
 public class BlackjackSplit extends PluginCommand
 {
 
-    BlackjackPlayer blackjackPlayer;
-    BlackjackTable blackjackTable;
-
     public BlackjackSplit()
     {
         getAlises().add("split");
@@ -27,6 +24,10 @@ public class BlackjackSplit extends PluginCommand
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "blackjack");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "blackjack." + getAlises().get(0));
     }
+
+    BlackjackPlayer blackjackPlayer;
+
+    BlackjackTable blackjackTable;
 
     @Override
     public boolean conditions()
@@ -99,7 +100,7 @@ public class BlackjackSplit extends PluginCommand
         blackjackPlayer.getHands().get(0).getHand().getCards().remove(card);
         blackjackPlayer.getHands().get(1).getHand().getCards().add(card);
 
-        //Hit both hands
+        // Hit both hands
         blackjackPlayer.getHands().get(0).recalculateScore();
         blackjackPlayer.getHands().get(0).addCards(blackjackTable.getDeck().generateCards(1));
         blackjackPlayer.getHands().get(1).recalculateScore();

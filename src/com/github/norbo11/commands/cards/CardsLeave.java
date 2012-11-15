@@ -14,11 +14,6 @@ import com.github.norbo11.util.Messages;
 
 public class CardsLeave extends PluginCommand
 {
-    CardsTable cardsTable;
-
-    CardsPlayer cardsPlayer;
-    double money;
-
     public CardsLeave()
     {
         getAlises().add("leave");
@@ -26,13 +21,18 @@ public class CardsLeave extends PluginCommand
         getAlises().add("stand");
         getAlises().add("standup");
 
-        setDescription("Leaves the table you are currently sititng at.");
+        setDescription("Leaves the table that you are currently sitting at.");
 
         setArgumentString("");
 
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "cards");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "cards." + getAlises().get(0));
     }
+
+    CardsTable cardsTable;
+    CardsPlayer cardsPlayer;
+
+    double money;
 
     @Override
     public boolean conditions()

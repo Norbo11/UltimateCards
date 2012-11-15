@@ -14,10 +14,6 @@ import com.github.norbo11.util.NumberMethods;
 
 public class CardsSit extends PluginCommand
 {
-    CardsTable cardsTable;
-
-    double buyin;
-
     public CardsSit()
     {
         getAlises().add("sit");
@@ -31,6 +27,10 @@ public class CardsSit extends PluginCommand
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "cards");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "cards." + getAlises().get(0));
     }
+
+    CardsTable cardsTable;
+
+    double buyin;
 
     @Override
     // cards sit <id> <buyin>

@@ -11,9 +11,27 @@ import com.github.norbo11.UltimateCards;
 
 public class Messages
 {
-    public static UltimateCards p;
+    public Messages(UltimateCards p)
+    {
+        Messages.p = p;
+
+        // Uncoment if you want delays between messages
+        /*
+         * Bukkit.getScheduler().scheduleAsyncRepeatingTask(p, new Runnable(){
+         * 
+         * @Override public void run() { String message = null; Location location = null;
+         * 
+         * for (Entry<String, Location> entry : messageBuffer.entrySet()) { message = entry.getKey(); location = entry.getValue(); break; }
+         * 
+         * for (Player player : Bukkit.getOnlinePlayers()) { if (player.getWorld().equals(location.getWorld())) { if (player.getLocation().distance(location) <= UltimateCards.getPluginConfig().getChatRange()) { Messages.sendMessage(player, message); messageBuffer.remove(message); } } } }
+         * 
+         * }, 0L, 10L);
+         */
+    }
 
     // public static HashMap<String, Location> messageBuffer = new HashMap<String, Location>();
+
+    public static UltimateCards p;
 
     public static String convertColors(String message)
     {
@@ -70,23 +88,5 @@ public class Messages
         {
             sendToAllWithinRange(location, message);
         }
-    }
-
-    public Messages(UltimateCards p)
-    {
-        Messages.p = p;
-
-        // Uncoment if you want delays between messages
-        /*
-         * Bukkit.getScheduler().scheduleAsyncRepeatingTask(p, new Runnable(){
-         * 
-         * @Override public void run() { String message = null; Location location = null;
-         * 
-         * for (Entry<String, Location> entry : messageBuffer.entrySet()) { message = entry.getKey(); location = entry.getValue(); break; }
-         * 
-         * for (Player player : Bukkit.getOnlinePlayers()) { if (player.getWorld().equals(location.getWorld())) { if (player.getLocation().distance(location) <= UltimateCards.getPluginConfig().getChatRange()) { Messages.sendMessage(player, message); messageBuffer.remove(message); } } } }
-         * 
-         * }, 0L, 10L);
-         */
     }
 }

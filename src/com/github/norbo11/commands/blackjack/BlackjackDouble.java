@@ -10,9 +10,6 @@ import com.github.norbo11.util.Messages;
 public class BlackjackDouble extends PluginCommand
 {
 
-    BlackjackPlayer blackjackPlayer;
-    BlackjackTable blackjackTable;
-
     public BlackjackDouble()
     {
         getAlises().add("doubledown");
@@ -26,6 +23,10 @@ public class BlackjackDouble extends PluginCommand
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "blackjack");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "blackjack." + getAlises().get(0));
     }
+
+    BlackjackPlayer blackjackPlayer;
+
+    BlackjackTable blackjackTable;
 
     @Override
     public boolean conditions()

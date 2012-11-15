@@ -11,10 +11,6 @@ import com.github.norbo11.util.Messages;
 
 public class CardsInvite extends PluginCommand
 {
-    String toInvite;
-
-    CardsPlayer cardsPlayer;
-
     public CardsInvite()
     {
         getAlises().add("invite");
@@ -27,6 +23,10 @@ public class CardsInvite extends PluginCommand
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "cards");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "cards." + getAlises().get(0));
     }
+
+    String toInvite;
+
+    CardsPlayer cardsPlayer;
 
     @Override
     public boolean conditions()

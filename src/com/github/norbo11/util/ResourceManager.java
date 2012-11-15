@@ -6,12 +6,12 @@ import com.github.norbo11.UltimateCards;
 
 public class ResourceManager
 {
-    UltimateCards p;
-
     public ResourceManager(UltimateCards p)
     {
         this.p = p;
     }
+
+    UltimateCards p;
 
     public InputStream getResource(String filename)
     {

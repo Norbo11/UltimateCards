@@ -47,168 +47,6 @@ import org.bukkit.plugin.Plugin;
 public class Updater
 {
     /**
-     * Gives the dev the result of the update process. Can be obtained by called getResult().
-     */
-    public enum UpdateResult
-    {
-        /**
-         * The updater found an update, and has readied it to be loaded the next time the server restarts/reloads.
-         */
-        SUCCESS(1),
-        /**
-         * The updater did not find an update, and nothing was downloaded.
-         */
-        NO_UPDATE(2),
-        /**
-         * The updater found an update, but was unable to download it.
-         */
-        FAIL_DOWNLOAD(3),
-        /**
-         * For some reason, the updater was unable to contact dev.bukkit.org to download the file.
-         */
-        FAIL_DBO(4),
-        /**
-         * When running the version check, the file on DBO did not contain the a version in the format 'vVersion' such as 'v1.0'.
-         */
-        FAIL_NOVERSION(5),
-        /**
-         * The slug provided by the plugin running the updater was invalid and doesn't exist on DBO.
-         */
-        FAIL_BADSLUG(6),
-        /**
-         * The updater found an update, but because of the UpdateType being set to NO_DOWNLOAD, it wasn't downloaded.
-         */
-        UPDATE_AVAILABLE(7);
-
-        private static final Map<Integer, Updater.UpdateResult> valueList = new HashMap<Integer, Updater.UpdateResult>();
-
-        public static Updater.UpdateResult getResult(int value)
-        {
-            return valueList.get(value);
-        }
-
-        private final int value;
-
-        static
-        {
-            for (Updater.UpdateResult result : Updater.UpdateResult.values())
-            {
-                valueList.put(result.value, result);
-            }
-        }
-
-        private UpdateResult(int value)
-        {
-            this.value = value;
-        }
-
-        public int getValue()
-        {
-            return this.value;
-        }
-    }
-
-    /**
-     * Allows the dev to specify the type of update that will be run.
-     */
-    public enum UpdateType
-    {
-        /**
-         * Run a version check, and then if the file is out of date, download the newest version.
-         */
-        DEFAULT(1),
-        /**
-         * Don't run a version check, just find the latest update and download it.
-         */
-        NO_VERSION_CHECK(2),
-        /**
-         * Get information about the version and the download size, but don't actually download anything.
-         */
-        NO_DOWNLOAD(3);
-
-        private static final Map<Integer, Updater.UpdateType> valueList = new HashMap<Integer, Updater.UpdateType>();
-
-        public static Updater.UpdateType getResult(int value)
-        {
-            return valueList.get(value);
-        }
-
-        private final int value;
-
-        static
-        {
-            for (Updater.UpdateType result : Updater.UpdateType.values())
-            {
-                valueList.put(result.value, result);
-            }
-        }
-
-        private UpdateType(int value)
-        {
-            this.value = value;
-        }
-
-        public int getValue()
-        {
-            return this.value;
-        }
-    }
-
-    private Plugin plugin;
-    private UpdateType type;
-    private String versionTitle;
-    private String versionLink;
-    private long totalSize; // Holds the total size of the file
-    @SuppressWarnings("unused")
-    private double downloadedSize; // TODO: Holds the number of bytes downloaded
-    private int sizeLine; // Used for detecting file size
-    private int multiplier; // Used for determining when to broadcast download
-                            // updates
-    private boolean announce; // Whether to announce file downloads
-    private URL url; // Connecting to RSS
-    private static final String DBOUrl = "http://dev.bukkit.org/server-mods/"; // Slugs
-                                                                               // will
-                                                                               // be
-                                                                               // appended
-                                                                               // to
-                                                                               // this
-                                                                               // to
-                                                                               // get
-                                                                               // to
-                                                                               // the
-                                                                               // project's
-                                                                               // RSS
-                                                                               // feed
-    private String[] noUpdateTag = { "-DEV", "-PRE" }; // If the version number
-                                                       // contains one of these,
-                                                       // don't update.
-    private static final int BYTE_SIZE = 1024; // Used for downloading files
-
-    private String updateFolder = YamlConfiguration.loadConfiguration(new File("bukkit.yml")).getString("settings.update-folder"); // The
-                                                                                                                                   // folder
-                                                                                                                                   // that
-                                                                                                                                   // downloads
-                                                                                                                                   // will
-                                                                                                                                   // be
-                                                                                                                                   // placed
-                                                                                                                                   // in
-    private Updater.UpdateResult result = Updater.UpdateResult.SUCCESS; // Used
-                                                                        // for
-                                                                        // determining
-                                                                        // the
-                                                                        // outcome
-                                                                        // of
-                                                                        // the
-                                                                        // update
-                                                                        // process
-    // Strings for reading RSS
-    private static final String TITLE = "title";
-
-    private static final String LINK = "link";
-
-    private static final String ITEM = "item";
-
-    /**
      * Initialize the updater
      * 
      * @param plugin
@@ -263,6 +101,169 @@ public class Updater
             }
         }
     }
+
+    /**
+     * Gives the dev the result of the update process. Can be obtained by called getResult().
+     */
+    public enum UpdateResult
+    {
+        /**
+         * The updater found an update, and has readied it to be loaded the next time the server restarts/reloads.
+         */
+        SUCCESS(1),
+        /**
+         * The updater did not find an update, and nothing was downloaded.
+         */
+        NO_UPDATE(2),
+        /**
+         * The updater found an update, but was unable to download it.
+         */
+        FAIL_DOWNLOAD(3),
+        /**
+         * For some reason, the updater was unable to contact dev.bukkit.org to download the file.
+         */
+        FAIL_DBO(4),
+        /**
+         * When running the version check, the file on DBO did not contain the a version in the format 'vVersion' such as 'v1.0'.
+         */
+        FAIL_NOVERSION(5),
+        /**
+         * The slug provided by the plugin running the updater was invalid and doesn't exist on DBO.
+         */
+        FAIL_BADSLUG(6),
+        /**
+         * The updater found an update, but because of the UpdateType being set to NO_DOWNLOAD, it wasn't downloaded.
+         */
+        UPDATE_AVAILABLE(7);
+
+        private UpdateResult(int value)
+        {
+            this.value = value;
+        }
+
+        private static final Map<Integer, Updater.UpdateResult> valueList = new HashMap<Integer, Updater.UpdateResult>();
+
+        private final int value;
+
+        static
+        {
+            for (Updater.UpdateResult result : Updater.UpdateResult.values())
+            {
+                valueList.put(result.value, result);
+            }
+        }
+
+        public static Updater.UpdateResult getResult(int value)
+        {
+            return valueList.get(value);
+        }
+
+        public int getValue()
+        {
+            return this.value;
+        }
+    }
+
+    /**
+     * Allows the dev to specify the type of update that will be run.
+     */
+    public enum UpdateType
+    {
+        /**
+         * Run a version check, and then if the file is out of date, download the newest version.
+         */
+        DEFAULT(1),
+        /**
+         * Don't run a version check, just find the latest update and download it.
+         */
+        NO_VERSION_CHECK(2),
+        /**
+         * Get information about the version and the download size, but don't actually download anything.
+         */
+        NO_DOWNLOAD(3);
+
+        private UpdateType(int value)
+        {
+            this.value = value;
+        }
+
+        private static final Map<Integer, Updater.UpdateType> valueList = new HashMap<Integer, Updater.UpdateType>();
+
+        private final int value;
+
+        static
+        {
+            for (Updater.UpdateType result : Updater.UpdateType.values())
+            {
+                valueList.put(result.value, result);
+            }
+        }
+
+        public static Updater.UpdateType getResult(int value)
+        {
+            return valueList.get(value);
+        }
+
+        public int getValue()
+        {
+            return this.value;
+        }
+    }
+
+    private Plugin plugin;
+    private UpdateType type;
+    private String versionTitle;
+    private String versionLink;
+    private long totalSize; // Holds the total size of the file
+    @SuppressWarnings("unused")
+    private double downloadedSize; // TODO: Holds the number of bytes downloaded
+    private int sizeLine; // Used for detecting file size
+    private int multiplier; // Used for determining when to broadcast download
+    // updates
+    private boolean announce; // Whether to announce file downloads
+    private URL url; // Connecting to RSS
+    private static final String DBOUrl = "http://dev.bukkit.org/server-mods/"; // Slugs
+    // will
+    // be
+    // appended
+    // to
+    // this
+    // to
+    // get
+    // to
+    // the
+    // project's
+    // RSS
+    // feed
+    private String[] noUpdateTag = { "-DEV", "-PRE" }; // If the version number
+
+    // contains one of these,
+    // don't update.
+    private static final int BYTE_SIZE = 1024; // Used for downloading files
+    private String updateFolder = YamlConfiguration.loadConfiguration(new File("bukkit.yml")).getString("settings.update-folder"); // The
+    // folder
+    // that
+    // downloads
+    // will
+    // be
+    // placed
+    // in
+    private Updater.UpdateResult result = Updater.UpdateResult.SUCCESS; // Used
+
+    // for
+    // determining
+    // the
+    // outcome
+    // of
+    // the
+    // update
+    // process
+    // Strings for reading RSS
+    private static final String TITLE = "title";
+
+    private static final String LINK = "link";
+
+    private static final String ITEM = "item";
 
     /**
      * Obtain the direct download file url from the file's page.

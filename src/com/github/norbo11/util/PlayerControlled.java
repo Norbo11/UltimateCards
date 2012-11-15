@@ -18,6 +18,11 @@ public class PlayerControlled
         return playerName;
     }
 
+    public void sendMessage(String message)
+    {
+        Messages.sendMessage(getPlayer(), message);
+    }
+
     public void setName(String playerName)
     {
         this.playerName = playerName;

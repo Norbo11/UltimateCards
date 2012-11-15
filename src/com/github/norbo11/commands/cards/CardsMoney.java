@@ -8,8 +8,6 @@ import com.github.norbo11.util.Messages;
 
 public class CardsMoney extends PluginCommand
 {
-    CardsPlayer cardsPlayer;
-
     public CardsMoney()
     {
         getAlises().add("money");
@@ -23,6 +21,8 @@ public class CardsMoney extends PluginCommand
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "cards");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "cards." + getAlises().get(0));
     }
+
+    CardsPlayer cardsPlayer;
 
     @Override
     public boolean conditions()

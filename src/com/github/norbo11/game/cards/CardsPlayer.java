@@ -9,6 +9,14 @@ import com.github.norbo11.util.Sound;
 
 public abstract class CardsPlayer extends PlayerControlled
 {
+    private Location startLocation; // Used to teleport the player back to the location where he/she joined
+
+    private CardsTable table;       // This holds the table that the player is sitting at
+
+    protected double money;         // This is the player's stack
+
+    private int ID;                 // ID of the player every single statistic associated with this player
+
     public static CardsPlayer getCardsPlayer(int id, CardsTable table)
     {
         if (table != null)
@@ -41,11 +49,6 @@ public abstract class CardsPlayer extends PlayerControlled
         return null; // If no match is found, or table doesnt exist, return null
     }
 
-    private Location startLocation; // Used to teleport the player back to the location where he/she joined
-    private CardsTable table;       // This holds the table that the player is sitting at
-    protected double money;         // This is the player's stack
-    private int ID;                 // ID of the player every single statistic associated with this player
-
     public abstract boolean canPlay();
 
     public int getID()
@@ -75,13 +78,17 @@ public abstract class CardsPlayer extends PlayerControlled
 
     public boolean hasMoney(double amount)
     {
-        System.out.println(getPlayerName() + "s money: " + getMoney());
         return getMoney() >= amount;
     }
 
     public boolean isAction()
     {
         return getTable().getActionPlayer() == this;
+    }
+
+    public boolean isButton()
+    {
+        return getTable().getButtonPlayer() == this;
     }
 
     public boolean isEliminated()
@@ -133,4 +140,5 @@ public abstract class CardsPlayer extends PlayerControlled
         table.playTurnSounds(getPlayer());
         Sound.turn(getPlayer());
     }
+
 }

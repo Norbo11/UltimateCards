@@ -1,6 +1,7 @@
 options:
   general:
     autoUpdate: true
+    cleanupOnDisable: true
   log:
     enableLog: false
     dateFormat: 'dd/MM/yyyy HH:mm:ss'

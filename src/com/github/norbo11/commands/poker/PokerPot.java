@@ -9,8 +9,6 @@ import com.github.norbo11.util.Messages;
 public class PokerPot extends PluginCommand
 {
 
-    PokerPlayer pokerPlayer;
-
     public PokerPot()
     {
         getAlises().add("pot");
@@ -23,6 +21,8 @@ public class PokerPot extends PluginCommand
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "poker");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "poker." + getAlises().get(0));
     }
+
+    PokerPlayer pokerPlayer;
 
     @Override
     public boolean conditions()

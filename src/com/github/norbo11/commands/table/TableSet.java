@@ -7,8 +7,6 @@ import com.github.norbo11.util.ErrorMessages;
 
 public class TableSet extends PluginCommand
 {
-    CardsTable cardsTable;
-
     public TableSet()
     {
         getAlises().add("set");
@@ -20,6 +18,8 @@ public class TableSet extends PluginCommand
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table." + getAlises().get(0));
     }
+
+    CardsTable cardsTable;
 
     @Override
     // table set <Setting> <value>

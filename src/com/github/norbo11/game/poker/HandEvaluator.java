@@ -9,17 +9,17 @@ import com.github.norbo11.game.cards.Card;
 public class HandEvaluator
 {
 
-    private Card cards[];
-
-    private String pattern;
-    private float handValue;
-
     public HandEvaluator(Card cards[])
     {
         this.cards = cards;
 
         evaluateHand();
     }
+
+    private Card cards[];
+    private String pattern;
+
+    private float handValue;
 
     public void evaluateHand()
     {

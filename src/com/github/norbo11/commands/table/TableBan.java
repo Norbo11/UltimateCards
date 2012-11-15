@@ -10,11 +10,6 @@ import com.github.norbo11.util.Messages;
 
 public class TableBan extends PluginCommand
 {
-    String toBan;
-
-    CardsPlayer owner;
-    CardsTable table;
-
     public TableBan()
     {
         getAlises().add("ban");
@@ -27,6 +22,11 @@ public class TableBan extends PluginCommand
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table." + getAlises().get(0));
     }
+
+    String toBan;
+    CardsPlayer owner;
+
+    CardsTable table;
 
     @Override
     public boolean conditions()

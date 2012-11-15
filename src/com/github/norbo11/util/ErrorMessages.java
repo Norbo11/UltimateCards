@@ -12,6 +12,16 @@ import com.github.norbo11.game.poker.PokerPlayer;
 public class ErrorMessages
 {
 
+    public static void betBelowCurrentBet(Player player)
+    {
+        Messages.sendMessage(player, "&cYou need to bet more than the current table bet! Or simply " + PluginExecutor.pokerCall.getCommandString() + "&f.");
+    }
+
+    public static void betBelowMinRaise(Player player, double minRaise, double currentBet)
+    {
+        Messages.sendMessage(player, "&cYou cannot raise that amount. Min Raise: " + "&6" + Formatter.formatMoney(minRaise) + "&c (on top of the current bet of " + "&6" + Formatter.formatMoney(currentBet) + "&c)");
+    }
+
     public static void cannotSpecifyHand(Player player)
     {
         Messages.sendMessage(player, "&cYou cannot specify a hand ID right now!");
@@ -35,11 +45,6 @@ public class ErrorMessages
     public static void cantPay(Player player)
     {
         Messages.sendMessage(player, "&cYou can't pay that player, his pot is 0!");
-    }
-
-    public static void betBelowMinRaise(Player player, double minRaise, double currentBet)
-    {
-        Messages.sendMessage(player, "&cYou cannot raise that amount. Min Raise: " + "&6" + Formatter.formatMoney(minRaise) + "&c (on top of the current bet of " + "&6" + Formatter.formatMoney(currentBet) + "&c)");
     }
 
     public static void cantReveal(Player player)
@@ -308,7 +313,7 @@ public class ErrorMessages
 
     public static void playerNotNearEnough(Player player)
     {
-        Messages.sendMessage(player, "&cYou are not near enough to the poker table to join it!");
+        Messages.sendMessage(player, "&cYou are not near enough to the cards table to join it!");
     }
 
     public static void playerSittingAtTable(Player player)
@@ -381,8 +386,4 @@ public class ErrorMessages
         Messages.sendMessage(player, "&cThat bet is too small! You need to bet at least " + Formatter.formatMoney(minBet));
     }
 
-    public static void betBelowCurrentBet(Player player)
-    {
-        Messages.sendMessage(player, "&cYou need to bet more than the current table bet! Or simply " + PluginExecutor.pokerCall.getCommandString() + "&f.");
-    }
 }

@@ -57,23 +57,25 @@ public class MapListener implements Listener
         try
         {
             if (e.getItem().getItemStack().getType() == Material.MAP) // If the item dropped is map that was created by the plugin
-            if (MapMethods.getCreatedMaps().contains(e.getItem().getItemStack().getDurability()))
             {
-                // If the player trying to pick up the map is NOT the
-                // rightful owner, and the map DOES have an owner
-                String mapOwner = MapMethods.mapExists(e.getItem().getItemStack());
-                if (mapOwner != e.getPlayer().getName() && mapOwner != "")
+                if (MapMethods.getCreatedMaps().contains(e.getItem().getItemStack().getDurability()))
                 {
-                    e.setCancelled(true);
-                } else if (CardsPlayer.getCardsPlayer(e.getPlayer().getName()) == null)
-                {
-                    e.setCancelled(true);
-                    e.getItem().remove();
-                    MapMethods.getCreatedMaps().remove(e.getItem().getItemStack().getDurability());
-                } // This results in maps that are no longer in use being
-                  // deleted. Maps being picked up, but still in use, are
-                  // not deleted, but simply cancelled. (both of this is in
-                  // the case if the player is not the owner of the map)
+                    // If the player trying to pick up the map is NOT the
+                    // rightful owner, and the map DOES have an owner
+                    String mapOwner = MapMethods.mapExists(e.getItem().getItemStack());
+                    if (mapOwner != e.getPlayer().getName() && mapOwner != "")
+                    {
+                        e.setCancelled(true);
+                    } else if (CardsPlayer.getCardsPlayer(e.getPlayer().getName()) == null)
+                    {
+                        e.setCancelled(true);
+                        e.getItem().remove();
+                        MapMethods.getCreatedMaps().remove(e.getItem().getItemStack().getDurability());
+                    } // This results in maps that are no longer in use being
+                      // deleted. Maps being picked up, but still in use, are
+                      // not deleted, but simply cancelled. (both of this is in
+                      // the case if the player is not the owner of the map)
+                }
             }
         } catch (Exception exc)
         {

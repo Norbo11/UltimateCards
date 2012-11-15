@@ -16,14 +16,6 @@ import com.github.norbo11.util.NumberMethods;
 
 public class TableCreate extends PluginCommand
 {
-    public static boolean isGameType(String gameType)
-    {
-        return gameType.equalsIgnoreCase("poker") || gameType.equalsIgnoreCase("blackjack") || gameType.equalsIgnoreCase("bj");
-    }
-
-    double buyin;
-    String gameType;
-
     public TableCreate()
     {
         getAlises().add("create");
@@ -36,6 +28,14 @@ public class TableCreate extends PluginCommand
 
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table." + getAlises().get(0));
+    }
+
+    double buyin;
+    String gameType;
+
+    public static boolean isGameType(String gameType)
+    {
+        return gameType.equalsIgnoreCase("poker") || gameType.equalsIgnoreCase("blackjack") || gameType.equalsIgnoreCase("bj");
     }
 
     // table create name buyin poker|blackjack

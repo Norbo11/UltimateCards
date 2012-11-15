@@ -5,16 +5,17 @@ import java.util.ArrayList;
 
 public class Deck
 {
-    private SecureRandom random = new SecureRandom();
-    private int amountOfDecks;
-    private ArrayList<Card> cards = new ArrayList<Card>(); // Cards left in the
-                                                           // deck
-
     public Deck(int amountOfDecks)
     {
         this.amountOfDecks = amountOfDecks;
         addCards(); // When the deck is created, add the initial cards.
     }
+
+    private SecureRandom random = new SecureRandom();
+    private int amountOfDecks;
+
+    private ArrayList<Card> cards = new ArrayList<Card>(); // Cards left in the
+                                                           // deck
 
     // Goes through ranks and suits, then adds them all to the deck
     public void addCards()

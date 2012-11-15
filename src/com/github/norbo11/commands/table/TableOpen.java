@@ -8,8 +8,6 @@ import com.github.norbo11.util.Messages;
 
 public class TableOpen extends PluginCommand
 {
-    CardsTable cardsTable;
-
     public TableOpen()
     {
         getAlises().add("open");
@@ -23,6 +21,8 @@ public class TableOpen extends PluginCommand
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table." + getAlises().get(0));
     }
+
+    CardsTable cardsTable;
 
     @Override
     public boolean conditions()

@@ -8,10 +8,6 @@ import com.github.norbo11.util.NumberMethods;
 
 public class TableKick extends PluginCommand
 {
-    CardsTable table;
-
-    CardsPlayer toKick;
-
     public TableKick()
     {
         getAlises().add("kick");
@@ -25,6 +21,10 @@ public class TableKick extends PluginCommand
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table." + getAlises().get(0));
     }
+
+    CardsTable table;
+
+    CardsPlayer toKick;
 
     @Override
     public boolean conditions()

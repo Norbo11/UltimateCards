@@ -9,10 +9,6 @@ import com.github.norbo11.util.ErrorMessages;
 public class PokerFold extends PluginCommand
 {
 
-    PokerPlayer pokerPlayer;
-
-    PokerTable pokerTable;
-
     public PokerFold()
     {
         getAlises().add("fold");
@@ -26,6 +22,10 @@ public class PokerFold extends PluginCommand
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "poker");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "poker." + getAlises().get(0));
     }
+
+    PokerPlayer pokerPlayer;
+
+    PokerTable pokerTable;
 
     @Override
     public boolean conditions()

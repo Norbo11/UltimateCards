@@ -11,11 +11,6 @@ import com.github.norbo11.util.Messages;
 
 public class BlackjackTableSettings extends CardsTableSettings
 {
-    private boolean allowDoubleDown = UltimateCards.getPluginConfig().isAllowDoubleDown();
-    private boolean serverDealer = UltimateCards.getPluginConfig().isServerDealer();
-    private double minBet = UltimateCards.getPluginConfig().getMinBet();
-    private int amountOfDecks = UltimateCards.getPluginConfig().getAmountOfDecks();
-
     public BlackjackTableSettings(BlackjackTable table)
     {
         super(table);
@@ -25,6 +20,12 @@ public class BlackjackTableSettings extends CardsTableSettings
             serverDealer = false;
         }
     }
+
+    private boolean allowDoubleDown = UltimateCards.getPluginConfig().isAllowDoubleDown();
+    private boolean serverDealer = UltimateCards.getPluginConfig().isServerDealer();
+    private double minBet = UltimateCards.getPluginConfig().getMinBet();
+
+    private int amountOfDecks = UltimateCards.getPluginConfig().getAmountOfDecks();
 
     public int getAmountOfDecks()
     {
@@ -110,7 +111,7 @@ public class BlackjackTableSettings extends CardsTableSettings
             }
         } else
         {
-            Messages.sendToAllWithinRange(getTable().getLocation(), "Sorry, the server cannot be the dealer!");
+            getTable().getOwner().sendMessage("Sorry, the server cannot be the dealer on this server!");
         }
     }
 

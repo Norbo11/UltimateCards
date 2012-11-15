@@ -18,6 +18,22 @@ import com.github.norbo11.util.ReturnMoney;
 
 public class BlackjackTable extends CardsTable
 {
+    public BlackjackTable(Player owner, String name, int ID, Location location, double buyin) throws Exception
+    {
+        // Set the table core properties
+        setOwner(new BlackjackPlayer(owner, this, buyin));
+        setName(name);
+        setID(ID);
+        setLocation(location);
+
+        getPlayers().add(getOwner()); // Add the owner to the sitting players
+                                      // list
+        setCardsTableSettings(new BlackjackTableSettings(this));
+    }
+
+    // Generic vars
+    private BlackjackDealer dealer = new BlackjackDealer(this);
+
     public static ArrayList<BlackjackTable> getBlackjackTables()
     {
         ArrayList<BlackjackTable> returnValue = new ArrayList<BlackjackTable>();
@@ -30,23 +46,10 @@ public class BlackjackTable extends CardsTable
         return returnValue;
     }
 
-    // Generic vars
-    private int button; // Represents the index of the player that is on the
-                        // button (in the list 'players')
-
-    private BlackjackDealer dealer = new BlackjackDealer(this);
-
-    public BlackjackTable(Player owner, String name, int ID, Location location, double buyin) throws Exception
+    @Override
+    public boolean canContinue()
     {
-        // Set the table core properties
-        setOwner(new BlackjackPlayer(owner, this, buyin));
-        setName(name);
-        setID(ID);
-        setLocation(location);
-
-        getPlayers().add(getOwner()); // Add the owner to the sitting players
-                                      // list
-        setCardsTableSettings(new BlackjackTableSettings(this));
+        return true;
     }
 
     @Override
@@ -113,7 +116,7 @@ public class BlackjackTable extends CardsTable
             displayScores();
 
             Messages.sendToAllWithinRange(getLocation(), "&6" + UltimateCards.getLineString());
-            nextPersonTurn(getNextPlayer(button));
+            nextPersonTurn(getNextPlayer(getButton()));
         }
     }
 
@@ -189,11 +192,6 @@ public class BlackjackTable extends CardsTable
             }
 
         return returnValue;
-    }
-
-    public int getButton()
-    {
-        return button;
     }
 
     public BlackjackDealer getDealer()
@@ -350,18 +348,6 @@ public class BlackjackTable extends CardsTable
         return list;
     }
 
-    // Moves the button to the next player (call this when starting a new hand)
-    public void moveButton()
-    {
-        // If the button is not the last player in the list, increment the
-        // button. Otherwise set button to 0.
-        if (++button >= getPlayersThisHand().size())
-        {
-            button = 0;
-        }
-        Messages.sendToAllWithinRange(getLocation(), "Button moved to &6" + getPlayersThisHand().get(button).getPlayerName());
-    }
-
     @Override
     // Move the action to the players after the one specified in the argument
     public void nextPersonTurn(CardsPlayer lastPlayer)
@@ -425,7 +411,7 @@ public class BlackjackTable extends CardsTable
     {
         Messages.sendToAllWithinRange(getLocation(), "Showdown time!");
         Messages.sendToAllWithinRange(getLocation(), dealer.getHand().getHand());
-        nextPersonTurn(getNextPlayer(button));
+        nextPersonTurn(getNextPlayer(getButton()));
     }
 
     @Override

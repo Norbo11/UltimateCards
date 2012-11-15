@@ -26,6 +26,11 @@ import com.github.norbo11.game.poker.PokerPlayer;
 
 public class MapMethods
 {
+    public MapMethods(UltimateCards p)
+    {
+        this.p = p;
+    }
+
     private class BlackjackRenderer extends MapRenderer
     {
         public BlackjackRenderer()
@@ -176,7 +181,7 @@ public class MapMethods
                     int i = 1;
                     x = 5;
                     int y = 58;
-                    for (PokerPlayer temp : pokerPlayer.getPokerTable().getPokerPlayers())
+                    for (PokerPlayer temp : pokerPlayer.getPokerTable().getPokerPlayersThisHand())
                     {
                         if (i == 9)
                         {
@@ -196,6 +201,12 @@ public class MapMethods
                         } else
                         {
                             mapCanvas.drawImage(x, y, status_normal);
+                        }
+
+                        // If the player is on the button, draw the little indicator
+                        if (temp.isButton())
+                        {
+                            drawImageWithTransparency(mapCanvas, button, x, y);
                         }
 
                         String playerName = temp.getPlayerName();
@@ -235,6 +246,8 @@ public class MapMethods
     private static BufferedImage status_action = null;
     private static BufferedImage card_facedown = null;
     private static BufferedImage card_empty = null;
+    private static BufferedImage button = null;
+
     static
     {
         try
@@ -247,6 +260,7 @@ public class MapMethods
             status_action = ImageIO.read(UltimateCards.getResourceManager().getResource("images/player_box_action.png"));
             card_facedown = ImageIO.read(UltimateCards.getResourceManager().getResource("images/card_facedown.png"));
             card_empty = ImageIO.read(UltimateCards.getResourceManager().getResource("images/card_empty.png"));
+            button = ImageIO.read(UltimateCards.getResourceManager().getResource("images/button.png"));
         } catch (Exception e)
         {
             e.printStackTrace();
@@ -255,14 +269,18 @@ public class MapMethods
 
     private static ArrayList<Short> createdMaps = new ArrayList<Short>();
 
+    private final HashMap<String, Integer> redrawTasks = new HashMap<String, Integer>();
+    private final HashMap<String, Boolean> redrawsNeeded = new HashMap<String, Boolean>();
+    private static HashMap<String, ItemStack> savedMaps = new HashMap<String, ItemStack>();
+
+    private final PokerRenderer pokerRenderer = new PokerRenderer();
+
+    private final BlackjackRenderer blackjackRenderer = new BlackjackRenderer();
+
     public static ArrayList<Short> getCreatedMaps()
     {
         return createdMaps;
     }
-
-    private final HashMap<String, Integer> redrawTasks = new HashMap<String, Integer>();
-    private final HashMap<String, Boolean> redrawsNeeded = new HashMap<String, Boolean>();
-    private static HashMap<String, ItemStack> savedMaps = new HashMap<String, ItemStack>();
 
     public static HashMap<String, ItemStack> getSavedMaps()
     {
@@ -274,15 +292,6 @@ public class MapMethods
         for (Entry<String, ItemStack> entry : savedMaps.entrySet())
             if (entry == itemStack) return entry.getKey();
         return "";
-    }
-
-    private final PokerRenderer pokerRenderer = new PokerRenderer();
-
-    private final BlackjackRenderer blackjackRenderer = new BlackjackRenderer();
-
-    public MapMethods(UltimateCards p)
-    {
-        this.p = p;
     }
 
     private void clearRenderers(MapView map)
@@ -329,7 +338,7 @@ public class MapMethods
 
     public void giveMap(final Player player, String renderer)
     {
-        //Create map
+        // Create map
         MapView map = Bukkit.getServer().createMap(player.getWorld());
         clearRenderers(map);
         if (renderer.equalsIgnoreCase("poker"))
@@ -340,15 +349,15 @@ public class MapMethods
             map.addRenderer(blackjackRenderer);
         }
 
-        //Give map
+        // Give map
         ItemStack mapItem = new ItemStack(Material.MAP, 1, map.getId());
-        
-        //Add to lists
+
+        // Add to lists
         redrawsNeeded.put(player.getName(), true);
         savedMaps.put(player.getName(), mapItem);
         createdMaps.add(map.getId());
 
-        //Schedule task
+        // Schedule task
         redrawTasks.put(player.getName(), Bukkit.getScheduler().scheduleAsyncRepeatingTask(p, new Runnable()
         {
 
@@ -359,15 +368,17 @@ public class MapMethods
             }
 
         }, 0L, 20L));
-        
+
         if (HelperMethods.hasOpenSlotInInventory(player))
         {
-            player.getInventory().addItem(mapItem);
+            ItemStack held = player.getInventory().getItem(0) == null ? new ItemStack(Material.AIR) : player.getInventory().getItem(0);
+            player.getInventory().setItem(0, mapItem);
+            player.getInventory().addItem(held);
         } else
         {
             player.getWorld().dropItemNaturally(player.getLocation(), mapItem);
         }
-        
+
     }
 
     public void restoreAllMaps()
@@ -387,7 +398,7 @@ public class MapMethods
         ItemStack mapItem = savedMaps.get(player.getName());
         player.getInventory().remove(mapItem);
 
-        createdMaps.remove(new Short(mapItem.getDurability()));
+        createdMaps.remove(mapItem);
         savedMaps.remove(player.getName());
         Bukkit.getScheduler().cancelTask(redrawTasks.get(player.getName()));
         redrawTasks.remove(player.getName());

@@ -152,8 +152,11 @@ public class UltimateCards extends JavaPlugin
     @Override
     public void onDisable()
     {
-        ReturnMoney.returnMoney();
-        mapMethods.restoreAllMaps();
+        if (pluginConfig.isCleanupOnDisable())
+        {
+            ReturnMoney.returnMoney();
+            mapMethods.restoreAllMaps();
+        }
         log.info("UltimateCards v" + version + " plugin disabled!");
     }
 

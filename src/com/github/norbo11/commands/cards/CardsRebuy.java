@@ -13,11 +13,6 @@ import com.github.norbo11.util.NumberMethods;
 
 public class CardsRebuy extends PluginCommand
 {
-    CardsPlayer cardsPlayer;
-
-    CardsTable cardsTable;
-    double amount;
-
     public CardsRebuy()
     {
         getAlises().add("rebuy");
@@ -32,6 +27,11 @@ public class CardsRebuy extends PluginCommand
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "cards");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "cards." + getAlises().get(0));
     }
+
+    CardsPlayer cardsPlayer;
+    CardsTable cardsTable;
+
+    double amount;
 
     @Override
     public boolean conditions()

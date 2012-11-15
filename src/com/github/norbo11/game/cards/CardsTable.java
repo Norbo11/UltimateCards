@@ -23,15 +23,15 @@ public abstract class CardsTable
         allowedDetailTypes.add("all");
     }
 
-    public static ArrayList<String> getAllowedTypes()
-    {
-        return allowedDetailTypes;
-    }
+    private int button; // button (in the list 'players')
 
     private CardsPlayer owner; // Owner of the table. A PokerPlayer object should be created right after the creation of the table
     private String name;
+
     private CardsPlayer actionPlayer; // The player that is currently supposed to act
+
     private CardsTableSettings cardsTableSettings;
+
     private Location location; // The location at which the table was created
     private Deck deck = new Deck(1); // Stores the deck assigned to this table
     private PokerPhase currentPhase;
@@ -39,32 +39,35 @@ public abstract class CardsTable
     private int handNumber; // The amount of hands played/the hand number currently being played at this table
     private boolean inProgress; // True if the hand is currently in progress. Its false if the table hasen't even started or is currently in showdown
     private boolean open; // Decides if player can join or not
-
     private boolean toBeContinued;
     private static ArrayList<String> allowedDetailTypes;
     private ArrayList<CardsPlayer> players = new ArrayList<CardsPlayer>();
     private ArrayList<String> bannedList = new ArrayList<String>();
+
     private static ArrayList<CardsTable> tables = new ArrayList<CardsTable>();
+
+    public static ArrayList<String> getAllowedTypes()
+    {
+        return allowedDetailTypes;
+    }
 
     public static int getFreeTableID()
     {
         int newID = 0;
-        try
+        boolean taken = true;
+        whileLoop: while (taken)
         {
-            // Try to get the first table. If that table exists, increment the
-            // newID variable
-            while (tables.get(newID).getID() == newID)
+            for (CardsTable table : tables)
             {
-                newID++;
+                if (table.getID() == newID)
+                {
+                    newID++;
+                    continue whileLoop;
+                }
             }
-        } catch (Exception e) // As soon as you try to get a player that
-                              // return null (doesnt exist), this means that
-                              // that ID is free. Therefore, return it
-        {
-            return newID;
+            taken = false;
         }
-        return newID; // This doesnt actually do anything but is required so the
-                      // compiler doesnt complain
+        return newID;
     }
 
     public static CardsTable getTable(int ID)
@@ -89,14 +92,13 @@ public abstract class CardsTable
     {
         CardsTable.tables = tables;
     }
-    
-    public void playTurnSounds(Player player)
+
+    public boolean canBeDeleted()
     {
-        for (CardsPlayer p : getPlayersThisHand())
-        {
-            if (!player.getName().equals(p.getPlayerName())) Sound.otherTurn(p.getPlayer());
-        }
+        return true;
     }
+
+    public abstract boolean canContinue();
 
     public abstract boolean canDeal();
 
@@ -147,6 +149,23 @@ public abstract class CardsTable
     public ArrayList<String> getBannedList()
     {
         return bannedList;
+    }
+
+    public int getButton()
+    {
+        return button;
+    }
+
+    public CardsPlayer getButtonPlayer()
+    {
+        // Exception has to be caught in case the button doesnt exist in the list
+        try
+        {
+            return getPlayersThisHand().get(button);
+        } catch (Exception e)
+        {
+            return null;
+        }
     }
 
     public CardsTableSettings getCardsTableSettings()
@@ -292,11 +311,34 @@ public abstract class CardsTable
 
     public abstract ArrayList<String> listPlayers();
 
+    // Moves the button to the next player (call this when starting a new hand)
+    public void moveButton()
+    {
+        // If the button is not the last player in the list, increment the
+        // button. Otherwise set button to 0.
+        if (++button >= getPlayersThisHand().size())
+        {
+            button = 0;
+        }
+        Messages.sendToAllWithinRange(getLocation(), "Button moved to &6" + getPlayersThisHand().get(button).getPlayerName());
+    }
+
     public abstract void nextPersonTurn(CardsPlayer lastPlayer);
 
     public abstract void playerLeave(CardsPlayer player);
 
     public abstract void playerSit(Player player, double buyin) throws Exception;
+
+    public void playTurnSounds(Player player)
+    {
+        for (CardsPlayer p : getPlayersThisHand())
+        {
+            if (!player.getName().equals(p.getPlayerName()))
+            {
+                Sound.otherTurn(p.getPlayer());
+            }
+        }
+    }
 
     public void removePlayer(CardsPlayer cardsPlayer)
     {
@@ -393,5 +435,4 @@ public abstract class CardsTable
                 getPlayers().get(i).setID(i);
             }
     }
-
 }

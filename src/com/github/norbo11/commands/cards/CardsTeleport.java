@@ -10,8 +10,6 @@ import com.github.norbo11.util.NumberMethods;
 public class CardsTeleport extends PluginCommand
 {
 
-    CardsTable cardsTable;
-
     public CardsTeleport()
     {
         getAlises().add("teleport");
@@ -24,6 +22,8 @@ public class CardsTeleport extends PluginCommand
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "cards");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "cards." + getAlises().get(0));
     }
+
+    CardsTable cardsTable;
 
     // cards teleport <id>
     @Override

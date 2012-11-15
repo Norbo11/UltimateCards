@@ -6,21 +6,22 @@ import com.github.norbo11.util.Messages;
 
 public class BlackjackHand
 {
-    private Hand hand = new Hand();
-    private boolean stayed;
-    private double amountBet;
-
-    private int score = 0;
-
-    private int id;
-    private BlackjackPlayer player;
-
     public BlackjackHand(BlackjackPlayer player, double amountBet)
     {
         this.player = player;
         this.amountBet = amountBet;
         this.id = player.getHands().size();
     }
+
+    private Hand hand = new Hand();
+    private boolean stayed;
+
+    private double amountBet;
+
+    private int score = 0;
+    private int id;
+
+    private BlackjackPlayer player;
 
     public void addCards(Card[] cards)
     {

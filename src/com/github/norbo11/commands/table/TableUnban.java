@@ -8,11 +8,6 @@ import com.github.norbo11.util.Messages;
 
 public class TableUnban extends PluginCommand
 {
-    CardsPlayer cardsPlayer;
-
-    CardsTable cardsTable;
-    String toUnBan;
-
     public TableUnban()
     {
         getAlises().add("unban");
@@ -27,6 +22,11 @@ public class TableUnban extends PluginCommand
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table." + getAlises().get(0));
     }
+
+    CardsPlayer cardsPlayer;
+    CardsTable cardsTable;
+
+    String toUnBan;
 
     @Override
     public boolean conditions()

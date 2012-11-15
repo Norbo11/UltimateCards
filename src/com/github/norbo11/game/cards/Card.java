@@ -10,9 +10,17 @@ import com.github.norbo11.UltimateCards;
 
 public class Card
 {
+    public Card(int i, int j)
+    {
+        rank = (byte) i;
+        suit = (byte) j;
+        image = cardImages.get(Integer.toString(rank) + Integer.toString(suit));
+    }
+
     // We read all card images here and put them in a hashmap, so they don't
     // have to be read every single time they are created
     private static HashMap<String, BufferedImage> cardImages = new HashMap<String, BufferedImage>();
+
     static
     {
         try
@@ -31,17 +39,10 @@ public class Card
             e.printStackTrace();
         }
     }
-
     private byte rank;
     private byte suit;
-    private BufferedImage image;
 
-    public Card(int i, int j)
-    {
-        rank = (byte) i;
-        suit = (byte) j;
-        image = cardImages.get(Integer.toString(rank) + Integer.toString(suit));
-    }
+    private BufferedImage image;
 
     public int getBlackjackScore()
     {

@@ -10,11 +10,6 @@ import com.github.norbo11.util.NumberMethods;
 public class PokerBet extends PluginCommand
 {
 
-    PokerPlayer pokerPlayer;
-
-    PokerTable pokerTable;
-    double amountToBet;
-
     public PokerBet()
     {
         getAlises().add("raiseto");
@@ -29,6 +24,11 @@ public class PokerBet extends PluginCommand
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "poker");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "poker." + getAlises().get(0));
     }
+
+    PokerPlayer pokerPlayer;
+    PokerTable pokerTable;
+
+    double amountToBet;
 
     @Override
     public boolean conditions()
@@ -54,25 +54,19 @@ public class PokerBet extends PluginCommand
                                         amountToBet = NumberMethods.getDouble(getArgs()[1]);
                                         if (amountToBet != -99999)
                                         {
-                                            System.out.println("********" + amountToBet + ", " + pokerPlayer.getCurrentBet());
                                             if (pokerPlayer.hasMoney(amountToBet - pokerPlayer.getCurrentBet()))
                                             {
-                                                //Raise
+                                                // Raise
                                                 if (amountToBet > pokerTable.getCurrentBet())
                                                 {
-                                                    if (amountToBet - pokerTable.getCurrentBet() >= pokerTable.getSettings().getMinRaise())
-                                                    {
-                                                        return true;
-                                                    }
+                                                    if (amountToBet - pokerTable.getCurrentBet() >= pokerTable.getSettings().getMinRaise()) return true;
                                                     else
                                                     {
                                                         ErrorMessages.betBelowMinRaise(getPlayer(), pokerTable.getSettings().getMinRaise(), pokerTable.getCurrentBet());
                                                     }
-                                                //Call
-                                                } else if (amountToBet == pokerTable.getCurrentBet())
-                                                {
-                                                    return true; 
-                                                } else
+                                                    // Call
+                                                } else if (amountToBet == pokerTable.getCurrentBet()) return true;
+                                                else
                                                 {
                                                     ErrorMessages.betBelowCurrentBet(getPlayer());
                                                 }

@@ -8,8 +8,6 @@ import com.github.norbo11.util.NumberMethods;
 
 public class PokerPay extends PluginCommand
 {
-    PokerPlayer playerToPay;
-
     public PokerPay()
     {
         getAlises().add("pay");
@@ -21,6 +19,8 @@ public class PokerPay extends PluginCommand
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "poker");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "poker." + getAlises().get(0));
     }
+
+    PokerPlayer playerToPay;
 
     @Override
     public boolean conditions()

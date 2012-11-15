@@ -11,16 +11,17 @@ import com.github.norbo11.util.Sound;
 
 public class BlackjackDealer
 {
-    private int score = 0;
-    private Card holeCard = null;
-    private BlackjackTable table;
-    private Hand hand = new Hand();
-    private boolean bust;
-
     public BlackjackDealer(BlackjackTable table)
     {
         this.table = table;
     }
+
+    private int score = 0;
+    private Card holeCard = null;
+    private BlackjackTable table;
+    private Hand hand = new Hand();
+
+    private boolean bust;
 
     public void addCards(Card[] cards)
     {

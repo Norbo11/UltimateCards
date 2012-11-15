@@ -8,10 +8,6 @@ import com.github.norbo11.util.Messages;
 
 public class TableClose extends PluginCommand
 {
-    CardsPlayer owner;
-
-    CardsTable table;
-
     public TableClose()
     {
         getAlises().add("close");
@@ -25,6 +21,10 @@ public class TableClose extends PluginCommand
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table." + getAlises().get(0));
     }
+
+    CardsPlayer owner;
+
+    CardsTable table;
 
     @Override
     public boolean conditions()

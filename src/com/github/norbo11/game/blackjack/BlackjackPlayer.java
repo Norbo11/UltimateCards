@@ -12,6 +12,23 @@ import com.github.norbo11.util.Sound;
 
 public class BlackjackPlayer extends CardsPlayer
 {
+    public BlackjackPlayer(Player player, BlackjackTable table, double buyin) throws Exception
+    {
+        hands.add(new BlackjackHand(this, 0));
+        setTable(table);
+        setStartLocation(player.getLocation());
+        setName(player.getName());
+        setID(table.getEmptyPlayerID());
+        setMoney(buyin);
+        UltimateCards.mapMethods.giveMap(player, "blackjack");
+    }
+
+    private boolean hitted;
+
+    private boolean doubled;
+    private double pushing;
+    private ArrayList<BlackjackHand> hands = new ArrayList<BlackjackHand>();
+
     public static BlackjackPlayer getBlackjackPlayer(int id, BlackjackTable table)
     {
         if (table != null)
@@ -26,22 +43,6 @@ public class BlackjackPlayer extends CardsPlayer
     {
         CardsPlayer cardsPlayer = CardsPlayer.getCardsPlayer(name);
         return cardsPlayer instanceof BlackjackPlayer ? (BlackjackPlayer) CardsPlayer.getCardsPlayer(name) : null;
-    }
-
-    private boolean hitted;
-    private boolean doubled;
-    private double pushing;
-    private ArrayList<BlackjackHand> hands = new ArrayList<BlackjackHand>();
-
-    public BlackjackPlayer(Player player, BlackjackTable table, double buyin) throws Exception
-    {
-        hands.add(new BlackjackHand(this, 0));
-        setTable(table);
-        setStartLocation(player.getLocation());
-        setName(player.getName());
-        setID(table.getEmptyPlayerID());
-        setMoney(buyin);
-        UltimateCards.mapMethods.giveMap(player, "blackjack");
     }
 
     @Override

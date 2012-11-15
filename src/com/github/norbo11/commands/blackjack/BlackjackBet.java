@@ -11,10 +11,6 @@ import com.github.norbo11.util.NumberMethods;
 public class BlackjackBet extends PluginCommand
 {
 
-    BlackjackPlayer blackjackPlayer;
-    BlackjackTable blackjackTable;
-    double amountToBet;
-
     public BlackjackBet()
     {
         getAlises().add("bet");
@@ -27,6 +23,11 @@ public class BlackjackBet extends PluginCommand
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "blackjack");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "blackjack." + getAlises().get(0));
     }
+
+    BlackjackPlayer blackjackPlayer;
+    BlackjackTable blackjackTable;
+
+    double amountToBet;
 
     @Override
     public boolean conditions()
@@ -60,7 +61,7 @@ public class BlackjackBet extends PluginCommand
                                 }
                             } else
                             {
-                                ErrorMessages.dealerHasNotEnoughMoney(getPlayer(), blackjackTable.getOwner().getMoney() / ((blackjackTable.getPlayers().size() - 1)* 2));
+                                ErrorMessages.dealerHasNotEnoughMoney(getPlayer(), blackjackTable.getOwner().getMoney() / ((blackjackTable.getPlayers().size() - 1) * 2));
                             }
                         } else
                         {

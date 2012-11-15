@@ -15,6 +15,26 @@ import com.github.norbo11.util.Sound;
 
 public class PokerPlayer extends CardsPlayer
 {
+    public PokerPlayer(Player player, CardsTable table, double buyin) throws Exception
+    {
+        setTable(table);
+        setStartLocation(player.getLocation());
+        setName(player.getName());
+        setID(table.getEmptyPlayerID());
+        setMoney(buyin);
+        UltimateCards.mapMethods.giveMap(player, "poker");
+    }
+
+    private boolean acted; // True if the player has acted at least once
+
+    private boolean folded;
+    private boolean revealed;
+    private double currentBet; // This simply represents the player's current bet in the phase. (phase = flop, turn, river, etc)
+    private double totalBet; // This is the total amount that the player has bet in the hand
+    private double pot; // This players personal pot
+    private double deltaPot; // This players personal pot this round
+    private Hand hand = new Hand();
+
     public static PokerPlayer getPokerPlayer(int id, PokerTable table)
     {
         if (table != null)
@@ -31,26 +51,6 @@ public class PokerPlayer extends CardsPlayer
         return cardsPlayer instanceof PokerPlayer ? (PokerPlayer) CardsPlayer.getCardsPlayer(name) : null;
     }
 
-    private boolean acted; // True if the player has acted at least once
-    private boolean folded;
-    private boolean revealed;
-    private double currentBet; // This simply represents the player's current bet in the phase. (phase = flop, turn, river, etc)
-    private double totalBet; // This is the total amount that the player  has bet in the hand
-    private double pot; // This players personal pot
-    private double deltaPot; // This players personal pot this round
-
-    private Hand hand = new Hand();
-
-    public PokerPlayer(Player player, CardsTable table, double buyin) throws Exception
-    {
-        setTable(table);
-        setStartLocation(player.getLocation());
-        setName(player.getName());
-        setID(table.getEmptyPlayerID());
-        setMoney(buyin);
-        UltimateCards.mapMethods.giveMap(player, "poker");
-    }
-
     public void addCards(Card[] cards)
     {
         for (Card card : cards)
@@ -62,7 +62,6 @@ public class PokerPlayer extends CardsPlayer
 
     public void bet(double bet, String blind)
     {
-        System.out.println("herping: " + (getMoney() - bet));
         if (blind != null)
         {
             Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f has posted the " + blind + " (" + Formatter.formatMoney(bet) + "&f)");
@@ -133,7 +132,6 @@ public class PokerPlayer extends CardsPlayer
     @Override
     public double getMoney()
     {
-        System.out.println(getPlayerName() + ": " + money);
         return money - getCurrentBet();
     }
 
@@ -164,7 +162,7 @@ public class PokerPlayer extends CardsPlayer
 
     public boolean isAllIn()
     {
-        return money == 0;
+        return getMoney() == 0;
     }
 
     public boolean isFolded()
@@ -302,7 +300,6 @@ public class PokerPlayer extends CardsPlayer
     {
         for (PokerPlayer p : getPokerTable().getNonFoldedPlayers())
         {
-            System.out.println("Comparing " + this.getPlayerName() + "s current bet of " + this.getCurrentBet() + " with " + p.getPlayerName() + "s current bet of " + p.getCurrentBet());
             if (p.getCurrentBet() >= this.getCurrentBet())
             {
                 this.deltaPot += this.getCurrentBet();
@@ -310,7 +307,6 @@ public class PokerPlayer extends CardsPlayer
             {
                 this.deltaPot += p.getCurrentBet();
             }
-            System.out.println("Outcome resulted in: " + this.deltaPot);
         }
     }
 }

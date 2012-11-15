@@ -12,10 +12,6 @@ import com.github.norbo11.util.Messages;
 
 public class TableListSettings extends PluginCommand
 {
-    CardsPlayer cardsPlayer;
-
-    CardsTable cardsTable;
-
     public TableListSettings()
     {
         getAlises().add("listsettings");
@@ -28,6 +24,10 @@ public class TableListSettings extends PluginCommand
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table." + getAlises().get(0));
     }
+
+    CardsPlayer cardsPlayer;
+
+    CardsTable cardsTable;
 
     @Override
     public boolean conditions()
