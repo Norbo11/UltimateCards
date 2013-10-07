@@ -4,13 +4,12 @@ import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.game.poker.PokerPhase;
 import com.github.norbo11.game.poker.PokerPlayer;
 import com.github.norbo11.game.poker.PokerTable;
+import com.github.norbo11.game.poker.eval.HandEvaluator;
 import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.Messages;
 
-public class PokerReveal extends PluginCommand
-{
-    public PokerReveal()
-    {
+public class PokerReveal extends PluginCommand {
+    public PokerReveal() {
         getAlises().add("reveal");
         getAlises().add("show");
         getAlises().add("display");
@@ -28,37 +27,28 @@ public class PokerReveal extends PluginCommand
     PokerTable pokerTable;
 
     @Override
-    public boolean conditions()
-    {
-        if (getArgs().length == 1)
-        {
+    public boolean conditions() {
+        if (getArgs().length == 1) {
             pokerPlayer = PokerPlayer.getPokerPlayer(getPlayer().getName());
-            if (pokerPlayer != null)
-            {
+            if (pokerPlayer != null) {
                 pokerTable = pokerPlayer.getPokerTable();
-                if (!pokerPlayer.isEliminated())
-                {
+                if (!pokerPlayer.isEliminated()) {
                     if (pokerTable.getCurrentPhase() == PokerPhase.SHOWDOWN) // If it is showdown
                     {
                         if (pokerPlayer.isAction()) return true;
-                        else
-                        {
+                        else {
                             ErrorMessages.notYourTurn(getPlayer());
                         }
-                    } else
-                    {
+                    } else {
                         ErrorMessages.cantReveal(getPlayer());
                     }
-                } else
-                {
+                } else {
                     ErrorMessages.playerIsEliminated(getPlayer());
                 }
-            } else
-            {
+            } else {
                 ErrorMessages.notSittingAtTable(getPlayer());
             }
-        } else
-        {
+        } else {
             showUsage();
         }
         return false;
@@ -66,10 +56,9 @@ public class PokerReveal extends PluginCommand
 
     // Publicly reveals the player's hand to everybody
     @Override
-    public void perform() throws Exception
-    {
+    public void perform() throws Exception {
         pokerPlayer.setRevealed(true);
-        Messages.sendToAllWithinRange(pokerTable.getLocation(), "[ID" + pokerPlayer.getID() + "] " + "&6" + getPlayer().getName() + "&f's hand:");
+        Messages.sendToAllWithinRange(pokerTable.getLocation(), "[ID" + pokerPlayer.getID() + "] " + "&6" + getPlayer().getName() + "&f: " + HandEvaluator.nameHand(pokerPlayer.getEvalHand()));
         Messages.sendToAllWithinRange(pokerTable.getLocation(), pokerPlayer.getHand().getHand());
         pokerTable.nextPersonTurn(pokerPlayer);
     }

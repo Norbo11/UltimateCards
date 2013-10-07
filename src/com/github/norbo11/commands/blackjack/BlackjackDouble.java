@@ -7,11 +7,9 @@ import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.Messages;
 
-public class BlackjackDouble extends PluginCommand
-{
+public class BlackjackDouble extends PluginCommand {
 
-    public BlackjackDouble()
-    {
+    public BlackjackDouble() {
         getAlises().add("doubledown");
         getAlises().add("double");
         getAlises().add("dd");
@@ -29,68 +27,51 @@ public class BlackjackDouble extends PluginCommand
     BlackjackTable blackjackTable;
 
     @Override
-    public boolean conditions()
-    {
-        if (getArgs().length == 1)
-        {
+    public boolean conditions() {
+        if (getArgs().length == 1) {
             blackjackPlayer = BlackjackPlayer.getBlackjackPlayer(getPlayer().getName());
-            if (blackjackPlayer != null)
-            {
+            if (blackjackPlayer != null) {
                 blackjackTable = blackjackPlayer.getBlackjackTable();
 
-                if (blackjackTable.isInProgress())
-                {
-                    if (blackjackPlayer.isAction())
-                    {
-                        if (!blackjackPlayer.isDoubled())
-                        {
-                            if (!blackjackPlayer.isSplit())
-                            {
-                                if (!blackjackPlayer.isHitted())
-                                {
-                                    if (blackjackPlayer.hasMoney(blackjackPlayer.getTotalAmountBet()))
-                                    {
+                if (blackjackTable.isInProgress()) {
+                    if (blackjackPlayer.isAction()) {
+                        if (!blackjackPlayer.isDoubled()) {
+                            if (!blackjackPlayer.isSplit()) {
+                                if (!blackjackPlayer.isHitted()) {
+                                    if (blackjackPlayer.hasMoney(blackjackPlayer.getTotalAmountBet())) {
                                         blackjackTable = blackjackPlayer.getBlackjackTable();
                                         return true;
-                                    } else
-                                    {
+                                    } else {
                                         ErrorMessages.notEnoughMoney(getPlayer(), blackjackPlayer.getTotalAmountBet(), blackjackPlayer.getMoney());
                                     }
-                                } else
-                                {
+                                } else {
                                     ErrorMessages.playerAlreadyHit(getPlayer());
                                 }
-                            } else
-                            {
+                            } else {
                                 ErrorMessages.playerIsSplit(getPlayer());
                             }
-                        } else
-                        {
+                        } else {
                             ErrorMessages.playerAlreadyDoubled(getPlayer());
                         }
-                    } else
-                    {
+                    } else {
                         ErrorMessages.notYourTurn(getPlayer());
                     }
-                } else
-                {
+                } else {
                     ErrorMessages.tableNotInProgress(getPlayer());
                 }
-            } else
-            {
+            } else {
                 ErrorMessages.notSittingAtTable(getPlayer());
             }
-        } else
-        {
+        } else {
             showUsage();
         }
         return false;
     }
 
     @Override
-    public void perform() throws Exception
-    {
-        blackjackPlayer.setMoney(blackjackPlayer.getMoney() - blackjackPlayer.getTotalAmountBet());
+    public void perform() throws Exception {
+        blackjackPlayer.removeMoney(blackjackPlayer.getTotalAmountBet());
+        blackjackPlayer.getBlackjackTable().getDealer().addMoney(blackjackPlayer.getTotalAmountBet());
         blackjackPlayer.getHands().get(0).setAmountBet(blackjackPlayer.getTotalAmountBet() * 2);
         Messages.sendToAllWithinRange(blackjackTable.getLocation(), "&6" + blackjackPlayer.getPlayerName() + "&f doubles down! New bet: &6" + Formatter.formatMoney(blackjackPlayer.getTotalAmountBet()));
         blackjackPlayer.getHands().get(0).addCards(blackjackPlayer.getTable().getDeck().generateCards(1));

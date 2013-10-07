@@ -7,10 +7,8 @@ import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.Messages;
 import com.github.norbo11.util.NumberMethods;
 
-public class CardsPlayers extends PluginCommand
-{
-    public CardsPlayers()
-    {
+public class CardsPlayers extends PluginCommand {
+    public CardsPlayers() {
         getAlises().add("players");
         getAlises().add("listplayers");
         getAlises().add("lp");
@@ -26,38 +24,30 @@ public class CardsPlayers extends PluginCommand
     CardsTable cardsTable;
 
     @Override
-    public boolean conditions()
-    {
+    public boolean conditions() {
         // If a table was not specified, make sure that the player is sitting at a table, then display all players on that table to the player
-        if (getArgs().length == 1)
-        {
+        if (getArgs().length == 1) {
             CardsPlayer cardsPlayer = CardsPlayer.getCardsPlayer(getPlayer().getName());
-            if (cardsPlayer != null)
-            {
+            if (cardsPlayer != null) {
                 cardsTable = cardsPlayer.getTable();
                 return true;
-            } else
-            {
+            } else {
                 ErrorMessages.notSittingAtTable(getPlayer());
             }
         } else if (getArgs().length == 2)
         // If a table was specified, make sure that the specified table is a real table before displaying all it's players
         {
             int tableID = NumberMethods.getInteger(getArgs()[1]);
-            if (tableID != -99999)
-            {
+            if (tableID != -99999) {
                 cardsTable = CardsTable.getTable(tableID);
                 if (cardsTable != null) return true;
-                else
-                {
+                else {
                     ErrorMessages.notTable(getPlayer(), getArgs()[1]);
                 }
-            } else
-            {
+            } else {
                 ErrorMessages.invalidNumber(getPlayer(), getArgs()[1]);
             }
-        } else
-        {
+        } else {
             showUsage();
         }
         return false;
@@ -65,8 +55,7 @@ public class CardsPlayers extends PluginCommand
 
     // Displays the list of players to the specified player
     @Override
-    public void perform() throws Exception
-    {
+    public void perform() throws Exception {
         Messages.sendMessage(getPlayer(), cardsTable.listPlayers());
     }
 }

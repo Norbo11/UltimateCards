@@ -8,11 +8,9 @@ import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.Messages;
 import com.github.norbo11.util.NumberMethods;
 
-public class BlackjackBet extends PluginCommand
-{
+public class BlackjackBet extends PluginCommand {
 
-    public BlackjackBet()
-    {
+    public BlackjackBet() {
         getAlises().add("bet");
         getAlises().add("b");
 
@@ -30,68 +28,52 @@ public class BlackjackBet extends PluginCommand
     double amountToBet;
 
     @Override
-    public boolean conditions()
-    {
-        if (getArgs().length == 2)
-        {
+    public boolean conditions() {
+        if (getArgs().length == 2) {
             blackjackPlayer = BlackjackPlayer.getBlackjackPlayer(getPlayer().getName());
-            if (blackjackPlayer != null)
-            {
-                if (blackjackPlayer.getTable().getOwner() != blackjackPlayer || blackjackPlayer.getBlackjackTable().getSettings().isServerDealer())
-                {
+            if (blackjackPlayer != null) {
+                if (blackjackPlayer.getTable().getOwnerPlayer() != blackjackPlayer) {
                     blackjackTable = blackjackPlayer.getBlackjackTable();
                     amountToBet = NumberMethods.getDouble(getArgs()[1]);
-                    if (amountToBet != -99999)
-                    {
-                        if (blackjackPlayer.getMoney() >= amountToBet)
-                        {
+                    if (amountToBet != -99999) {
+                        if (blackjackPlayer.getMoney() >= amountToBet) {
                             blackjackTable = blackjackPlayer.getBlackjackTable();
-                            if (amountToBet <= blackjackTable.getOwner().getMoney() / ((blackjackTable.getPlayers().size() - 1) * 2) || blackjackPlayer.getBlackjackTable().getSettings().isServerDealer())
-                            {
-                                if (amountToBet >= blackjackTable.getSettings().getMinBet())
-                                {
+                            if (blackjackTable.getDealer().hasEnoughMoney(amountToBet)) {
+                                if (amountToBet >= blackjackTable.getSettings().getMinBet()) {
                                     if (!blackjackTable.isInProgress()) return true;
-                                    else
-                                    {
+                                    else {
                                         ErrorMessages.tableInProgress(getPlayer());
                                     }
-                                } else
-                                {
+                                } else {
                                     ErrorMessages.tooSmallBet(getPlayer(), blackjackTable.getSettings().getMinBet());
                                 }
-                            } else
-                            {
-                                ErrorMessages.dealerHasNotEnoughMoney(getPlayer(), blackjackTable.getOwner().getMoney() / ((blackjackTable.getPlayers().size() - 1) * 2));
+                            } else {
+                                ErrorMessages.dealerHasNotEnoughMoney(getPlayer(), blackjackTable.getOwnerPlayer().getMoney() / ((blackjackTable.getPlayers().size() - 1) * 2));
                             }
-                        } else
-                        {
+                        } else {
                             ErrorMessages.notEnoughMoney(getPlayer(), amountToBet, blackjackPlayer.getMoney());
                         }
-                    } else
-                    {
+                    } else {
                         ErrorMessages.invalidNumber(getPlayer(), getArgs()[1]);
                     }
-                } else
-                {
+                } else {
                     ErrorMessages.playerIsBlackjackDealer(getPlayer());
                 }
-            } else
-            {
+            } else {
                 ErrorMessages.notSittingAtTable(getPlayer());
             }
-        } else
-        {
+        } else {
             showUsage();
         }
         return false;
     }
 
     @Override
-    public void perform() throws Exception
-    {
+    public void perform() throws Exception {
         blackjackPlayer.removeMoney(amountToBet);
+        blackjackPlayer.getBlackjackTable().getDealer().addMoney(amountToBet);
         blackjackPlayer.getHands().get(0).setAmountBet(blackjackPlayer.getHands().get(0).getAmountBet() + amountToBet);
         Messages.sendToAllWithinRange(blackjackTable.getLocation(), "&6" + blackjackPlayer.getPlayerName() + "&f bets &6" + Formatter.formatMoney(blackjackPlayer.getHands().get(0).getAmountBet()));
-
+        blackjackTable.autoStart();
     }
 }

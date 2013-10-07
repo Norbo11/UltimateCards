@@ -4,14 +4,14 @@ import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.game.cards.CardsPlayer;
 import com.github.norbo11.game.cards.CardsTable;
 import com.github.norbo11.util.ErrorMessages;
+import com.github.norbo11.util.Messages;
+import com.github.norbo11.util.config.SavedTables;
 
-public class TableDelete extends PluginCommand {
-    public TableDelete() {
-        getAlises().add("delete");
-        getAlises().add("del");
-        getAlises().add("d");
+public class TableUnsave extends PluginCommand {
+    public TableUnsave() {
+        getAlises().add("unsave");
 
-        setDescription("Deletes your table.");
+        setDescription("Deletes a saved table permanently.");
 
         setArgumentString("");
 
@@ -22,15 +22,15 @@ public class TableDelete extends PluginCommand {
     CardsPlayer cardsPlayer;
     CardsTable cardsTable;
 
+    // table create name buyin poker|blackjack
     @Override
     public boolean conditions() {
         if (getArgs().length == 1) {
             cardsPlayer = CardsPlayer.getCardsPlayer(getPlayer().getName());
             if (cardsPlayer != null) {
                 cardsTable = cardsPlayer.getTable();
-                if (cardsTable.isOwner(cardsPlayer.getPlayerName())) {
-                    if (cardsPlayer.getTable().canBeDeleted()) return true;
-                } else {
+                if (cardsTable.isOwner(cardsPlayer.getPlayerName())) return true;
+                else {
                     ErrorMessages.playerNotOwner(getPlayer());
                 }
             } else {
@@ -42,10 +42,10 @@ public class TableDelete extends PluginCommand {
         return false;
     }
 
-    // Deletes the players's table
     @Override
-    public void perform() {
-        cardsPlayer.getTable().restoreAllMaps();
-        cardsPlayer.getTable().deleteTable();
+    public void perform() throws Exception {
+        Messages.sendMessage(getPlayer(), "&cUnsaving table &6[" + cardsTable.getId() + "] " + cardsTable.getName() + "&c...");
+        SavedTables.unsaveTable(cardsTable);
+        Messages.sendMessage(getPlayer(), "&cTable unsaved.");
     }
 }

@@ -13,7 +13,10 @@
     <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
         <file path="/UltimateCards/.classpath"/>
         <file path="/UltimateCards/config.yml"/>
+        <file path="/UltimateCards/.project"/>
+        <file path="/UltimateCards/tables.yml"/>
         <file path="/UltimateCards/plugin.yml"/>
+        <file path="/UltimateCards/UltimateCards.jardesc"/>
         <folder path="/UltimateCards/images"/>
         <javaElement handleIdentifier="=UltimateCards/src"/>
     </selectedElements>

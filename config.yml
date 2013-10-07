@@ -15,14 +15,13 @@ options:
   generalDefaults:
     allowRebuys: true
     displayTurnsPublicly: false
+    autoStart: 30
+    minBuy: 0
+    maxBuy: 100000
   poker:
     fixRake: -1
-    rakeToStack: false
     defaults:
-      elimination: false
       minRaiseIsAlwaysBB: true
-      minBuy: 0
-      maxBuy: 100000
       sb: 500
       bb: 1000
       ante: 0
@@ -30,9 +29,7 @@ options:
       rake: 0.05
       minRaise: 200
   blackjack:
-    serverNeverDealer: true
     defaults:
       allowDoubleDown: true
       minBet: 100
-      serverDealer: false
       amountOfDecks: 5

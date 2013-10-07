@@ -14,10 +14,8 @@ import com.github.norbo11.util.Log;
 import com.github.norbo11.util.Messages;
 import com.github.norbo11.util.NumberMethods;
 
-public class TableCreate extends PluginCommand
-{
-    public TableCreate()
-    {
+public class TableCreate extends PluginCommand {
+    public TableCreate() {
         getAlises().add("create");
         getAlises().add("new");
         getAlises().add("cr");
@@ -31,66 +29,53 @@ public class TableCreate extends PluginCommand
     }
 
     double buyin;
-    String gameType;
-
-    public static boolean isGameType(String gameType)
-    {
-        return gameType.equalsIgnoreCase("poker") || gameType.equalsIgnoreCase("blackjack") || gameType.equalsIgnoreCase("bj");
-    }
+    String gameType, tableName;
 
     // table create name buyin poker|blackjack
     @Override
-    public boolean conditions()
-    {
-        if (getArgs().length == 4)
-        {
-            if (CardsPlayer.getCardsPlayer(getPlayer().getName()) == null)
-            {
+    public boolean conditions() {
+        if (getArgs().length == 4) {
+            if (CardsPlayer.getCardsPlayer(getPlayer().getName()) == null) {
                 gameType = getArgs()[3];
-                if (isGameType(gameType))
-                {
+                if (CardsTable.isGameType(gameType)) {
                     buyin = NumberMethods.getDouble(getArgs()[2]);
-                    if (buyin != -99999)
-                    {
-                        if (UltimateCards.getEconomy().has(getPlayer().getName(), buyin)) return true;
-                        else
-                        {
+                    if (buyin != -99999) {
+                        if (UltimateCards.getEconomy().has(getPlayer().getName(), buyin)) {
+                            tableName = getArgs()[1];
+                            if (!CardsTable.doesTableExist(tableName)) return true;
+                            else {
+                                ErrorMessages.tableNameAlreadyExists(getPlayer());
+                            }
+                        } else {
                             ErrorMessages.notEnoughMoney(getPlayer(), buyin, UltimateCards.getEconomy().getBalance(getPlayer().getName()) - buyin);
                         }
-                    } else
-                    {
+                    } else {
                         ErrorMessages.invalidNumber(getPlayer(), getArgs()[2]);
                     }
-                } else
-                {
+                } else {
                     ErrorMessages.notGameType(getPlayer());
                 }
-            } else
-            {
+            } else {
                 ErrorMessages.playerSittingAtTable(getPlayer());
             }
-        } else
-        {
+        } else {
             showUsage();
         }
         return false;
     }
 
     @Override
-    public void perform() throws Exception
-    {
+    public void perform() throws Exception {
         CardsTable newTable = null;
-        if (gameType.equalsIgnoreCase("poker"))
-        {
-            newTable = new PokerTable(getPlayer(), getArgs()[1], CardsTable.getFreeTableID(), getPlayer().getLocation(), buyin);
-        } else if (gameType.equalsIgnoreCase("blackjack") || gameType.equalsIgnoreCase("bj"))
-        {
-            newTable = new BlackjackTable(getPlayer(), getArgs()[1], CardsTable.getFreeTableID(), getPlayer().getLocation(), buyin);
+        if (gameType.equalsIgnoreCase("poker")) {
+            newTable = new PokerTable(getPlayer(), tableName, CardsTable.getFreeTableID(), getPlayer().getLocation(), buyin);
+        } else if (gameType.equalsIgnoreCase("blackjack") || gameType.equalsIgnoreCase("bj")) {
+            newTable = new BlackjackTable(getPlayer(), tableName, CardsTable.getFreeTableID(), getPlayer().getLocation(), buyin);
         }
         CardsTable.getTables().add(newTable);
 
         // Send messages
-        Messages.sendToAllWithinRange(newTable.getLocation(), "&6" + getPlayer().getName() + " &fhas created a &6" + gameType + "&f table named " + "&6'" + newTable.getName() + "'&f, ID " + "&6" + Integer.toString(newTable.getID()));
+        Messages.sendToAllWithinRange(newTable.getLocation(), "&6" + getPlayer().getName() + " &fhas created a &6" + gameType + "&f table named " + "&6'" + newTable.getName() + "'&f, ID " + "&6" + Integer.toString(newTable.getId()));
         Messages.sendToAllWithinRange(newTable.getLocation(), "Bought in for " + "&6" + Formatter.formatMoney(buyin));
         Messages.sendMessage(getPlayer(), "Edit the rules of your table with " + PluginExecutor.tableSet.getCommandString() + "&f, and open it with " + PluginExecutor.tableOpen.getCommandString() + "&f when ready!");
 

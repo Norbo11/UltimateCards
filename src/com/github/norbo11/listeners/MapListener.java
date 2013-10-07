@@ -12,62 +12,46 @@ import com.github.norbo11.game.cards.CardsPlayer;
 import com.github.norbo11.util.MapMethods;
 
 //This class prevents map duping by disallowing inventory clicks, item drops, and item pickups if the map isnt picked up by the player it was supposed to go to.
-public class MapListener implements Listener
-{
+public class MapListener implements Listener {
     @EventHandler
-    public void onInventoryClick(InventoryClickEvent e)
-    {
-        try
-        {
-            if (e.getCurrentItem().getType() == Material.MAP)
-            {
+    public void onInventoryClick(InventoryClickEvent e) {
+        try {
+            if (e.getCurrentItem().getType() == Material.MAP) {
                 ItemStack itemStack = MapMethods.getSavedMaps().get(e.getWhoClicked().getName());
-                if (itemStack != null && e.getCurrentItem().equals(itemStack))
-                {
+                if (itemStack != null && e.getCurrentItem().equals(itemStack)) {
                     e.setCancelled(true);
                     e.getInventory().remove(itemStack);
                 }
             }
-        } catch (Exception exc)
-        {
+        } catch (Exception exc) {
         }
     }
 
     @EventHandler
-    public void onPlayerDropItem(PlayerDropItemEvent e)
-    {
-        try
-        {
-            if (e.getItemDrop().getItemStack().getType() == Material.MAP)
-            {
+    public void onPlayerDropItem(PlayerDropItemEvent e) {
+        try {
+            if (e.getItemDrop().getItemStack().getType() == Material.MAP) {
                 ItemStack itemStack = MapMethods.getSavedMaps().get(e.getPlayer().getName());
-                if (itemStack != null && e.getItemDrop().getItemStack().equals(itemStack))
-                {
+                if (itemStack != null && e.getItemDrop().getItemStack().equals(itemStack)) {
                     e.setCancelled(true);
                 }
             }
-        } catch (Exception exc)
-        {
+        } catch (Exception exc) {
         }
     }
 
     @EventHandler
-    public void onPlayerPickupItem(PlayerPickupItemEvent e)
-    {
-        try
-        {
+    public void onPlayerPickupItem(PlayerPickupItemEvent e) {
+        try {
             if (e.getItem().getItemStack().getType() == Material.MAP) // If the item dropped is map that was created by the plugin
             {
-                if (MapMethods.getCreatedMaps().contains(e.getItem().getItemStack().getDurability()))
-                {
+                if (MapMethods.getCreatedMaps().contains(e.getItem().getItemStack().getDurability())) {
                     // If the player trying to pick up the map is NOT the
                     // rightful owner, and the map DOES have an owner
                     String mapOwner = MapMethods.mapExists(e.getItem().getItemStack());
-                    if (mapOwner != e.getPlayer().getName() && mapOwner != "")
-                    {
+                    if (mapOwner != e.getPlayer().getName() && mapOwner != "") {
                         e.setCancelled(true);
-                    } else if (CardsPlayer.getCardsPlayer(e.getPlayer().getName()) == null)
-                    {
+                    } else if (CardsPlayer.getCardsPlayer(e.getPlayer().getName()) == null) {
                         e.setCancelled(true);
                         e.getItem().remove();
                         MapMethods.getCreatedMaps().remove(e.getItem().getItemStack().getDurability());
@@ -77,8 +61,7 @@ public class MapListener implements Listener
                       // the case if the player is not the owner of the map)
                 }
             }
-        } catch (Exception exc)
-        {
+        } catch (Exception exc) {
         }
     }
 }

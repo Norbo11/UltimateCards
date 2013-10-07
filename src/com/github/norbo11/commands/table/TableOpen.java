@@ -6,10 +6,8 @@ import com.github.norbo11.game.cards.CardsTable;
 import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.Messages;
 
-public class TableOpen extends PluginCommand
-{
-    public TableOpen()
-    {
+public class TableOpen extends PluginCommand {
+    public TableOpen() {
         getAlises().add("open");
         getAlises().add("unlock");
         getAlises().add("o");
@@ -22,28 +20,27 @@ public class TableOpen extends PluginCommand
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "table." + getAlises().get(0));
     }
 
+    CardsPlayer cardsPlayer;
     CardsTable cardsTable;
 
     @Override
-    public boolean conditions()
-    {
-        if (getArgs().length == 1)
-        {
-            CardsPlayer cardsPlayer = CardsPlayer.getCardsPlayer(getPlayer().getName());
-            if (CardsTable.isOwnerOfTable(cardsPlayer))
-            {
+    public boolean conditions() {
+        if (getArgs().length == 1) {
+            cardsPlayer = CardsPlayer.getCardsPlayer(getPlayer().getName());
+            if (cardsPlayer != null) {
                 cardsTable = cardsPlayer.getTable();
-                if (!cardsTable.isOpen()) return true;
-                else
-                {
-                    ErrorMessages.tableAlreadyOpen(getPlayer());
+                if (cardsTable.isOwner(cardsPlayer.getPlayerName())) {
+                    if (!cardsTable.isOpen()) return true;
+                    else {
+                        ErrorMessages.tableAlreadyOpen(getPlayer());
+                    }
+                } else {
+                    ErrorMessages.playerNotOwner(getPlayer());
                 }
-            } else
-            {
-                ErrorMessages.notOwnerOfAnyTable(getPlayer());
+            } else {
+                ErrorMessages.notSittingAtTable(getPlayer());
             }
-        } else
-        {
+        } else {
             showUsage();
         }
         return false;
@@ -51,10 +48,9 @@ public class TableOpen extends PluginCommand
 
     // Opens the specified player's table
     @Override
-    public void perform()
-    {
+    public void perform() {
         cardsTable.setOpen(true);
-        Messages.sendToAllWithinRange(cardsTable.getLocation(), "Table named &6" + cardsTable.getName() + "&f, ID #&6" + cardsTable.getID() + "&f is now open! Players can now join!");
+        Messages.sendToAllWithinRange(cardsTable.getLocation(), "Table named &6" + cardsTable.getName() + "&f, ID #&6" + cardsTable.getId() + "&f is now open! Players can now join!");
 
     }
 }

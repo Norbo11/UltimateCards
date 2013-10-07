@@ -6,11 +6,9 @@ import com.github.norbo11.game.poker.PokerPlayer;
 import com.github.norbo11.game.poker.PokerTable;
 import com.github.norbo11.util.ErrorMessages;
 
-public class PokerFold extends PluginCommand
-{
+public class PokerFold extends PluginCommand {
 
-    public PokerFold()
-    {
+    public PokerFold() {
         getAlises().add("fold");
         getAlises().add("muck");
         getAlises().add("f");
@@ -28,49 +26,35 @@ public class PokerFold extends PluginCommand
     PokerTable pokerTable;
 
     @Override
-    public boolean conditions()
-    {
-        if (getArgs().length == 1)
-        {
+    public boolean conditions() {
+        if (getArgs().length == 1) {
             pokerPlayer = PokerPlayer.getPokerPlayer(getPlayer().getName());
-            if (pokerPlayer != null)
-            {
-                if (!pokerPlayer.isEliminated())
-                {
+            if (pokerPlayer != null) {
+                if (!pokerPlayer.isEliminated()) {
                     pokerTable = pokerPlayer.getPokerTable();
-                    if (pokerTable.isInProgress())
-                    {
-                        if (pokerPlayer.isAction())
-                        {
-                            if (!pokerPlayer.isFolded())
-                            {
+                    if (pokerTable.isInProgress()) {
+                        if (pokerPlayer.isAction()) {
+                            if (!pokerPlayer.isFolded()) {
                                 if (!pokerPlayer.isAllIn() || pokerTable.getCurrentPhase() == PokerPhase.SHOWDOWN) return true;
-                                else
-                                {
+                                else {
                                     ErrorMessages.playerIsAllIn(getPlayer());
                                 }
-                            } else
-                            {
+                            } else {
                                 ErrorMessages.playerIsFolded(getPlayer());
                             }
-                        } else
-                        {
+                        } else {
                             ErrorMessages.notYourTurn(getPlayer());
                         }
-                    } else
-                    {
+                    } else {
                         ErrorMessages.tableNotInProgress(getPlayer());
                     }
-                } else
-                {
+                } else {
                     ErrorMessages.playerIsEliminated(getPlayer());
                 }
-            } else
-            {
+            } else {
                 ErrorMessages.notSittingAtTable(getPlayer());
             }
-        } else
-        {
+        } else {
             showUsage();
         }
         return false;
@@ -80,8 +64,7 @@ public class PokerFold extends PluginCommand
     // Clears the player's hand, sets their folded flag to true and
     // displays a message. Then goes to the turn of the next player
     @Override
-    public void perform() throws Exception
-    {
+    public void perform() throws Exception {
         pokerPlayer.fold();
     }
 }

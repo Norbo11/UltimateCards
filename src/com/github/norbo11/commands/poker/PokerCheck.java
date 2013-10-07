@@ -7,11 +7,9 @@ import com.github.norbo11.game.poker.PokerTable;
 import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.Messages;
 
-public class PokerCheck extends PluginCommand
-{
+public class PokerCheck extends PluginCommand {
 
-    public PokerCheck()
-    {
+    public PokerCheck() {
         getAlises().add("check");
         getAlises().add("ch");
 
@@ -28,61 +26,43 @@ public class PokerCheck extends PluginCommand
     PokerTable pokerTable;
 
     @Override
-    public boolean conditions()
-    {
-        if (getArgs().length == 1)
-        {
+    public boolean conditions() {
+        if (getArgs().length == 1) {
             pokerPlayer = PokerPlayer.getPokerPlayer(getPlayer().getName());
-            if (pokerPlayer != null)
-            {
-                if (!pokerPlayer.isEliminated())
-                {
+            if (pokerPlayer != null) {
+                if (!pokerPlayer.isEliminated()) {
                     pokerTable = pokerPlayer.getPokerTable();
-                    if (pokerTable.isInProgress())
-                    {
-                        if (pokerTable.getCurrentPhase() != PokerPhase.SHOWDOWN)
-                        {
-                            if (pokerPlayer.isAction())
-                            {
-                                if (!pokerPlayer.isFolded())
-                                {
-                                    if (!pokerPlayer.isAllIn())
-                                    {
+                    if (pokerTable.isInProgress()) {
+                        if (pokerTable.getCurrentPhase() != PokerPhase.SHOWDOWN) {
+                            if (pokerPlayer.isAction()) {
+                                if (!pokerPlayer.isFolded()) {
+                                    if (!pokerPlayer.isAllIn()) {
                                         if (pokerPlayer.getCurrentBet() == pokerTable.getCurrentBet()) return true;
-                                        else
-                                        {
+                                        else {
                                             ErrorMessages.cantCheck(pokerPlayer);
                                         }
-                                    } else
-                                    {
+                                    } else {
                                         ErrorMessages.playerIsAllIn(getPlayer());
                                     }
-                                } else
-                                {
+                                } else {
                                     ErrorMessages.playerIsFolded(getPlayer());
                                 }
-                            } else
-                            {
+                            } else {
                                 ErrorMessages.notYourTurn(getPlayer());
                             }
-                        } else
-                        {
+                        } else {
                             ErrorMessages.tableAtShowdown(getPlayer());
                         }
-                    } else
-                    {
+                    } else {
                         ErrorMessages.tableNotInProgress(getPlayer());
                     }
-                } else
-                {
+                } else {
                     ErrorMessages.playerIsEliminated(getPlayer());
                 }
-            } else
-            {
+            } else {
                 ErrorMessages.notSittingAtTable(getPlayer());
             }
-        } else
-        {
+        } else {
             showUsage();
         }
         return false;
@@ -90,8 +70,7 @@ public class PokerCheck extends PluginCommand
 
     // Checks the turn of the specified player()
     @Override
-    public void perform() throws Exception
-    {
+    public void perform() throws Exception {
         // Simply say that the player has took action, and just send a message.
         // Then go to the next player's turn
         pokerPlayer.setActed(true);

@@ -9,11 +9,9 @@ import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.Messages;
 
-public class BlackjackSplit extends PluginCommand
-{
+public class BlackjackSplit extends PluginCommand {
 
-    public BlackjackSplit()
-    {
+    public BlackjackSplit() {
         getAlises().add("split");
         getAlises().add("sp");
 
@@ -30,68 +28,51 @@ public class BlackjackSplit extends PluginCommand
     BlackjackTable blackjackTable;
 
     @Override
-    public boolean conditions()
-    {
-        if (getArgs().length == 1)
-        {
+    public boolean conditions() {
+        if (getArgs().length == 1) {
             blackjackPlayer = BlackjackPlayer.getBlackjackPlayer(getPlayer().getName());
-            if (blackjackPlayer != null)
-            {
+            if (blackjackPlayer != null) {
                 blackjackTable = blackjackPlayer.getBlackjackTable();
 
-                if (blackjackTable.isInProgress())
-                {
-                    if (blackjackPlayer.isAction())
-                    {
-                        if (!blackjackPlayer.isSplit())
-                        {
-                            if (!blackjackPlayer.isHitted())
-                            {
-                                if (blackjackPlayer.sameHoleCards())
-                                {
-                                    if (blackjackPlayer.hasMoney(blackjackPlayer.getTotalAmountBet()))
-                                    {
+                if (blackjackTable.isInProgress()) {
+                    if (blackjackPlayer.isAction()) {
+                        if (!blackjackPlayer.isSplit()) {
+                            if (!blackjackPlayer.isHitted()) {
+                                if (blackjackPlayer.sameHoleCards()) {
+                                    if (blackjackPlayer.hasMoney(blackjackPlayer.getTotalAmountBet())) {
                                         blackjackTable = blackjackPlayer.getBlackjackTable();
                                         return true;
-                                    } else
-                                    {
+                                    } else {
                                         ErrorMessages.notEnoughMoney(getPlayer(), blackjackPlayer.getTotalAmountBet(), blackjackPlayer.getMoney());
                                     }
-                                } else
-                                {
+                                } else {
                                     ErrorMessages.holeCardsNotMatching(getPlayer());
                                 }
-                            } else
-                            {
+                            } else {
                                 ErrorMessages.playerIsSplit(getPlayer());
                             }
-                        } else
-                        {
+                        } else {
                             ErrorMessages.playerIsStayed(getPlayer());
                         }
-                    } else
-                    {
+                    } else {
                         ErrorMessages.notYourTurn(getPlayer());
                     }
-                } else
-                {
+                } else {
                     ErrorMessages.tableNotInProgress(getPlayer());
                 }
-            } else
-            {
+            } else {
                 ErrorMessages.notSittingAtTable(getPlayer());
             }
-        } else
-        {
+        } else {
             showUsage();
         }
         return false;
     }
 
     @Override
-    public void perform() throws Exception
-    {
-        blackjackPlayer.setMoney(blackjackPlayer.getMoney() - blackjackPlayer.getHands().get(0).getAmountBet());
+    public void perform() throws Exception {
+        blackjackPlayer.removeMoney(blackjackPlayer.getHands().get(0).getAmountBet());
+        blackjackPlayer.getBlackjackTable().getDealer().addMoney(blackjackPlayer.getHands().get(0).getAmountBet());
         blackjackPlayer.getHands().add(new BlackjackHand(blackjackPlayer, blackjackPlayer.getHands().get(0).getAmountBet()));
 
         Messages.sendToAllWithinRange(blackjackTable.getLocation(), "&6" + blackjackPlayer.getPlayerName() + "&f splits! New bet: &6" + Formatter.formatMoney(blackjackPlayer.getTotalAmountBet()));

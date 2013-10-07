@@ -4,10 +4,8 @@ import com.github.norbo11.UltimateCards;
 import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.util.Messages;
 
-public class CardsReload extends PluginCommand
-{
-    public CardsReload()
-    {
+public class CardsReload extends PluginCommand {
+    public CardsReload() {
         getAlises().add("reload");
 
         setDescription("Reloads the plugin configuration.");
@@ -20,11 +18,9 @@ public class CardsReload extends PluginCommand
 
     // Lists the specified details type of the specified table. If no table is specified, lists details of the table that the player is sitting on. If a type is not specified, lists all details.
     @Override
-    public boolean conditions()
-    {
+    public boolean conditions() {
         if (getArgs().length == 1) return true;
-        else
-        {
+        else {
             showUsage();
         }
 
@@ -32,8 +28,7 @@ public class CardsReload extends PluginCommand
     }
 
     @Override
-    public void perform() throws Exception
-    {
+    public void perform() throws Exception {
         UltimateCards.getPluginConfig().load();
         Messages.sendMessage(getPlayer(), "Plugin configuration sucessfully reloaded.");
     }

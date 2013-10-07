@@ -4,17 +4,27 @@ import java.util.ArrayList;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 
 import com.github.norbo11.UltimateCards;
 import com.github.norbo11.game.poker.PokerPhase;
+import com.github.norbo11.util.Formatter;
+import com.github.norbo11.util.MapMethods;
 import com.github.norbo11.util.Messages;
 import com.github.norbo11.util.NumberMethods;
 import com.github.norbo11.util.Sound;
+import com.github.norbo11.util.config.SavedTables;
 
-public abstract class CardsTable
-{
-    static
-    {
+public abstract class CardsTable {
+    public CardsTable(String owner, String name, int id, Location location) {
+        // Set the table core properties
+        setOwner(owner);
+        setName(name);
+        setId(id);
+        setLocation(location);
+    }
+
+    static {
         ArrayList<String> allowedDetailTypes = new ArrayList<String>();
         allowedDetailTypes.add("settings");
         allowedDetailTypes.add("player");
@@ -22,20 +32,21 @@ public abstract class CardsTable
         allowedDetailTypes.add("general");
         allowedDetailTypes.add("all");
     }
-
     private int button; // button (in the list 'players')
 
-    private CardsPlayer owner; // Owner of the table. A PokerPlayer object should be created right after the creation of the table
-    private String name;
+    private CardsPlayer ownerPlayer;
 
+    private String owner;
+
+    private String name;
     private CardsPlayer actionPlayer; // The player that is currently supposed to act
 
     private CardsTableSettings cardsTableSettings;
-
     private Location location; // The location at which the table was created
+
     private Deck deck = new Deck(1); // Stores the deck assigned to this table
     private PokerPhase currentPhase;
-    private int ID;
+    private int id;
     private int handNumber; // The amount of hands played/the hand number currently being played at this table
     private boolean inProgress; // True if the hand is currently in progress. Its false if the table hasen't even started or is currently in showdown
     private boolean open; // Decides if player can join or not
@@ -43,24 +54,29 @@ public abstract class CardsTable
     private static ArrayList<String> allowedDetailTypes;
     private ArrayList<CardsPlayer> players = new ArrayList<CardsPlayer>();
     private ArrayList<String> bannedList = new ArrayList<String>();
-
     private static ArrayList<CardsTable> tables = new ArrayList<CardsTable>();
+    private BukkitTask timerTask;
 
-    public static ArrayList<String> getAllowedTypes()
-    {
+    public static boolean doesTableExist(String tableName) {
+        for (CardsTable table : tables) {
+            if (table.getName().equalsIgnoreCase(tableName)) return true;
+        }
+        for (CardsTable table : SavedTables.getSavedTables()) {
+            if (table.getName().equalsIgnoreCase(tableName)) return true;
+        }
+        return false;
+    }
+
+    public static ArrayList<String> getAllowedTypes() {
         return allowedDetailTypes;
     }
 
-    public static int getFreeTableID()
-    {
+    public static int getFreeTableID() {
         int newID = 0;
         boolean taken = true;
-        whileLoop: while (taken)
-        {
-            for (CardsTable table : tables)
-            {
-                if (table.getID() == newID)
-                {
+        whileLoop: while (taken) {
+            for (CardsTable table : tables) {
+                if (table.getId() == newID) {
                     newID++;
                     continue whileLoop;
                 }
@@ -70,35 +86,29 @@ public abstract class CardsTable
         return newID;
     }
 
-    public static CardsTable getTable(int ID)
-    {
+    public static CardsTable getTable(int ID) {
         for (CardsTable cardsTable : CardsTable.getTables())
-            if (cardsTable.getID() == ID) return cardsTable;
+            if (cardsTable.getId() == ID) return cardsTable;
         return null;
     }
 
-    public static ArrayList<CardsTable> getTables()
-    {
+    public static ArrayList<CardsTable> getTables() {
         return tables;
     }
 
-    public static boolean isOwnerOfTable(CardsPlayer toCheck)
-    {
-        if (toCheck != null) if (toCheck.getTable().getOwner() == toCheck) return true;
-        return false;
+    public static boolean isGameType(String gameType) {
+        return gameType.equalsIgnoreCase("poker") || gameType.equalsIgnoreCase("blackjack") || gameType.equalsIgnoreCase("bj");
     }
 
-    public static void setTables(ArrayList<CardsTable> tables)
-    {
+    public static void setTables(ArrayList<CardsTable> tables) {
         CardsTable.tables = tables;
     }
 
-    public boolean canBeDeleted()
-    {
+    public abstract void autoStart();
+
+    public boolean canBeDeleted() {
         return true;
     }
-
-    public abstract boolean canContinue();
 
     public abstract boolean canDeal();
 
@@ -110,8 +120,7 @@ public abstract class CardsTable
 
     public abstract void deleteTable();
 
-    public void displayDetails(Player player)
-    {
+    public void displayDetails(Player player) {
         Messages.sendMessage(player, "&6" + UltimateCards.getLineString());
         Messages.sendMessage(player, "&6&nSettings");
         Messages.sendMessage(player, getSettings().listSettings());
@@ -122,88 +131,72 @@ public abstract class CardsTable
 
         Messages.sendMessage(player, "&6" + UltimateCards.getLineString());
         Messages.sendMessage(player, "&6&nGeneral Details");
-        Messages.sendMessage(player, "Owner: &6" + getOwner().getPlayerName());
+        Messages.sendMessage(player, "Owner: &6" + getOwner());
         Messages.sendMessage(player, "Hands played: &6" + getHandNumber());
         Messages.sendMessage(player, "Open: &6" + isOpen());
         Messages.sendMessage(player, "In progress: " + "&6" + isInProgress());
-        Messages.sendMessage(player, "Location: " + "&6X: &f" + Math.round(getLocation().getX()) + "&6 Z: &f" + Math.round(getLocation().getZ()) + "&6 Y: &f" + Math.round(getLocation().getY()) + "&6 World: &f" + getLocation().getWorld().getName());
+        Messages.sendMessage(player, "Location: " + Formatter.formatLocation(location));
     }
 
-    public CardsPlayer getActionPlayer()
-    {
+    public CardsPlayer getActionPlayer() {
         return actionPlayer;
     }
 
-    public double getAverageStack()
-    {
+    public double getAverageStack() {
         double average = 0;
         int players = 0;
-        for (CardsPlayer player : getPlayers())
-        {
+        for (CardsPlayer player : getPlayers()) {
             average += player.getMoney();
             players++;
         }
         return NumberMethods.roundDouble(average / players, 2);
     }
 
-    public ArrayList<String> getBannedList()
-    {
+    public ArrayList<String> getBannedList() {
         return bannedList;
     }
 
-    public int getButton()
-    {
+    public int getButton() {
         return button;
     }
 
-    public CardsPlayer getButtonPlayer()
-    {
+    public CardsPlayer getButtonPlayer() {
         // Exception has to be caught in case the button doesnt exist in the list
-        try
-        {
+        try {
             return getPlayersThisHand().get(button);
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             return null;
         }
     }
 
-    public CardsTableSettings getCardsTableSettings()
-    {
+    public CardsTableSettings getCardsTableSettings() {
         return cardsTableSettings;
     }
 
-    public CardsPlayer getChipLeader()
-    {
+    public CardsPlayer getChipLeader() {
         CardsPlayer returnValue = players.get(0);
         for (CardsPlayer cardsPlayer : players)
-            if (cardsPlayer.getMoney() > returnValue.getMoney())
-            {
+            if (cardsPlayer.getMoney() > returnValue.getMoney()) {
                 returnValue = cardsPlayer;
             }
         return returnValue;
     }
 
-    public PokerPhase getCurrentPhase()
-    {
+    public PokerPhase getCurrentPhase() {
         return currentPhase;
     }
 
-    public Deck getDeck()
-    {
+    public Deck getDeck() {
         return deck;
     }
 
     // Find the first empty ID that is closest to 0
-    public int getEmptyPlayerID()
-    {
+    public int getEmptyPlayerID() {
         int newID = 0;
-        try
-        {
+        try {
             // Try to get the first player. If that player exists,
             // increment the newID variable
-            while (getPlayers().get(newID).getID() == newID)
-            {
+            while (getPlayers().get(newID).getID() == newID) {
                 newID++;
             }
         } catch (Exception e) // As soon as you try to get a player that
@@ -216,32 +209,27 @@ public abstract class CardsTable
                       // compiler doesnt complain
     }
 
-    public int getHandNumber()
-    {
+    public int getHandNumber() {
         return handNumber;
     }
 
-    public int getID()
-    {
-        return ID;
+    public int getId() {
+        return id;
     }
 
-    public Location getLocation()
-    {
+    public Location getLocation() {
         return location;
     }
 
     public abstract int getMinPlayers();
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
     // Method to get the player 1 after the index specified, and loop back to
     // the beginning if the end is reached
-    public CardsPlayer getNextPlayer(int index)
-    {
+    public CardsPlayer getNextPlayer(int index) {
         if (index + 1 >= getPlayers().size()) return getPlayers().get((index + 1) % getPlayers().size()); // If
         else return getPlayers().get(index + 1); // If the end of the
         // players is not reached
@@ -250,37 +238,34 @@ public abstract class CardsTable
     }
 
     // Returns a list of online player sitting at the table
-    public ArrayList<CardsPlayer> getOnlinePlayers()
-    {
+    public ArrayList<CardsPlayer> getOnlinePlayers() {
         ArrayList<CardsPlayer> returnValue = new ArrayList<CardsPlayer>();
         for (CardsPlayer player : getPlayers())
-            if (player.isOnline() == true)
-            {
+            if (player.isOnline() == true) {
                 returnValue.add(player);
             }
         return returnValue;
     }
 
-    public CardsPlayer getOwner()
-    {
+    public String getOwner() {
         return owner;
     }
 
-    public ArrayList<CardsPlayer> getPlayers()
-    {
+    public CardsPlayer getOwnerPlayer() {
+        return ownerPlayer;
+    }
+
+    public ArrayList<CardsPlayer> getPlayers() {
         return players;
     }
 
     public abstract ArrayList<CardsPlayer> getPlayersThisHand();
 
-    public ArrayList<CardsPlayer> getRearrangedPlayers(CardsPlayer startingPlayer)
-    {
+    public ArrayList<CardsPlayer> getRearrangedPlayers(CardsPlayer startingPlayer) {
         ArrayList<CardsPlayer> returnValue = new ArrayList<CardsPlayer>(getPlayersThisHand());
 
-        for (CardsPlayer player : getPlayersThisHand())
-        {
-            if (getPlayers().indexOf(player) < getPlayersThisHand().indexOf(startingPlayer))
-            {
+        for (CardsPlayer player : getPlayersThisHand()) {
+            if (getPlayers().indexOf(player) < getPlayersThisHand().indexOf(startingPlayer)) {
                 CardsPlayer temp = returnValue.get(0);
                 returnValue.remove(0);
                 returnValue.add(temp);
@@ -292,18 +277,23 @@ public abstract class CardsTable
 
     public abstract CardsTableSettings getSettings();
 
-    public boolean isInProgress()
-    {
+    public BukkitTask getTimerTask() {
+        return timerTask;
+    }
+
+    public boolean isInProgress() {
         return inProgress;
     }
 
-    public boolean isOpen()
-    {
+    public boolean isOpen() {
         return open;
     }
 
-    public boolean isToBeContinued()
-    {
+    public boolean isOwner(String player) {
+        return player.equalsIgnoreCase(owner);
+    }
+
+    public boolean isToBeContinued() {
         return toBeContinued;
     }
 
@@ -312,12 +302,10 @@ public abstract class CardsTable
     public abstract ArrayList<String> listPlayers();
 
     // Moves the button to the next player (call this when starting a new hand)
-    public void moveButton()
-    {
+    public void moveButton() {
         // If the button is not the last player in the list, increment the
         // button. Otherwise set button to 0.
-        if (++button >= getPlayersThisHand().size())
-        {
+        if (++button >= getPlayersThisHand().size()) {
             button = 0;
         }
         Messages.sendToAllWithinRange(getLocation(), "Button moved to &6" + getPlayersThisHand().get(button).getPlayerName());
@@ -327,111 +315,99 @@ public abstract class CardsTable
 
     public abstract void playerLeave(CardsPlayer player);
 
-    public abstract void playerSit(Player player, double buyin) throws Exception;
+    public abstract CardsPlayer playerSit(Player player, double buyin) throws Exception;
 
-    public void playTurnSounds(Player player)
-    {
-        for (CardsPlayer p : getPlayersThisHand())
-        {
-            if (!player.getName().equals(p.getPlayerName()))
-            {
+    // Plays turn sounds apart from the player specified in the argument
+    public void playTurnSounds(String player) {
+        for (CardsPlayer p : getPlayersThisHand()) {
+            if (player.equals(p.getPlayerName())) {
                 Sound.otherTurn(p.getPlayer());
             }
         }
     }
 
-    public void removePlayer(CardsPlayer cardsPlayer)
-    {
+    public void removePlayer(CardsPlayer cardsPlayer) {
         players.remove(cardsPlayer);
+        if (players.size() == 0) setOpen(true);
     }
 
-    public void restoreAllMaps()
-    {
-        for (CardsPlayer player : getPlayers())
-        {
-            UltimateCards.mapMethods.restoreMap(player.getPlayer());
+    public void restoreAllMaps() {
+        for (CardsPlayer player : getPlayers()) {
+            MapMethods.restoreMap(player.getPlayer().getName(), true);
         }
     }
 
     public abstract void returnMoney(CardsPlayer player);
 
-    public void setActionPlayer(CardsPlayer cardsPlayer)
-    {
-        this.actionPlayer = cardsPlayer;
+    public void setActionPlayer(CardsPlayer cardsPlayer) {
+        actionPlayer = cardsPlayer;
     }
 
-    public void setBannedList(ArrayList<String> bannedList)
-    {
+    public void setBannedList(ArrayList<String> bannedList) {
         this.bannedList = bannedList;
     }
 
-    public void setCardsTableSettings(CardsTableSettings cardsTableSettings)
-    {
+    public void setCardsTableSettings(CardsTableSettings cardsTableSettings) {
         this.cardsTableSettings = cardsTableSettings;
     }
 
-    public void setCurrentPhase(PokerPhase currentPhase)
-    {
+    public void setCurrentPhase(PokerPhase currentPhase) {
         this.currentPhase = currentPhase;
     }
 
-    public void setDeck(Deck deck)
-    {
+    public void setDeck(Deck deck) {
         this.deck = deck;
     }
 
-    public void setHandNumber(int handNumber)
-    {
+    public void setHandNumber(int handNumber) {
         this.handNumber = handNumber;
     }
 
-    public void setID(int iD)
-    {
-        ID = iD;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void setInProgress(boolean inProgress)
-    {
+    public void setInProgress(boolean inProgress) {
         this.inProgress = inProgress;
     }
 
-    public void setLocation(Location location)
-    {
+    public void setLocation(Location location) {
         this.location = location;
     }
 
-    public void setName(String name)
-    {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public void setOpen(boolean open)
-    {
+    public void setOpen(boolean open) {
         this.open = open;
     }
 
-    public void setOwner(CardsPlayer owner)
-    {
+    public void setOwner(String owner) {
         this.owner = owner;
     }
 
-    public void setPlayers(ArrayList<CardsPlayer> players)
-    {
+    public void setOwnerPlayer(CardsPlayer ownerPlayer) {
+        this.ownerPlayer = ownerPlayer;
+    }
+
+    public void setPlayers(ArrayList<CardsPlayer> players) {
         this.players = players;
     }
 
-    public void setToBeContinued(boolean toBeContinued)
-    {
+    public void setTimerTask(BukkitTask timerTask) {
+        this.timerTask = timerTask;
+    }
+
+    public void setToBeContinued(boolean toBeContinued) {
         this.toBeContinued = toBeContinued;
     }
 
     // This method makes sure that every player ID is equal to their index in
     // the player list. This should be called whenever a player is removed.
-    public void shiftIDs()
-    {
+    public void shiftIDs() {
         for (int i = 0; i < getPlayers().size(); i++)
-            if (getPlayers().get(i).getID() != i)
-            {
+            if (getPlayers().get(i).getID() != i) {
                 getPlayers().get(i).setID(i);
             }
     }

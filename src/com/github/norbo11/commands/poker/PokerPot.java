@@ -6,11 +6,9 @@ import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.Messages;
 
-public class PokerPot extends PluginCommand
-{
+public class PokerPot extends PluginCommand {
 
-    public PokerPot()
-    {
+    public PokerPot() {
         getAlises().add("pot");
         getAlises().add("pots");
 
@@ -25,18 +23,14 @@ public class PokerPot extends PluginCommand
     PokerPlayer pokerPlayer;
 
     @Override
-    public boolean conditions()
-    {
-        if (getArgs().length == 1)
-        {
+    public boolean conditions() {
+        if (getArgs().length == 1) {
             pokerPlayer = PokerPlayer.getPokerPlayer(getPlayer().getName());
             if (pokerPlayer != null) return true;
-            else
-            {
+            else {
                 ErrorMessages.notSittingAtTable(getPlayer());
             }
-        } else
-        {
+        } else {
             showUsage();
         }
         return false;
@@ -44,10 +38,8 @@ public class PokerPot extends PluginCommand
 
     // Displays the table's pots to the player
     @Override
-    public void perform() throws Exception
-    {
-        for (PokerPlayer p : pokerPlayer.getPokerTable().getNonFoldedPlayers())
-        {
+    public void perform() throws Exception {
+        for (PokerPlayer p : pokerPlayer.getPokerTable().getNonFoldedPlayers()) {
             double pot = p.getTotalPot() > 0 ? p.getTotalPot() : 0;
             Messages.sendMessage(getPlayer(), "If &6[ID" + p.getID() + "] " + p.getPlayerName() + "&f wins, he will win &6" + Formatter.formatMoney(pot) + "&f.");
         }

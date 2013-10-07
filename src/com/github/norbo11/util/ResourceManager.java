@@ -4,17 +4,10 @@ import java.io.InputStream;
 
 import com.github.norbo11.UltimateCards;
 
-public class ResourceManager
-{
-    public ResourceManager(UltimateCards p)
-    {
-        this.p = p;
-    }
+public class ResourceManager {
+    public static UltimateCards p;
 
-    UltimateCards p;
-
-    public InputStream getResource(String filename)
-    {
+    public static InputStream getResource(String filename) {
         return p.getResource(filename);
     }
 }

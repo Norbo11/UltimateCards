@@ -7,11 +7,9 @@ import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.Messages;
 import com.github.norbo11.util.NumberMethods;
 
-public class CardsTeleport extends PluginCommand
-{
+public class CardsTeleport extends PluginCommand {
 
-    public CardsTeleport()
-    {
+    public CardsTeleport() {
         getAlises().add("teleport");
         getAlises().add("tp");
 
@@ -27,34 +25,27 @@ public class CardsTeleport extends PluginCommand
 
     // cards teleport <id>
     @Override
-    public boolean conditions()
-    {
-        if (getArgs().length == 2)
-        {
+    public boolean conditions() {
+        if (getArgs().length == 2) {
             int id = NumberMethods.getInteger(getArgs()[1]);
-            if (id != -99999)
-            {
+            if (id != -99999) {
                 cardsTable = CardsTable.getTable(id);
                 if (cardsTable != null) return true;
-                else
-                {
+                else {
                     ErrorMessages.notTable(getPlayer(), getArgs()[1]);
                 }
-            } else
-            {
+            } else {
                 ErrorMessages.invalidNumber(getPlayer(), getArgs()[1]);
             }
-        } else
-        {
+        } else {
             showUsage();
         }
         return false;
     }
 
     @Override
-    public void perform() throws Exception
-    {
+    public void perform() throws Exception {
         getPlayer().teleport(cardsTable.getLocation());
-        Messages.sendMessage(getPlayer(), "You have teleported to table " + "&6" + cardsTable.getName() + "&f, ID #" + "&6" + cardsTable.getID() + "&f. Sit down with " + PluginExecutor.cardsSit.getCommandString() + " [ID]");
+        Messages.sendMessage(getPlayer(), "You have teleported to table " + "&6" + cardsTable.getName() + "&f, ID #" + "&6" + cardsTable.getId() + "&f. Sit down with " + PluginExecutor.cardsSit.getCommandString() + " [ID]");
     }
 }

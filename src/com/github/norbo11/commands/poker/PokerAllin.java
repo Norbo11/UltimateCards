@@ -6,11 +6,9 @@ import com.github.norbo11.game.poker.PokerPlayer;
 import com.github.norbo11.game.poker.PokerTable;
 import com.github.norbo11.util.ErrorMessages;
 
-public class PokerAllin extends PluginCommand
-{
+public class PokerAllin extends PluginCommand {
 
-    public PokerAllin()
-    {
+    public PokerAllin() {
         getAlises().add("allin");
         getAlises().add("shove");
         getAlises().add("a");
@@ -28,56 +26,41 @@ public class PokerAllin extends PluginCommand
     PokerTable pokerTable;
 
     @Override
-    public boolean conditions()
-    {
-        if (getArgs().length == 1)
-        {
+    public boolean conditions() {
+        if (getArgs().length == 1) {
             pokerPlayer = PokerPlayer.getPokerPlayer(getPlayer().getName());
-            if (pokerPlayer != null)
-            {
-                if (!pokerPlayer.isEliminated())
-                {
+            if (pokerPlayer != null) {
+                if (!pokerPlayer.isEliminated()) {
                     pokerTable = pokerPlayer.getPokerTable();
                     if (pokerTable.isInProgress()) // Check if the table is
                                                    // in progress
                     {
-                        if (pokerTable.getCurrentPhase() != PokerPhase.SHOWDOWN)
-                        {
-                            if (pokerPlayer.isAction())
-                            {
-                                if (!pokerPlayer.isFolded())
-                                {
+                        if (pokerTable.getCurrentPhase() != PokerPhase.SHOWDOWN) {
+                            if (pokerPlayer.isAction()) {
+                                if (!pokerPlayer.isFolded()) {
                                     if (!pokerPlayer.isAllIn()) return true;
-                                    else
-                                    {
+                                    else {
                                         ErrorMessages.playerIsAllIn(getPlayer());
                                     }
-                                } else
-                                {
+                                } else {
                                     ErrorMessages.playerIsFolded(getPlayer());
                                 }
-                            } else
-                            {
+                            } else {
                                 ErrorMessages.notYourTurn(getPlayer());
                             }
-                        } else
-                        {
+                        } else {
                             ErrorMessages.tableAtShowdown(getPlayer());
                         }
-                    } else
-                    {
+                    } else {
                         ErrorMessages.tableNotInProgress(getPlayer());
                     }
-                } else
-                {
+                } else {
                     ErrorMessages.playerIsEliminated(getPlayer());
                 }
-            } else
-            {
+            } else {
                 ErrorMessages.notSittingAtTable(getPlayer());
             }
-        } else
-        {
+        } else {
             showUsage();
         }
         return false;
@@ -85,8 +68,7 @@ public class PokerAllin extends PluginCommand
 
     // Declares the specified player all in
     @Override
-    public void perform() throws Exception
-    {
+    public void perform() throws Exception {
         double betAmount = pokerPlayer.getMoney() + pokerPlayer.getCurrentBet();
         pokerPlayer.bet(betAmount, null);
     }

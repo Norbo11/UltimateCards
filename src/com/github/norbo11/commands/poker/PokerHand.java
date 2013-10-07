@@ -9,10 +9,8 @@ import com.github.norbo11.game.poker.PokerPlayer;
 import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.Messages;
 
-public class PokerHand extends PluginCommand
-{
-    public PokerHand()
-    {
+public class PokerHand extends PluginCommand {
+    public PokerHand() {
         getAlises().add("cards");
         getAlises().add("hand");
 
@@ -27,18 +25,14 @@ public class PokerHand extends PluginCommand
     PokerPlayer pokerPlayer;
 
     @Override
-    public boolean conditions()
-    {
-        if (getArgs().length == 1)
-        {
+    public boolean conditions() {
+        if (getArgs().length == 1) {
             pokerPlayer = PokerPlayer.getPokerPlayer(getPlayer().getName());
             if (pokerPlayer != null) if (pokerPlayer.getHand().getCards().size() > 0) return true;
-            else
-            {
+            else {
                 ErrorMessages.playerHasNoHand(getPlayer());
             }
-        } else
-        {
+        } else {
             showUsage();
         }
         return false;
@@ -46,8 +40,7 @@ public class PokerHand extends PluginCommand
 
     // Displays the player's hand (to himself only)
     @Override
-    public void perform() throws Exception
-    {
+    public void perform() throws Exception {
         Messages.sendMessage(getPlayer(), "Your hand:");
         Messages.sendMessage(getPlayer(), "&6" + UltimateCards.getLineString());
         Messages.sendMessage(getPlayer(), new ArrayList<String>(Arrays.asList(pokerPlayer.getHand().getHand())));

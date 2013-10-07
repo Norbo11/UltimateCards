@@ -6,10 +6,8 @@ import com.github.norbo11.game.cards.CardsTable;
 import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.Messages;
 
-public class TableUnban extends PluginCommand
-{
-    public TableUnban()
-    {
+public class TableUnban extends PluginCommand {
+    public TableUnban() {
         getAlises().add("unban");
         getAlises().add("pardon");
         getAlises().add("forgive");
@@ -29,26 +27,24 @@ public class TableUnban extends PluginCommand
     String toUnBan;
 
     @Override
-    public boolean conditions()
-    {
-        if (getArgs().length == 2)
-        {
+    public boolean conditions() {
+        if (getArgs().length == 2) {
             toUnBan = getArgs()[1];
             cardsPlayer = CardsPlayer.getCardsPlayer(getPlayer().getName());
-            if (CardsTable.isOwnerOfTable(cardsPlayer))
-            {
+            if (cardsPlayer != null) {
                 cardsTable = cardsPlayer.getTable();
-                if (cardsTable.getBannedList().contains(toUnBan)) return true;
-                else
-                {
-                    ErrorMessages.playerNotBanned(getPlayer(), toUnBan);
+                if (cardsTable.isOwner(cardsPlayer.getPlayerName())) {
+                    if (cardsTable.getBannedList().contains(toUnBan)) return true;
+                    else {
+                        ErrorMessages.playerNotBanned(getPlayer(), toUnBan);
+                    }
+                } else {
+                    ErrorMessages.playerNotOwner(getPlayer());
                 }
-            } else
-            {
-                ErrorMessages.notOwnerOfAnyTable(getPlayer());
+            } else {
+                ErrorMessages.notSittingAtTable(getPlayer());
             }
-        } else
-        {
+        } else {
             showUsage();
         }
         return false;
@@ -57,8 +53,7 @@ public class TableUnban extends PluginCommand
     // Unbans the specified player from the player's table specified
     // in the first argument
     @Override
-    public void perform()
-    {
+    public void perform() {
         cardsTable.getBannedList().remove(toUnBan);
         Messages.sendToAllWithinRange(cardsTable.getLocation(), "&6" + cardsPlayer.getPlayerName() + " &fhas unbanned &6" + toUnBan + " &ffrom the table!");
 

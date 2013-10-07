@@ -6,11 +6,9 @@ import com.github.norbo11.game.blackjack.BlackjackTable;
 import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.NumberMethods;
 
-public class BlackjackHit extends PluginCommand
-{
+public class BlackjackHit extends PluginCommand {
 
-    public BlackjackHit()
-    {
+    public BlackjackHit() {
         getAlises().add("hit");
         getAlises().add("hitme");
         getAlises().add("h");
@@ -29,76 +27,58 @@ public class BlackjackHit extends PluginCommand
     int hand = 0;
 
     @Override
-    public boolean conditions()
-    {
+    public boolean conditions() {
         hand = 0;
-        if (getArgs().length == 1 || getArgs().length == 2)
-        {
+        if (getArgs().length == 1 || getArgs().length == 2) {
             blackjackPlayer = BlackjackPlayer.getBlackjackPlayer(getPlayer().getName());
-            if (getArgs().length == 2)
-            {
-                if (blackjackPlayer.isSplit())
-                {
-                    hand = NumberMethods.getInteger(getArgs()[1]);
-                    if (hand != 0 && hand != 1)
-                    {
-                        ErrorMessages.invalidNumber(getPlayer(), getArgs()[1]);
-                        return false;
-                    }
-                } else
-                {
-                    ErrorMessages.cannotSpecifyHand(getPlayer());
-                    return false;
-                }
-            } else
-            {
-                if (blackjackPlayer.isSplit())
-                {
-                    ErrorMessages.needToSpecifyHand(getPlayer());
-                    return false;
-                }
-            }
-
-            if (blackjackPlayer != null)
-            {
+            if (blackjackPlayer != null) {
                 blackjackTable = blackjackPlayer.getBlackjackTable();
-                if (blackjackTable.isInProgress())
-                {
-                    if (blackjackPlayer.isAction())
-                    {
-                        if (!blackjackPlayer.getHands().get(hand).isBust())
-                        {
+            
+                if (blackjackTable.isInProgress()) {
+                    if (blackjackPlayer.isAction()) {
+                        if (getArgs().length == 2) {
+                            if (blackjackPlayer.isSplit()) {
+                                hand = NumberMethods.getInteger(getArgs()[1]);
+                                if (hand != 0 && hand != 1) {
+                                    ErrorMessages.invalidNumber(getPlayer(), getArgs()[1]);
+                                    return false;
+                                }
+                            } else {
+                                ErrorMessages.cannotSpecifyHand(getPlayer());
+                                return false;
+                            }
+                        } else {
+                            if (blackjackPlayer.isSplit()) {
+                                ErrorMessages.needToSpecifyHand(getPlayer());
+                                return false;
+                            }
+                        }
+                        
+                        if (!blackjackPlayer.getHands().get(hand).isBust()) {
                             if (!blackjackPlayer.getHands().get(hand).isStayed()) return true;
-                            else
-                            {
+                            else {
                                 ErrorMessages.playerIsStayed(getPlayer());
                             }
-                        } else
-                        {
+                        } else {
                             ErrorMessages.playerIsBust(getPlayer());
                         }
-                    } else
-                    {
+                    } else {
                         ErrorMessages.notYourTurn(getPlayer());
                     }
-                } else
-                {
+                } else {
                     ErrorMessages.tableNotInProgress(getPlayer());
                 }
-            } else
-            {
+            } else {
                 ErrorMessages.notSittingAtTable(getPlayer());
             }
-        } else
-        {
+        } else {
             showUsage();
         }
         return false;
     }
 
     @Override
-    public void perform() throws Exception
-    {
+    public void perform() throws Exception {
         blackjackPlayer.getHands().get(hand).addCards(blackjackPlayer.getBlackjackTable().getDeck().generateCards(1));
         blackjackPlayer.displayScore();
         blackjackPlayer.checkForBust();

@@ -1,13 +1,11 @@
-package com.github.norbo11.util;
+package com.github.norbo11.util.config;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
 import com.github.norbo11.UltimateCards;
 
-public class PluginConfig
-{
-    public PluginConfig(UltimateCards p)
-    {
+public class PluginConfig {
+    public PluginConfig(UltimateCards p) {
         this.p = p;
     }
 
@@ -18,193 +16,161 @@ public class PluginConfig
 
     // General
     private boolean autoUpdate, cleanupOnDisable;
+
     // Log
     private boolean enableLog;
-
     private String dateFormat;
+
     // Chat
     private boolean displayTag;
-
     private String colorTag, colorNormalMessage, colorErrorMessage, colorHighlight;
 
     // General
     private boolean displayTurnsPublicly, allowRebuys;
+    private int autoStart;
+
     // Poker
     private int chatRange, dynamicFrequency;
     private double maxBuy, sb, bb, ante, minRaise, fixRake, minBuy, rake;
 
-    private boolean rakeToStack, minRaiseAlwaysBB;
+    private boolean minRaiseAlwaysBB;
     // Blackjack
     private boolean allowDoubleDown, serverDealer, serverNeverDealer;
     private double minBet;
 
     private int amountOfDecks;
 
-    public int getAmountOfDecks()
-    {
+    public int getAmountOfDecks() {
         return amountOfDecks;
     }
 
-    public double getAnte()
-    {
+    public double getAnte() {
         return ante;
     }
 
-    public double getBb()
-    {
+    public int getAutoStart() {
+        return autoStart;
+    }
+
+    public double getBb() {
         return bb;
     }
 
-    public int getChatRange()
-    {
+    public int getChatRange() {
         return chatRange;
     }
 
-    public String getColorErrorMessage()
-    {
+    public String getColorErrorMessage() {
         return colorErrorMessage;
     }
 
-    public String getColorHighlight()
-    {
+    public String getColorHighlight() {
         return colorHighlight;
     }
 
-    public String getColorNormalMessage()
-    {
+    public String getColorNormalMessage() {
         return colorNormalMessage;
     }
 
-    public String getColorTag()
-    {
+    public String getColorTag() {
         return colorTag;
     }
 
-    public FileConfiguration getConfig()
-    {
+    public FileConfiguration getConfig() {
         return config;
     }
 
-    public String getDateFormat()
-    {
+    public String getDateFormat() {
         return dateFormat;
     }
 
-    public int getDynamicFrequency()
-    {
+    public int getDynamicFrequency() {
         return dynamicFrequency;
     }
 
-    public double getFixRake()
-    {
+    public double getFixRake() {
         return fixRake;
     }
 
-    public double getMaxBuy()
-    {
+    public double getMaxBuy() {
         return maxBuy;
     }
 
-    public double getMinBet()
-    {
+    public double getMinBet() {
         return minBet;
     }
 
-    public double getMinBuy()
-    {
+    public double getMinBuy() {
         return minBuy;
     }
 
-    public double getMinRaise()
-    {
+    public double getMinRaise() {
         return minRaise;
     }
 
-    public double getRake()
-    {
+    public double getRake() {
         return rake;
     }
 
-    public double getSb()
-    {
+    public double getSb() {
         return sb;
     }
 
-    public boolean isAllowDoubleDown()
-    {
+    public boolean isAllowDoubleDown() {
         return allowDoubleDown;
     }
 
-    public boolean isAllowRebuys()
-    {
+    public boolean isAllowRebuys() {
         return allowRebuys;
     }
 
-    public boolean isAutoUpdate()
-    {
+    public boolean isAutoUpdate() {
         return autoUpdate;
     }
 
-    public boolean isCleanupOnDisable()
-    {
+    public boolean isCleanupOnDisable() {
         return cleanupOnDisable;
     }
 
-    public boolean isDisplayTag()
-    {
+    public boolean isDisplayTag() {
         return displayTag;
     }
 
-    public boolean isDisplayTurnsPublicly()
-    {
+    public boolean isDisplayTurnsPublicly() {
         return displayTurnsPublicly;
     }
 
-    public boolean isEnableLog()
-    {
+    public boolean isEnableLog() {
         return enableLog;
     }
 
-    public boolean isMinRaiseAlwaysBB()
-    {
+    public boolean isMinRaiseAlwaysBB() {
         return minRaiseAlwaysBB;
     }
 
-    public boolean isRakeToStack()
-    {
-        return rakeToStack;
-    }
-
-    public boolean isServerDealer()
-    {
+    public boolean isServerDealer() {
         return serverDealer;
     }
 
-    public boolean isServerNeverDealer()
-    {
+    public boolean isServerNeverDealer() {
         return serverNeverDealer;
     }
 
-    public void load()
-    {
+    public void load() {
         config = p.getConfig();
-        try
-        {
+        try {
             config.load(UltimateCards.getFilePluginConfig());
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         setValues();
     }
 
-    public void setServerDealer(boolean serverDealer)
-    {
+    public void setServerDealer(boolean serverDealer) {
         this.serverDealer = serverDealer;
     }
 
-    private void setValues()
-    {
+    private void setValues() {
         // General
         cleanupOnDisable = config.getBoolean("options.general.cleanupOnDisable", config.getDefaults().getBoolean("options.general.cleanupOnDisable"));
         autoUpdate = config.getBoolean("options.general.autoUpdate", config.getDefaults().getBoolean("options.general.autoUpdate"));
@@ -224,14 +190,13 @@ public class PluginConfig
         // General
         allowRebuys = config.getBoolean("options.generalDefaults.allowRebuys", config.getDefaults().getBoolean("options.generalDefaults.allowRebuys"));
         displayTurnsPublicly = config.getBoolean("options.generalDefaults.displayTurnsPublicly", config.getDefaults().getBoolean("options.generalDefaults.displayTurnsPublicly"));
+        autoStart = config.getInt("options.generalDefaults.autoStart", config.getDefaults().getInt("options.generalDefaults.autoStart"));
+        minBuy = config.getDouble("options.generalDefaults.minBuy", config.getDefaults().getDouble("options.generalDefaults.minBuy"));
+        maxBuy = config.getDouble("options.generalDefaults.maxBuy", config.getDefaults().getDouble("options.generalDefaults.maxBuy"));
 
         // Poker
-        rakeToStack = config.getBoolean("options.poker.rakeToStack", config.getDefaults().getBoolean("options.poker.rakeToStack"));
         fixRake = config.getDouble("options.poker.fixRake", config.getDefaults().getDouble("options.poker.fixRake"));
-
         minRaiseAlwaysBB = config.getBoolean("options.poker.defaults.minRaiseIsAlwaysbb", config.getDefaults().getBoolean("options.poker.defaults.minRaiseIsAlwaysbb"));
-        minBuy = config.getDouble("options.poker.defaults.minBuy", config.getDefaults().getDouble("options.poker.defaults.minBuy"));
-        maxBuy = config.getDouble("options.poker.defaults.maxBuy", config.getDefaults().getDouble("options.poker.defaults.maxBuy"));
         sb = config.getDouble("options.poker.defaults.sb", config.getDefaults().getDouble("options.poker.defaults.sb"));
         bb = config.getDouble("options.poker.defaults.bb", config.getDefaults().getDouble("options.poker.defaults.bb"));
         ante = config.getDouble("options.poker.defaults.ante", config.getDefaults().getDouble("options.poker.defaults.ante"));

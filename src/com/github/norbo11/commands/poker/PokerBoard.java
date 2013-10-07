@@ -4,11 +4,9 @@ import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.game.poker.PokerPlayer;
 import com.github.norbo11.util.ErrorMessages;
 
-public class PokerBoard extends PluginCommand
-{
+public class PokerBoard extends PluginCommand {
 
-    public PokerBoard()
-    {
+    public PokerBoard() {
         getAlises().add("board");
         getAlises().add("community");
 
@@ -23,18 +21,14 @@ public class PokerBoard extends PluginCommand
     PokerPlayer pokerPlayer;
 
     @Override
-    public boolean conditions()
-    {
-        if (getArgs().length == 1)
-        {
+    public boolean conditions() {
+        if (getArgs().length == 1) {
             pokerPlayer = PokerPlayer.getPokerPlayer(getPlayer().getName());
             if (pokerPlayer != null) return true;
-            else
-            {
+            else {
                 ErrorMessages.notSittingAtTable(getPlayer());
             }
-        } else
-        {
+        } else {
             showUsage();
         }
         return false;
@@ -42,8 +36,7 @@ public class PokerBoard extends PluginCommand
 
     // Displays the board to the specified player
     @Override
-    public void perform() throws Exception
-    {
+    public void perform() throws Exception {
         pokerPlayer.getPokerTable().displayBoard(getPlayer());
     }
 }

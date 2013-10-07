@@ -6,10 +6,8 @@ import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.Messages;
 
-public class CardsMoney extends PluginCommand
-{
-    public CardsMoney()
-    {
+public class CardsMoney extends PluginCommand {
+    public CardsMoney() {
         getAlises().add("money");
         getAlises().add("balance");
         getAlises().add("m");
@@ -25,19 +23,15 @@ public class CardsMoney extends PluginCommand
     CardsPlayer cardsPlayer;
 
     @Override
-    public boolean conditions()
-    {
-        if (getArgs().length == 1)
-        {
+    public boolean conditions() {
+        if (getArgs().length == 1) {
             cardsPlayer = CardsPlayer.getCardsPlayer(getPlayer().getName());
 
             if (cardsPlayer != null) return true;
-            else
-            {
+            else {
                 ErrorMessages.notSittingAtTable(getPlayer());
             }
-        } else
-        {
+        } else {
             showUsage();
         }
 
@@ -46,8 +40,7 @@ public class CardsMoney extends PluginCommand
 
     // Displays the player's money just to the player
     @Override
-    public void perform() throws Exception
-    {
+    public void perform() throws Exception {
 
         Messages.sendMessage(getPlayer().getName(), "You have &6" + Formatter.formatMoney(cardsPlayer.getMoney()) + "&f left on this table.");
         Messages.sendMessage(getPlayer().getName(), "Average stack size: &6" + Formatter.formatMoney(cardsPlayer.getTable().getAverageStack()));

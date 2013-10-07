@@ -6,8 +6,7 @@ import org.bukkit.entity.Player;
 
 import com.github.norbo11.util.Messages;
 
-public abstract class PluginCommand
-{
+public abstract class PluginCommand {
     public static final String PERMISSIONS_BASE_NODE = "ucards.";
 
     private Player player;
@@ -19,49 +18,40 @@ public abstract class PluginCommand
 
     public abstract boolean conditions();
 
-    public boolean containsAlias(String action)
-    {
-        for (String alias : aliases)
-        {
+    public boolean containsAlias(String action) {
+        for (String alias : aliases) {
             if (alias.equalsIgnoreCase(action)) return true;
         }
         return false;
     }
 
-    public String getAliasesString()
-    {
+    public String getAliasesString() {
         String returnValue = "";
 
-        for (String alias : aliases)
-        {
+        for (String alias : aliases) {
             returnValue += alias + "&b | &6";
         }
 
-        if (returnValue.endsWith("&b | &6"))
-        {
+        if (returnValue.endsWith("&b | &6")) {
             returnValue = returnValue.substring(0, returnValue.length() - 7);
         }
 
         return returnValue;
     }
 
-    public ArrayList<String> getAlises()
-    {
+    public ArrayList<String> getAlises() {
         return aliases;
     }
 
-    public String[] getArgs()
-    {
+    public String[] getArgs() {
         return args;
     }
 
-    public String getArgumentsString()
-    {
+    public String getArgumentsString() {
         return argumentsString;
     }
 
-    public String getCommandString()
-    {
+    public String getCommandString() {
         if (PluginExecutor.commandsCards.contains(this)) return "&6/cards " + getAlises().get(0);
         else if (PluginExecutor.commandsTable.contains(this)) return "&6/table " + getAlises().get(0);
         else if (PluginExecutor.commandsPoker.contains(this)) return "&6/poker " + getAlises().get(0);
@@ -69,28 +59,23 @@ public abstract class PluginCommand
         else return "&6ERROR";
     }
 
-    public String getDescription()
-    {
+    public String getDescription() {
         return description;
     }
 
-    public ArrayList<String> getPermissionNodes()
-    {
+    public ArrayList<String> getPermissionNodes() {
         return permissionNodes;
     }
 
-    public Player getPlayer()
-    {
+    public Player getPlayer() {
         return player;
     }
 
-    public String getUsage()
-    {
+    public String getUsage() {
         return "&cUsage: &6" + getAliasesString() + " &b" + getArgumentsString() + " - &f" + getDescription();
     }
 
-    public boolean hasPermission(Player player)
-    {
+    public boolean hasPermission(Player player) {
         for (String node : permissionNodes)
             if (player.hasPermission(node)) return true;
         return false;
@@ -98,33 +83,27 @@ public abstract class PluginCommand
 
     public abstract void perform() throws Exception;
 
-    public void setArgs(String[] args)
-    {
+    public void setArgs(String[] args) {
         this.args = args;
     }
 
-    public void setArgumentsString(String argumentsString)
-    {
+    public void setArgumentsString(String argumentsString) {
         this.argumentsString = argumentsString;
     }
 
-    public void setArgumentString(String argumentsString)
-    {
+    public void setArgumentString(String argumentsString) {
         this.argumentsString = argumentsString;
     }
 
-    public void setDescription(String description)
-    {
+    public void setDescription(String description) {
         this.description = description;
     }
 
-    public void setPlayer(Player player)
-    {
+    public void setPlayer(Player player) {
         this.player = player;
     }
 
-    public void showUsage()
-    {
+    public void showUsage() {
         Messages.sendMessage(player, getUsage());
     }
 }

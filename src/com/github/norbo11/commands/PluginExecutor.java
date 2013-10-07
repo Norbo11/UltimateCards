@@ -30,7 +30,6 @@ import com.github.norbo11.commands.poker.PokerCall;
 import com.github.norbo11.commands.poker.PokerCheck;
 import com.github.norbo11.commands.poker.PokerFold;
 import com.github.norbo11.commands.poker.PokerHand;
-import com.github.norbo11.commands.poker.PokerPay;
 import com.github.norbo11.commands.poker.PokerPot;
 import com.github.norbo11.commands.poker.PokerReveal;
 import com.github.norbo11.commands.table.TableBan;
@@ -40,16 +39,18 @@ import com.github.norbo11.commands.table.TableDelete;
 import com.github.norbo11.commands.table.TableKick;
 import com.github.norbo11.commands.table.TableListSettings;
 import com.github.norbo11.commands.table.TableOpen;
+import com.github.norbo11.commands.table.TableRelocate;
+import com.github.norbo11.commands.table.TableSave;
 import com.github.norbo11.commands.table.TableSet;
 import com.github.norbo11.commands.table.TableStart;
 import com.github.norbo11.commands.table.TableUnban;
+import com.github.norbo11.commands.table.TableUnsave;
 import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.ExceptionCatcher;
 import com.github.norbo11.util.Log;
 import com.github.norbo11.util.Messages;
 
-public class PluginExecutor implements CommandExecutor
-{
+public class PluginExecutor implements CommandExecutor {
 
     public static CardsDetails cardsDetails = new CardsDetails();
     public static CardsInvite cardsInvite = new CardsInvite();
@@ -70,7 +71,6 @@ public class PluginExecutor implements CommandExecutor
     public static PokerCall pokerCall = new PokerCall();
     public static PokerCheck pokerCheck = new PokerCheck();
     public static PokerFold pokerFold = new PokerFold();
-    public static PokerPay pokerPay = new PokerPay();
     public static PokerPot pokerPot = new PokerPot();
     public static PokerReveal pokerReveal = new PokerReveal();
 
@@ -84,6 +84,9 @@ public class PluginExecutor implements CommandExecutor
     public static TableSet tableSet = new TableSet();
     public static TableStart tableStart = new TableStart();
     public static TableUnban tableUnban = new TableUnban();
+    public static TableSave tableSave = new TableSave();
+    public static TableUnsave tableUnsave = new TableUnsave();
+    public static TableRelocate tableRelocate = new TableRelocate();
 
     public static BlackjackHit blackjackHit = new BlackjackHit();
     public static BlackjackStand blackjackStand = new BlackjackStand();
@@ -97,8 +100,7 @@ public class PluginExecutor implements CommandExecutor
     public static ArrayList<PluginCommand> commandsBlackjack = new ArrayList<PluginCommand>();
     public static ArrayList<ArrayList<PluginCommand>> commands = new ArrayList<ArrayList<PluginCommand>>();
 
-    static
-    {
+    static {
         commandsCards.add(cardsDetails);
         commandsCards.add(cardsInvite);
         commandsCards.add(cardsLeave);
@@ -121,6 +123,9 @@ public class PluginExecutor implements CommandExecutor
         commandsTable.add(tableSet);
         commandsTable.add(tableStart);
         commandsTable.add(tableUnban);
+        commandsTable.add(tableSave);
+        commandsTable.add(tableUnsave);
+        commandsTable.add(tableRelocate);
 
         commandsPoker.add(pokerHand);
         commandsPoker.add(pokerReveal);
@@ -130,7 +135,6 @@ public class PluginExecutor implements CommandExecutor
         commandsPoker.add(pokerCall);
         commandsPoker.add(pokerCheck);
         commandsPoker.add(pokerFold);
-        commandsPoker.add(pokerPay);
         commandsPoker.add(pokerPot);
 
         commandsBlackjack.add(blackjackHit);
@@ -146,37 +150,27 @@ public class PluginExecutor implements CommandExecutor
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
-    {
-        try
-        {
-            if (sender instanceof Player)
-            {
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        try {
+            if (sender instanceof Player) {
                 Player player = (Player) sender;
 
-                if (args.length >= 1)
-                {
+                if (args.length >= 1) {
                     String action = args[0];
                     Log.logCommand(sender, command, args);
 
-                    if (action.equalsIgnoreCase("help"))
-                    {
+                    if (action.equalsIgnoreCase("help")) {
                         String commandToHelpWith = args.length == 2 ? args[1] : command.getName();
                         ErrorMessages.displayHelp(player, commandToHelpWith);
                         return true;
                     }
 
-                    if (command.getName().equalsIgnoreCase("cards"))
-                    {
-                        for (PluginCommand cmd : commandsCards)
-                        {
-                            if (cmd.containsAlias(action))
-                            {
-                                if (cmd.hasPermission(player) || player.hasPermission(PluginCommand.PERMISSIONS_BASE_NODE))
-                                {
+                    if (command.getName().equalsIgnoreCase("cards")) {
+                        for (PluginCommand cmd : commandsCards) {
+                            if (cmd.containsAlias(action)) {
+                                if (cmd.hasPermission(player) || player.hasPermission(PluginCommand.PERMISSIONS_BASE_NODE)) {
                                     performCommand(cmd, args, player);
-                                } else
-                                {
+                                } else {
                                     ErrorMessages.noPermission(player);
                                 }
                                 return true;
@@ -185,17 +179,12 @@ public class PluginExecutor implements CommandExecutor
                         Messages.sendMessage(player, "&cNo such cards command. Check help with &6/cards help&c.");
                     }
 
-                    if (command.getName().equalsIgnoreCase("table"))
-                    {
-                        for (PluginCommand cmd : commandsTable)
-                        {
-                            if (cmd.containsAlias(action))
-                            {
-                                if (cmd.hasPermission(player) || player.hasPermission(PluginCommand.PERMISSIONS_BASE_NODE))
-                                {
+                    if (command.getName().equalsIgnoreCase("table")) {
+                        for (PluginCommand cmd : commandsTable) {
+                            if (cmd.containsAlias(action)) {
+                                if (cmd.hasPermission(player) || player.hasPermission(PluginCommand.PERMISSIONS_BASE_NODE)) {
                                     performCommand(cmd, args, player);
-                                } else
-                                {
+                                } else {
                                     ErrorMessages.noPermission(player);
                                 }
                                 return true;
@@ -204,17 +193,12 @@ public class PluginExecutor implements CommandExecutor
                         Messages.sendMessage(player, "&cNo such table command. Check help with &6/table help&c.");
                     }
 
-                    if (command.getName().equalsIgnoreCase("poker"))
-                    {
-                        for (PluginCommand cmd : commandsPoker)
-                        {
-                            if (cmd.containsAlias(action))
-                            {
-                                if (cmd.hasPermission(player) || player.hasPermission(PluginCommand.PERMISSIONS_BASE_NODE))
-                                {
+                    if (command.getName().equalsIgnoreCase("poker")) {
+                        for (PluginCommand cmd : commandsPoker) {
+                            if (cmd.containsAlias(action)) {
+                                if (cmd.hasPermission(player) || player.hasPermission(PluginCommand.PERMISSIONS_BASE_NODE)) {
                                     performCommand(cmd, args, player);
-                                } else
-                                {
+                                } else {
                                     ErrorMessages.noPermission(player);
                                 }
                                 return true;
@@ -223,17 +207,12 @@ public class PluginExecutor implements CommandExecutor
                         Messages.sendMessage(player, "&cNo such poker command. Check help with &6/poker help&c.");
                     }
 
-                    if (command.getName().equalsIgnoreCase("blackjack") || command.getName().equalsIgnoreCase("bj"))
-                    {
-                        for (PluginCommand cmd : commandsBlackjack)
-                        {
-                            if (cmd.containsAlias(action))
-                            {
-                                if (cmd.hasPermission(player) || player.hasPermission(PluginCommand.PERMISSIONS_BASE_NODE))
-                                {
+                    if (command.getName().equalsIgnoreCase("blackjack") || command.getName().equalsIgnoreCase("bj")) {
+                        for (PluginCommand cmd : commandsBlackjack) {
+                            if (cmd.containsAlias(action)) {
+                                if (cmd.hasPermission(player) || player.hasPermission(PluginCommand.PERMISSIONS_BASE_NODE)) {
                                     performCommand(cmd, args, player);
-                                } else
-                                {
+                                } else {
                                     ErrorMessages.noPermission(player);
                                 }
                                 return true;
@@ -241,27 +220,22 @@ public class PluginExecutor implements CommandExecutor
                         }
                         Messages.sendMessage(player, "&cNo such blackjack command. Check help with &6/blackjack | /bj help&c.");
                     }
-                } else
-                {
+                } else {
                     ErrorMessages.displayHelp(player, command.getName());
                 }
-            } else
-            {
+            } else {
                 ErrorMessages.notHumanPlayer(sender);
             }
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             ExceptionCatcher.catchException(e, command, sender, args);
         }
         return true;
     }
 
-    public void performCommand(PluginCommand cmd, String[] args, Player player) throws Exception
-    {
+    public void performCommand(PluginCommand cmd, String[] args, Player player) throws Exception {
         cmd.setArgs(args);
         cmd.setPlayer(player);
-        if (cmd.conditions())
-        {
+        if (cmd.conditions()) {
             cmd.perform();
         }
     }

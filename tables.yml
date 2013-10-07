@@ -1,0 +1,28 @@
+EditYourConfig:
+    gameType: poker
+    owner: ""
+    location: ["world",0,0,0]
+    settings:
+        allowRebuys: true
+        displayTurnsPublicly: false
+        autoStart: 30
+        minRaiseIsAlwaysBB: true
+        minBuy: 0
+        maxBuy: 100000
+        sb: 500
+        bb: 1000
+        ante: 0
+        dynamicFrequency: 0
+        rake: 0.05
+        minRaise: 200
+EditYourConfig2:
+    gameType: bj
+    owner: ""
+    location: ["world",100,0,100]
+    settings:
+        allowRebuys: true
+        displayTurnsPublicly: false
+        autoStart: 30
+        allowDoubleDown: true
+        minBet: 100
+        amountOfDecks: 5

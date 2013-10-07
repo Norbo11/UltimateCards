@@ -9,10 +9,8 @@ import org.bukkit.entity.Player;
 
 import com.github.norbo11.UltimateCards;
 
-public class Messages
-{
-    public Messages(UltimateCards p)
-    {
+public class Messages {
+    public Messages(UltimateCards p) {
         Messages.p = p;
 
         // Uncoment if you want delays between messages
@@ -33,8 +31,7 @@ public class Messages
 
     public static UltimateCards p;
 
-    public static String convertColors(String message)
-    {
+    public static String convertColors(String message) {
         message = UltimateCards.getPluginConfig().getColorTag() + UltimateCards.getPluginTag() + " " + message;
 
         message = message.replace("&l", ChatColor.BOLD + "");
@@ -51,41 +48,35 @@ public class Messages
         return message;
     }
 
-    public static void sendMessage(Player player, ArrayList<String> messages)
-    {
-        for (String message : messages)
-        {
+    public static void sendMessage(Player player, ArrayList<String> messages) {
+        for (String message : messages) {
             sendMessage(player, message);
         }
     }
 
-    public static void sendMessage(Player player, String message)
-    {
-        player.sendMessage(convertColors(message));
+    public static void sendMessage(Player player, String message) {
+        if (player != null) {
+            player.sendMessage(convertColors(message));
+        }
     }
 
-    public static void sendMessage(String player, String message)
-    {
+    public static void sendMessage(String player, String message) {
         sendMessage(Bukkit.getPlayer(player), message);
     }
 
     // Sends a single message to all players that are close to the specified
-    // location. The maximum distance is specified in the config
-    public static void sendToAllWithinRange(Location location, String message)
-    {
+    // location. The maximum distance is specified in the csonfig
+    public static void sendToAllWithinRange(Location location, String message) {
         for (Player player : Bukkit.getOnlinePlayers())
-            if (player.getWorld().equals(location.getWorld())) if (player.getLocation().distance(location) <= UltimateCards.getPluginConfig().getChatRange())
-            {
+            if (player.getWorld().equals(location.getWorld())) if (player.getLocation().distance(location) <= UltimateCards.getPluginConfig().getChatRange()) {
                 Messages.sendMessage(player, message);
             }
     }
 
     // Sends an array of messages to all players that are close to the specified
     // location. The maximum distance is specified in the config
-    public static void sendToAllWithinRange(Location location, String[] messages)
-    {
-        for (String message : messages)
-        {
+    public static void sendToAllWithinRange(Location location, String[] messages) {
+        for (String message : messages) {
             sendToAllWithinRange(location, message);
         }
     }

@@ -24,65 +24,45 @@ import com.github.norbo11.game.blackjack.BlackjackPlayer;
 import com.github.norbo11.game.cards.Card;
 import com.github.norbo11.game.poker.PokerPlayer;
 
-public class MapMethods
-{
-    public MapMethods(UltimateCards p)
-    {
-        this.p = p;
-    }
-
-    private class BlackjackRenderer extends MapRenderer
-    {
-        public BlackjackRenderer()
-        {
+public class MapMethods {
+    private static class BlackjackRenderer extends MapRenderer {
+        public BlackjackRenderer() {
             super(true);
         }
 
         @Override
-        public void render(MapView mapView, MapCanvas mapCanvas, Player player)
-        {
-            if (redrawsNeeded.get(player.getName()))
-            {
+        public void render(MapView mapView, MapCanvas mapCanvas, Player player) {
+            if (redrawsNeeded.get(player.getName())) {
                 BlackjackPlayer blackjackPlayer = BlackjackPlayer.getBlackjackPlayer(player.getName());
-                if (blackjackPlayer != null)
-                {
+                if (blackjackPlayer != null) {
                     // Draw dealer hand, or 2nd hand if exists
                     int x = 2;
-                    if (!blackjackPlayer.isSplit())
-                    {
+                    int y = 8;
+                    if (!blackjackPlayer.isSplit()) {
                         mapCanvas.drawImage(0, 0, blackjack_base);
 
                         ArrayList<Card> dealerCards = blackjackPlayer.getBlackjackTable().getDealer().getHand().getCards();
-                        for (int i = 0; i < 5; i++)
-                        {
-                            if (i < dealerCards.size())
-                            {
-                                if (dealerCards.get(i) != blackjackPlayer.getBlackjackTable().getDealer().getHoleCard())
-                                {
-                                    drawImageWithTransparency(mapCanvas, dealerCards.get(i).getImage(), x, 15);
-                                } else
-                                {
-                                    drawImageWithTransparency(mapCanvas, card_facedown, x, 15);
+                        for (int i = 0; i < 5; i++) {
+                            if (i < dealerCards.size()) {
+                                if (dealerCards.get(i) != blackjackPlayer.getBlackjackTable().getDealer().getHoleCard()) {
+                                    drawImageWithTransparency(mapCanvas, dealerCards.get(i).getImage(), x, y);
+                                } else {
+                                    drawImageWithTransparency(mapCanvas, card_facedown, x, y);
                                 }
-                            } else
-                            {
-                                drawImageWithTransparency(mapCanvas, card_empty, x, 15);
+                            } else {
+                                drawImageWithTransparency(mapCanvas, card_empty, x, y);
                             }
                             x += 12;
                         }
-                    } else
-                    {
+                    } else {
                         mapCanvas.drawImage(0, 0, blackjack_base_split);
 
                         ArrayList<Card> playerCards = blackjackPlayer.getHands().get(1).getHand().getCards();
-                        for (int i = 0; i < 5; i++)
-                        {
-                            if (i < playerCards.size())
-                            {
-                                drawImageWithTransparency(mapCanvas, playerCards.get(i).getImage(), x, 15);
-                            } else
-                            {
-                                drawImageWithTransparency(mapCanvas, card_empty, x, 15);
+                        for (int i = 0; i < 5; i++) {
+                            if (i < playerCards.size()) {
+                                drawImageWithTransparency(mapCanvas, playerCards.get(i).getImage(), x, y);
+                            } else {
+                                drawImageWithTransparency(mapCanvas, card_empty, x, y);
                             }
                             x += 12;
                         }
@@ -91,14 +71,12 @@ public class MapMethods
                     // Draw player hand
                     ArrayList<Card> playerCards = blackjackPlayer.getHands().get(0).getHand().getCards();
                     x = 2;
-                    for (int i = 0; i < 5; i++)
-                    {
-                        if (i < playerCards.size())
-                        {
-                            drawImageWithTransparency(mapCanvas, playerCards.get(i).getImage(), x, 55);
-                        } else
-                        {
-                            drawImageWithTransparency(mapCanvas, card_empty, x, 55);
+                    y = 52;
+                    for (int i = 0; i < 5; i++) {
+                        if (i < playerCards.size()) {
+                            drawImageWithTransparency(mapCanvas, playerCards.get(i).getImage(), x, y);
+                        } else {
+                            drawImageWithTransparency(mapCanvas, card_empty, x, y);
                         }
                         x += 12;
                     }
@@ -106,26 +84,20 @@ public class MapMethods
                     // Draw player status
                     int i = 1;
                     x = 5;
-                    int y = 98;
-                    for (BlackjackPlayer temp : blackjackPlayer.getBlackjackTable().getBjPlayersThisHand())
-                    {
-                        if (i == 9)
-                        {
+                    y = 98;
+                    for (BlackjackPlayer temp : blackjackPlayer.getBlackjackTable().getBjPlayersThisHand()) {
+                        if (i == 9) {
                             break;
                         }
-                        if (i == 5)
-                        {
+                        if (i == 5) {
                             x = 5;
                             y = 111;
                         }
-                        if (temp.isStayedOnAllHands())
-                        {
+                        if (temp.isStayedOnAllHands()) {
                             mapCanvas.drawImage(x, y, status_folded);
-                        } else if (temp.isAction())
-                        {
+                        } else if (temp.isAction()) {
                             mapCanvas.drawImage(x, y, status_action);
-                        } else
-                        {
+                        } else {
                             mapCanvas.drawImage(x, y, status_normal);
                         }
 
@@ -136,13 +108,13 @@ public class MapMethods
                     }
 
                     // Draw dealer score
-                    mapCanvas.drawText(80, 31, MinecraftFont.Font, "§16;" + blackjackPlayer.getBlackjackTable().getDealer().getScore());
+                    mapCanvas.drawText(80, 18, MinecraftFont.Font, "§32;" + blackjackPlayer.getBlackjackTable().getDealer().getScore());
 
                     // Draw player score
-                    mapCanvas.drawText(80, 51, MinecraftFont.Font, "§16;" + blackjackPlayer.scoreToString());
+                    mapCanvas.drawText(80, 47, MinecraftFont.Font, "§32;" + blackjackPlayer.scoreToString());
 
                     // Draw your bet
-                    mapCanvas.drawText(80, 71, MinecraftFont.Font, "§16;" + Formatter.formatMoneyWithoutCurrency(blackjackPlayer.getTotalAmountBet()));
+                    mapCanvas.drawText(80, 76, MinecraftFont.Font, "§32;" + Formatter.formatMoneyWithoutCurrency(blackjackPlayer.getTotalAmountBet()));
 
                     redrawsNeeded.put(player.getName(), false);
                     player.sendMap(mapView);
@@ -151,61 +123,49 @@ public class MapMethods
         }
     }
 
-    private class PokerRenderer extends MapRenderer
-    {
-        public PokerRenderer()
-        {
+    private static class PokerRenderer extends MapRenderer {
+        public PokerRenderer() {
             super(true);
         }
 
         @Override
-        public void render(MapView mapView, MapCanvas mapCanvas, Player player)
-        {
-            if (redrawsNeeded.get(player.getName()))
-            {
+        public void render(MapView mapView, MapCanvas mapCanvas, Player player) {
+            if (redrawsNeeded.get(player.getName())) {
                 PokerPlayer pokerPlayer = PokerPlayer.getPokerPlayer(player.getName());
-                if (pokerPlayer != null)
-                {
+                if (pokerPlayer != null) {
                     // Draw base
                     mapCanvas.drawImage(0, 0, poker_base);
 
                     // Draw community cards
                     int x = 2;
-                    for (Card card : pokerPlayer.getPokerTable().getBoard())
-                    {
-                        drawImageWithTransparency(mapCanvas, card.getImage(), x, 15);
+                    int y = 8;
+                    for (Card card : pokerPlayer.getPokerTable().getBoard().getCards()) {
+                        drawImageWithTransparency(mapCanvas, card.getImage(), x, y);
                         x += card.getImage().getWidth() + 1;
                     }
 
                     // Draw player status
                     int i = 1;
                     x = 5;
-                    int y = 58;
-                    for (PokerPlayer temp : pokerPlayer.getPokerTable().getPokerPlayersThisHand())
-                    {
-                        if (i == 9)
-                        {
+                    y = 54;
+                    for (PokerPlayer temp : pokerPlayer.getPokerTable().getPokerPlayersThisHand()) {
+                        if (i == 9) {
                             break;
                         }
-                        if (i == 5)
-                        {
+                        if (i == 5) {
                             x = 5;
-                            y = 71;
+                            y = 67;
                         }
-                        if (temp.isFolded())
-                        {
+                        if (temp.isFolded()) {
                             mapCanvas.drawImage(x, y, status_folded);
-                        } else if (temp.isAction())
-                        {
+                        } else if (temp.isAction()) {
                             mapCanvas.drawImage(x, y, status_action);
-                        } else
-                        {
+                        } else {
                             mapCanvas.drawImage(x, y, status_normal);
                         }
 
                         // If the player is on the button, draw the little indicator
-                        if (temp.isButton())
-                        {
+                        if (temp.isButton()) {
                             drawImageWithTransparency(mapCanvas, button, x, y);
                         }
 
@@ -217,18 +177,17 @@ public class MapMethods
 
                     // Draw player cards
                     x = 2;
-                    for (Card card : pokerPlayer.getHand().getCards())
-                    {
-                        drawImageWithTransparency(mapCanvas, card.getImage(), x, 92);
+                    y = 91;
+                    for (Card card : pokerPlayer.getHand().getCards()) {
+                        drawImageWithTransparency(mapCanvas, card.getImage(), x, y);
                         x += card.getImage().getWidth() + 1;
                     }
 
                     // Draw current bet
-                    mapCanvas.drawText(55, 95, MinecraftFont.Font, "§16;" + Formatter.formatMoneyWithoutCurrency(pokerPlayer.getPokerTable().getCurrentBet()));
+                    mapCanvas.drawText(56, 94, MinecraftFont.Font, "§32;" + Formatter.formatMoneyWithoutCurrency(pokerPlayer.getPokerTable().getCurrentBet()));
 
                     // Draw total in pots
-                    // TODO: UPDATE
-                    mapCanvas.drawText(55, 115, MinecraftFont.Font, "§16;" + Formatter.formatMoneyWithoutCurrency(pokerPlayer.getPokerTable().getHighestPot()));
+                    mapCanvas.drawText(56, 115, MinecraftFont.Font, "§32;" + Formatter.formatMoneyWithoutCurrency(pokerPlayer.getPokerTable().getHighestPot()));
 
                     redrawsNeeded.put(player.getName(), false);
                     player.sendMap(mapView);
@@ -237,7 +196,7 @@ public class MapMethods
         }
     }
 
-    UltimateCards p = null;
+    public static UltimateCards p;
     private static BufferedImage poker_base = null;
     private static BufferedImage blackjack_base = null;
     private static BufferedImage blackjack_base_split = null;
@@ -248,64 +207,39 @@ public class MapMethods
     private static BufferedImage card_empty = null;
     private static BufferedImage button = null;
 
-    static
-    {
-        try
-        {
-            poker_base = ImageIO.read(UltimateCards.getResourceManager().getResource("images/poker_base.png"));
-            blackjack_base = ImageIO.read(UltimateCards.getResourceManager().getResource("images/blackjack_base.png"));
-            blackjack_base_split = ImageIO.read(UltimateCards.getResourceManager().getResource("images/blackjack_base_split.png"));
-            status_normal = ImageIO.read(UltimateCards.getResourceManager().getResource("images/player_box_normal.png"));
-            status_folded = ImageIO.read(UltimateCards.getResourceManager().getResource("images/player_box_folded.png"));
-            status_action = ImageIO.read(UltimateCards.getResourceManager().getResource("images/player_box_action.png"));
-            card_facedown = ImageIO.read(UltimateCards.getResourceManager().getResource("images/card_facedown.png"));
-            card_empty = ImageIO.read(UltimateCards.getResourceManager().getResource("images/card_empty.png"));
-            button = ImageIO.read(UltimateCards.getResourceManager().getResource("images/button.png"));
-        } catch (Exception e)
-        {
+    static {
+        try {
+            poker_base = ImageIO.read(ResourceManager.getResource("images/poker_base.png"));
+            blackjack_base = ImageIO.read(ResourceManager.getResource("images/blackjack_base.png"));
+            blackjack_base_split = ImageIO.read(ResourceManager.getResource("images/blackjack_base_split.png"));
+            status_normal = ImageIO.read(ResourceManager.getResource("images/player_box_normal.png"));
+            status_folded = ImageIO.read(ResourceManager.getResource("images/player_box_folded.png"));
+            status_action = ImageIO.read(ResourceManager.getResource("images/player_box_action.png"));
+            card_facedown = ImageIO.read(ResourceManager.getResource("images/card_facedown.png"));
+            card_empty = ImageIO.read(ResourceManager.getResource("images/card_empty.png"));
+            button = ImageIO.read(ResourceManager.getResource("images/button.png"));
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private static ArrayList<Short> createdMaps = new ArrayList<Short>();
 
-    private final HashMap<String, Integer> redrawTasks = new HashMap<String, Integer>();
-    private final HashMap<String, Boolean> redrawsNeeded = new HashMap<String, Boolean>();
+    private static final HashMap<String, Integer> redrawTasks = new HashMap<String, Integer>();
+    private static final HashMap<String, Boolean> redrawsNeeded = new HashMap<String, Boolean>();
     private static HashMap<String, ItemStack> savedMaps = new HashMap<String, ItemStack>();
 
-    private final PokerRenderer pokerRenderer = new PokerRenderer();
+    private static final PokerRenderer pokerRenderer = new PokerRenderer();
+    private static final BlackjackRenderer blackjackRenderer = new BlackjackRenderer();
 
-    private final BlackjackRenderer blackjackRenderer = new BlackjackRenderer();
-
-    public static ArrayList<Short> getCreatedMaps()
-    {
-        return createdMaps;
-    }
-
-    public static HashMap<String, ItemStack> getSavedMaps()
-    {
-        return savedMaps;
-    }
-
-    public static String mapExists(ItemStack itemStack)
-    {
-        for (Entry<String, ItemStack> entry : savedMaps.entrySet())
-            if (entry == itemStack) return entry.getKey();
-        return "";
-    }
-
-    private void clearRenderers(MapView map)
-    {
-        for (MapRenderer mr : map.getRenderers())
-        {
+    private static void clearRenderers(MapView map) {
+        for (MapRenderer mr : map.getRenderers()) {
             map.removeRenderer(mr);
         }
     }
 
-    public void drawImageWithTransparency(MapCanvas canvas, BufferedImage img, int posX, int posY)
-    {
-        try
-        {
+    public static void drawImageWithTransparency(MapCanvas canvas, BufferedImage img, int posX, int posY) {
+        try {
             int height = img.getHeight();
             int width = img.getWidth();
             int i = 0;
@@ -314,12 +248,9 @@ public class MapMethods
             PixelGrabber pg = new PixelGrabber(img, 0, 0, width, height, pixels, 0, width);
 
             pg.grabPixels();
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    if (pixels[i] != 16777215)
-                    {
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    if (pixels[i] != 16777215) {
                         Color c = new Color(img.getRGB(x, y));
 
                         int red = c.getRed();
@@ -331,21 +262,25 @@ public class MapMethods
                     i++;
                 }
             }
-        } catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
         }
     }
 
-    public void giveMap(final Player player, String renderer)
-    {
+    public static ArrayList<Short> getCreatedMaps() {
+        return createdMaps;
+    }
+
+    public static HashMap<String, ItemStack> getSavedMaps() {
+        return savedMaps;
+    }
+
+    public static void giveMap(final Player player, String renderer) {
         // Create map
         MapView map = Bukkit.getServer().createMap(player.getWorld());
         clearRenderers(map);
-        if (renderer.equalsIgnoreCase("poker"))
-        {
+        if (renderer.equalsIgnoreCase("poker")) {
             map.addRenderer(pokerRenderer);
-        } else if (renderer.equalsIgnoreCase("blackjack"))
-        {
+        } else if (renderer.equalsIgnoreCase("blackjack")) {
             map.addRenderer(blackjackRenderer);
         }
 
@@ -358,49 +293,49 @@ public class MapMethods
         createdMaps.add(map.getId());
 
         // Schedule task
-        redrawTasks.put(player.getName(), Bukkit.getScheduler().scheduleAsyncRepeatingTask(p, new Runnable()
-        {
+        redrawTasks.put(player.getName(), Bukkit.getScheduler().scheduleSyncRepeatingTask(p, new Runnable() {
 
             @Override
-            public void run()
-            {
+            public void run() {
                 redrawsNeeded.put(player.getName(), true);
             }
 
         }, 0L, 20L));
 
-        if (HelperMethods.hasOpenSlotInInventory(player))
-        {
+        if (HelperMethods.hasOpenSlotInInventory(player)) {
             ItemStack held = player.getInventory().getItem(0) == null ? new ItemStack(Material.AIR) : player.getInventory().getItem(0);
             player.getInventory().setItem(0, mapItem);
             player.getInventory().addItem(held);
-        } else
-        {
+        } else {
             player.getWorld().dropItemNaturally(player.getLocation(), mapItem);
         }
 
     }
 
-    public void restoreAllMaps()
-    {
+    public static String mapExists(ItemStack itemStack) {
         for (Entry<String, ItemStack> entry : savedMaps.entrySet())
-        {
-            Player player = Bukkit.getPlayer(entry.getKey());
-            if (player != null)
-            {
-                restoreMap(player);
-            }
-        }
+            if (entry == itemStack) return entry.getKey();
+        return "";
     }
 
-    public void restoreMap(Player player)
-    {
-        ItemStack mapItem = savedMaps.get(player.getName());
-        player.getInventory().remove(mapItem);
+    public static void restoreAllMaps() {
+        for (Entry<String, ItemStack> entry : savedMaps.entrySet()) {
+            restoreMap(entry.getKey(), false);
+        }
+        savedMaps.clear();
+    }
+
+    public static void restoreMap(String playerName, boolean remove) {
+        ItemStack mapItem = savedMaps.get(playerName);
+        Player player = Bukkit.getPlayer(playerName);
+
+        if (player != null) {
+            player.getInventory().remove(mapItem);
+        }
 
         createdMaps.remove(mapItem);
-        savedMaps.remove(player.getName());
-        Bukkit.getScheduler().cancelTask(redrawTasks.get(player.getName()));
-        redrawTasks.remove(player.getName());
+        if (remove) savedMaps.remove(playerName);
+        Bukkit.getScheduler().cancelTask(redrawTasks.get(playerName));
+        redrawTasks.remove(playerName);
     }
 }

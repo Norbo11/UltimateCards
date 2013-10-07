@@ -1,20 +1,16 @@
 package com.github.norbo11.commands.cards;
 
-import com.github.norbo11.UltimateCards;
 import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.game.cards.CardsPlayer;
-import com.github.norbo11.util.DateMethods;
 import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.Formatter;
-import com.github.norbo11.util.Log;
 import com.github.norbo11.util.Messages;
+import com.github.norbo11.util.MoneyMethods;
 import com.github.norbo11.util.NumberMethods;
 
-public class CardsWithdraw extends PluginCommand
-{
+public class CardsWithdraw extends PluginCommand {
 
-    public CardsWithdraw()
-    {
+    public CardsWithdraw() {
         getAlises().add("withdraw");
         getAlises().add("cashin");
         getAlises().add("w");
@@ -33,54 +29,40 @@ public class CardsWithdraw extends PluginCommand
 
     // cards withdraw <amount>
     @Override
-    public boolean conditions()
-    {
-        if (getArgs().length == 2)
-        {
+    public boolean conditions() {
+        if (getArgs().length == 2) {
             cardsPlayer = CardsPlayer.getCardsPlayer(getPlayer().getName());
-            if (cardsPlayer != null)
-            {
-                if (cardsPlayer.getTable().getSettings().isAllowRebuys())
-                {
-                    if (!cardsPlayer.getTable().isInProgress())
-                    {
+            if (cardsPlayer != null) {
+                if (cardsPlayer.getTable().getSettings().isAllowRebuys()) {
+                    if (!cardsPlayer.getTable().isInProgress()) {
                         amountToWithdraw = NumberMethods.getDouble(getArgs()[1]);
-                        if (amountToWithdraw != -99999)
-                        {
+                        if (amountToWithdraw != -99999) {
                             if (amountToWithdraw <= cardsPlayer.getMoney()) return true;
-                            else
-                            {
+                            else {
                                 ErrorMessages.notEnoughMoney(getPlayer(), cardsPlayer.getMoney(), amountToWithdraw);
                             }
-                        } else
-                        {
+                        } else {
                             ErrorMessages.invalidNumber(getPlayer(), getArgs()[1]);
                         }
-                    } else
-                    {
+                    } else {
                         ErrorMessages.tableInProgress(getPlayer());
                     }
-                } else
-                {
+                } else {
                     ErrorMessages.tableDoesntAllowRebuys(getPlayer());
                 }
-            } else
-            {
+            } else {
                 ErrorMessages.notSittingAtTable(getPlayer());
             }
-        } else
-        {
+        } else {
             showUsage();
         }
         return false;
     }
 
     @Override
-    public void perform() throws Exception
-    {
+    public void perform() throws Exception {
         cardsPlayer.setMoney(cardsPlayer.getMoney() - amountToWithdraw);
-        UltimateCards.getEconomy().depositPlayer(getPlayer().getName(), amountToWithdraw);
-        Log.addToLog(DateMethods.getDate() + " [ECONOMY] Depositing " + amountToWithdraw + " to " + getPlayer().getName());
+        MoneyMethods.depositMoney(getPlayer().getName(), amountToWithdraw);
         Messages.sendToAllWithinRange(cardsPlayer.getTable().getLocation(), "&6" + getPlayer().getName() + "&f withdraws " + "&6" + Formatter.formatMoney(amountToWithdraw) + "&f New balance: " + "&6" + Formatter.formatMoney(cardsPlayer.getMoney()));
     }
 }

@@ -6,12 +6,10 @@ import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
-import com.github.norbo11.UltimateCards;
+import com.github.norbo11.util.ResourceManager;
 
-public class Card
-{
-    public Card(int i, int j)
-    {
+public class Card {
+    public Card(int i, int j) {
         rank = (byte) i;
         suit = (byte) j;
         image = cardImages.get(Integer.toString(rank) + Integer.toString(suit));
@@ -21,21 +19,16 @@ public class Card
     // have to be read every single time they are created
     private static HashMap<String, BufferedImage> cardImages = new HashMap<String, BufferedImage>();
 
-    static
-    {
-        try
-        {
-            for (int i = 1; i <= 13; i++)
-            {
-                for (int j = 0; j <= 3; j++)
-                {
+    static {
+        try {
+            for (int i = 1; i <= 13; i++) {
+                for (int j = 0; j <= 3; j++) {
                     String rank = Integer.toString(i);
                     String suit = Integer.toString(j);
-                    cardImages.put(rank + suit, ImageIO.read(UltimateCards.getResourceManager().getResource("images/card" + rank + suit + ".png")));
+                    cardImages.put(rank + suit, ImageIO.read(ResourceManager.getResource("images/card" + rank + suit + ".png")));
                 }
             }
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -44,80 +37,77 @@ public class Card
 
     private BufferedImage image;
 
-    public int getBlackjackScore()
-    {
+    public int getBlackjackScore() {
         if (isFaceCard()) return 10;
         else return rank;
     }
 
-    public BufferedImage getImage()
-    {
+    public BufferedImage getImage() {
         return image;
     }
 
-    public byte getRank()
-    {
+    public byte getRank() {
         return rank;
     }
 
-    public byte getSuit()
-    {
+    public byte getSuit() {
         return suit;
     }
 
-    public boolean isFaceCard()
-    {
+    public boolean isFaceCard() {
         return rank == 11 || rank == 12 || rank == 13;
     }
 
-    public String rankToString()
-    {
+    public String rankToString() {
         String value = "Error";
 
-        if (rank == 1)
-        {
+        if (rank == 1) {
             value = "Ace";
-        } else if (rank == 11)
-        {
+        } else if (rank == 11) {
             value = "Jack";
-        } else if (rank == 12)
-        {
+        } else if (rank == 12) {
             value = "Queen";
-        } else if (rank == 13)
-        {
+        } else if (rank == 13) {
             value = "King";
-        } else
-        {
+        } else {
             value = Byte.toString(rank);
         }
 
         return value;
     }
 
-    public String suitToString()
-    {
+    public String suitToString() {
         String suit = "Error";
 
-        if (this.suit == 0)
-        {
+        if (this.suit == 0) {
             suit = "Spades";
-        } else if (this.suit == 1)
-        {
+        } else if (this.suit == 1) {
             suit = "Clubs";
-        } else if (this.suit == 2)
-        {
+        } else if (this.suit == 2) {
             suit = "Hearts";
-        } else if (this.suit == 3)
-        {
+        } else if (this.suit == 3) {
             suit = "Diamonds";
         }
 
         return suit;
     }
 
+    // Special format used by the Hand Evaluator
+    public String toEvalString() {
+        String rank = "";
+        if (this.rank != 10) {
+            rank = rankToString().substring(0, 1).toUpperCase();
+        } else {
+            rank = "T";
+        }
+
+        String suit = suitToString().substring(0, 1).toLowerCase();
+
+        return rank + suit;
+    }
+
     @Override
-    public String toString()
-    {
+    public String toString() {
         String returnValue = "Error";
 
         if (suit == 0) return "&7" + rankToString() + " of " + suitToString() + "&f";

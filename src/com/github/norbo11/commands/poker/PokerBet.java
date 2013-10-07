@@ -7,11 +7,9 @@ import com.github.norbo11.game.poker.PokerTable;
 import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.NumberMethods;
 
-public class PokerBet extends PluginCommand
-{
+public class PokerBet extends PluginCommand {
 
-    public PokerBet()
-    {
+    public PokerBet() {
         getAlises().add("raiseto");
         getAlises().add("bet");
         getAlises().add("raise");
@@ -31,83 +29,59 @@ public class PokerBet extends PluginCommand
     double amountToBet;
 
     @Override
-    public boolean conditions()
-    {
-        if (getArgs().length == 2)
-        {
+    public boolean conditions() {
+        if (getArgs().length == 2) {
             pokerPlayer = PokerPlayer.getPokerPlayer(getPlayer().getName());
-            if (pokerPlayer != null)
-            {
-                if (!pokerPlayer.isEliminated())
-                {
+            if (pokerPlayer != null) {
+                if (!pokerPlayer.isEliminated()) {
                     pokerTable = pokerPlayer.getPokerTable();
-                    if (pokerTable.isInProgress())
-                    {
-                        if (pokerTable.getCurrentPhase() != PokerPhase.SHOWDOWN)
-                        {
-                            if (pokerPlayer.isAction())
-                            {
-                                if (!pokerPlayer.isFolded())
-                                {
-                                    if (!pokerPlayer.isAllIn())
-                                    {
+                    if (pokerTable.isInProgress()) {
+                        if (pokerTable.getCurrentPhase() != PokerPhase.SHOWDOWN) {
+                            if (pokerPlayer.isAction()) {
+                                if (!pokerPlayer.isFolded()) {
+                                    if (!pokerPlayer.isAllIn()) {
                                         amountToBet = NumberMethods.getDouble(getArgs()[1]);
-                                        if (amountToBet != -99999)
-                                        {
-                                            if (pokerPlayer.hasMoney(amountToBet - pokerPlayer.getCurrentBet()))
-                                            {
+                                        if (amountToBet != -99999) {
+                                            if (pokerPlayer.hasMoney(amountToBet - pokerPlayer.getCurrentBet())) {
                                                 // Raise
-                                                if (amountToBet > pokerTable.getCurrentBet())
-                                                {
+                                                if (amountToBet > pokerTable.getCurrentBet()) {
                                                     if (amountToBet - pokerTable.getCurrentBet() >= pokerTable.getSettings().getMinRaise()) return true;
-                                                    else
-                                                    {
+                                                    else {
                                                         ErrorMessages.betBelowMinRaise(getPlayer(), pokerTable.getSettings().getMinRaise(), pokerTable.getCurrentBet());
                                                     }
                                                     // Call
                                                 } else if (amountToBet == pokerTable.getCurrentBet()) return true;
-                                                else
-                                                {
+                                                else {
                                                     ErrorMessages.betBelowCurrentBet(getPlayer());
                                                 }
-                                            } else
-                                            {
+                                            } else {
                                                 ErrorMessages.notEnoughMoney(getPlayer(), amountToBet, pokerPlayer.getMoney());
                                             }
-                                        } else
-                                        {
+                                        } else {
                                             ErrorMessages.invalidNumber(getPlayer(), getArgs()[1]);
                                         }
-                                    } else
-                                    {
+                                    } else {
                                         ErrorMessages.playerIsAllIn(getPlayer());
                                     }
-                                } else
-                                {
+                                } else {
                                     ErrorMessages.playerIsFolded(getPlayer());
                                 }
-                            } else
-                            {
+                            } else {
                                 ErrorMessages.notYourTurn(getPlayer());
                             }
-                        } else
-                        {
+                        } else {
                             ErrorMessages.tableAtShowdown(getPlayer());
                         }
-                    } else
-                    {
+                    } else {
                         ErrorMessages.tableNotInProgress(getPlayer());
                     }
-                } else
-                {
+                } else {
                     ErrorMessages.playerIsEliminated(getPlayer());
                 }
-            } else
-            {
+            } else {
                 ErrorMessages.notSittingAtTable(getPlayer());
             }
-        } else
-        {
+        } else {
             showUsage();
         }
         return false;
@@ -117,8 +91,7 @@ public class PokerBet extends PluginCommand
     // This method is only called when raising or betting for the first time in
     // the phase. You cannot bet less than the current bet of the table
     @Override
-    public void perform() throws Exception
-    {
+    public void perform() throws Exception {
         pokerPlayer.bet(amountToBet, null);
     }
 
