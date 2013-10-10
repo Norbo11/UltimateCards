@@ -2,9 +2,9 @@ package com.github.norbo11.commands.cards;
 
 import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.game.cards.CardsPlayer;
+import com.github.norbo11.game.cards.CardsTable;
 import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.Formatter;
-import com.github.norbo11.util.Messages;
 import com.github.norbo11.util.MoneyMethods;
 import com.github.norbo11.util.NumberMethods;
 
@@ -24,6 +24,7 @@ public class CardsWithdraw extends PluginCommand {
     }
 
     CardsPlayer cardsPlayer;
+    CardsTable cardsTable;
 
     double amountToWithdraw;
 
@@ -33,7 +34,8 @@ public class CardsWithdraw extends PluginCommand {
         if (getArgs().length == 2) {
             cardsPlayer = CardsPlayer.getCardsPlayer(getPlayer().getName());
             if (cardsPlayer != null) {
-                if (cardsPlayer.getTable().getSettings().isAllowRebuys()) {
+                cardsTable = cardsPlayer.getTable();
+                if (cardsTable.getSettings().isAllowRebuys()) {
                     if (!cardsPlayer.getTable().isInProgress()) {
                         amountToWithdraw = NumberMethods.getDouble(getArgs()[1]);
                         if (amountToWithdraw != -99999) {
@@ -63,6 +65,6 @@ public class CardsWithdraw extends PluginCommand {
     public void perform() throws Exception {
         cardsPlayer.setMoney(cardsPlayer.getMoney() - amountToWithdraw);
         MoneyMethods.depositMoney(getPlayer().getName(), amountToWithdraw);
-        Messages.sendToAllWithinRange(cardsPlayer.getTable().getLocation(), "&6" + getPlayer().getName() + "&f withdraws " + "&6" + Formatter.formatMoney(amountToWithdraw) + "&f New balance: " + "&6" + Formatter.formatMoney(cardsPlayer.getMoney()));
+        cardsTable.sendTableMessage("&6" + getPlayer().getName() + "&f withdraws " + "&6" + Formatter.formatMoney(amountToWithdraw) + "&f New balance: " + "&6" + Formatter.formatMoney(cardsPlayer.getMoney()));
     }
 }

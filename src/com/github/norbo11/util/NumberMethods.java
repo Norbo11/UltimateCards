@@ -11,13 +11,23 @@ public class NumberMethods {
         }
     }
 
-    // Returns integer if the supplied string is an integer, otherwise returns
-    // -99999
+    // Returns integer if the supplied string is a positiveinteger, otherwise returns -99999
+    public static int getPositiveInteger(String string) {
+        return getInteger(string, true);
+    }
+    
     public static int getInteger(String string) {
+        return getInteger(string, false);
+    }
+    
+    private static int getInteger(String string, boolean positive) {
         try {
             int integer = Integer.parseInt(string);
-            if (integer >= 0) return integer;
-            else return -99999;
+            if (positive)
+            {
+                if (integer < 0) return -99999;
+            }
+            return integer;
         } catch (Exception e) {
             return -99999;
         }

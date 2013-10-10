@@ -3,6 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="D:/Dev/Libraries/Vault.jar"/>
-	<classpathentry kind="lib" path="D:/Dev/Libraries/bukkit-1.6.4-R0.1.jar"/>
+	<classpathentry kind="lib" path="D:/Dev/Libraries/bukkit-1.6.2-R1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

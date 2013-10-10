@@ -2,7 +2,6 @@ package com.github.norbo11.game.blackjack;
 
 import com.github.norbo11.game.cards.Card;
 import com.github.norbo11.game.cards.Hand;
-import com.github.norbo11.util.Messages;
 
 public class BlackjackHand {
     public BlackjackHand(BlackjackPlayer player, double amountBet) {
@@ -24,16 +23,16 @@ public class BlackjackHand {
     public void addCards(Card[] cards) {
         for (Card card : cards) {
             hand.getCards().add(card);
-            Messages.sendToAllWithinRange(player.getTable().getLocation(), "&6" + player.getPlayerName() + "&f has been dealt the " + card.toString() + (player.isSplit() ? " for hand ID &6" + id : ""));
+            player.getTable().sendTableMessage("&6" + player.getPlayerName() + "&f has been dealt the " + card.toString() + (player.isSplit() ? " for hand ID &6" + id : ""));
         }
         recalculateScore();
     }
 
     public void bust() {
         if (!player.isSplit()) {
-            Messages.sendToAllWithinRange(player.getBlackjackTable().getLocation(), "&6" + player.getPlayerName() + "&f has gone bust!");
+            player.getBlackjackTable().sendTableMessage("&6" + player.getPlayerName() + "&f has gone bust!");
         } else {
-            Messages.sendToAllWithinRange(player.getBlackjackTable().getLocation(), "&6" + player.getPlayerName() + "&f's hand score &6" + score + "&f has gone bust!");
+            player.getBlackjackTable().sendTableMessage("&6" + player.getPlayerName() + "&f's hand score &6" + score + "&f has gone bust!");
         }
     }
 

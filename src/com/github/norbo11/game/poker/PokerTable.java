@@ -62,7 +62,7 @@ public class PokerTable extends CardsTable {
     @Override
     public void autoStart() {
         if (getSettings().getAutoStart() > 0) {
-            Messages.sendToAllWithinRange(getLocation(), "Next round in &6" + getSettings().getAutoStart() + "&f seconds... or use &6/table start");
+            sendTableMessage("Next round in &6" + getSettings().getAutoStart() + "&f seconds... or use &6/table start");
 
             if (getTimerTask() != null) {
                 getTimerTask().cancel();
@@ -82,12 +82,12 @@ public class PokerTable extends CardsTable {
     public boolean canDeal() {
         // If there are not enough players to continue the hand (less than 2 non eliminated players are left)
         if (getPlayersThisHand().size() < getMinPlayers()) {
-            Messages.sendToAllWithinRange(getLocation(), "&cLess than " + getMinPlayers() + " non-eliminated left, cannot start table!");
+            sendTableMessage("&cLess than " + getMinPlayers() + " non-eliminated left, cannot start table!");
             return false;
         }
 
         if (getPlayersThisHand().size() >= 23) {
-            Messages.sendToAllWithinRange(getLocation(), "&cA poker game of 23+ players!? Are you nuts!? Cannot start table!");
+            sendTableMessage("&cA poker game of 23+ players!? Are you nuts!? Cannot start table!");
             return false;
         }
 
@@ -133,8 +133,8 @@ public class PokerTable extends CardsTable {
         if (canDeal()) {
             setHandNumber(getHandNumber() + 1);
 
-            Messages.sendToAllWithinRange(getLocation(), "Dealing hand number &6" + getHandNumber());
-            Messages.sendToAllWithinRange(getLocation(), "&6" + UltimateCards.getLineString());
+            sendTableMessage("Dealing hand number &6" + getHandNumber());
+            sendTableMessage("&6" + UltimateCards.getLineString());
 
             setInProgress(true);
 
@@ -172,7 +172,7 @@ public class PokerTable extends CardsTable {
     public void deleteTable() {
         // Displays a message, returns money for every player, and removes
         // the table
-        Messages.sendToAllWithinRange(getLocation(), "Table ID '" + "&6" + getName() + "&f', ID #" + "&6" + getId() + " &fhas been deleted!");
+        sendTableMessage("Table ID '" + "&6" + getName() + "&f', ID #" + "&6" + getId() + " &fhas been deleted!");
         MoneyMethods.returnMoney(this);
         CardsTable.getTables().remove(this);
 
@@ -182,11 +182,11 @@ public class PokerTable extends CardsTable {
     // the table. Otherwise, display to just the player specified in "who".
     public void displayBoard(Player who) {
         if (who == null) {
-            Messages.sendToAllWithinRange(getLocation(), "&6" + UltimateCards.getLineString());
-            Messages.sendToAllWithinRange(getLocation(), "Community Cards: ");
+            sendTableMessage("&6" + UltimateCards.getLineString());
+            sendTableMessage("Community Cards: ");
             int i = 1;
             for (Card card : board.getCards()) {
-                Messages.sendToAllWithinRange(getLocation(), "[" + i + "] " + card.toString());
+                sendTableMessage("[" + i + "] " + card.toString());
                 i++;
             }
         } else {
@@ -377,7 +377,7 @@ public class PokerTable extends CardsTable {
 
         playerLeave(pokerPlayer);
         
-        Messages.sendToAllWithinRange(getLocation(), "&6" + getOwner() + "&f has kicked &6" + pokerPlayer + "&f from the table!");        
+        sendTableMessage("&6" + getOwner() + "&f has kicked &6" + pokerPlayer + "&f from the table!");        
         if (pokerPlayer.isOnline()) {
             pokerPlayer.getPlayer().teleport(pokerPlayer.getStartLocation());
             Messages.sendMessage(pokerPlayer.getPlayer(), "&6" + getOwner() + "&c has kicked you from his/her poker table! You receive your remaining stack of &6" + Formatter.formatMoney(pokerPlayer.getMoney()));
@@ -520,7 +520,7 @@ public class PokerTable extends CardsTable {
         board.getCards().add(cards[1]);
         board.getCards().add(cards[2]);
         displayBoard(null); // Specifying null in the argument displays the board to everyone
-        Messages.sendToAllWithinRange(getLocation(), "Total amount in pots: &6" + Formatter.formatMoney(getHighestPot()));
+        sendTableMessage("Total amount in pots: &6" + Formatter.formatMoney(getHighestPot()));
         nextPersonTurn(getPokerPlayersThisHand().get(getButton())); // Take the action from the player AFTER the button (that would be the small blind)
     }
 
@@ -574,7 +574,7 @@ public class PokerTable extends CardsTable {
         for (PokerPlayer player : getPokerPlayers()) {
             player.setTotalBet(0);
             if (player.getMoney() < getHighestBlind()) {
-                Messages.sendToAllWithinRange(getLocation(), "&6" + player + "&f has been eliminated!");
+                sendTableMessage("&6" + player + "&f has been eliminated!");
             }
         }
 
@@ -589,7 +589,7 @@ public class PokerTable extends CardsTable {
     public void phasePreflop() {
         setCurrentPhase(PokerPhase.PREFLOP);
         postBlinds();
-        Messages.sendToAllWithinRange(getLocation(), "Total amount in pots: &6" + Formatter.formatMoney(getHighestPot()));
+        sendTableMessage("Total amount in pots: &6" + Formatter.formatMoney(getHighestPot()));
         nextPersonTurn(getNextPlayer(getButton() + 1));
     }
 
@@ -600,14 +600,14 @@ public class PokerTable extends CardsTable {
         board.getCards().add(getDeck().generateCards(1)[0]);
         displayBoard(null); // Null in the argument makes it display the board
                             // to everyone
-        Messages.sendToAllWithinRange(getLocation(), "Total amount in pots: &6" + Formatter.formatMoney(getHighestPot()));
+        sendTableMessage("Total amount in pots: &6" + Formatter.formatMoney(getHighestPot()));
         nextPersonTurn(getPokerPlayersThisHand().get(getButton()));
     }
 
     // Showdown method
     public void phaseShowdown() {
         setCurrentPhase(PokerPhase.SHOWDOWN);
-        Messages.sendToAllWithinRange(getLocation(), "Showdown time!");
+        sendTableMessage("Showdown time!");
 
         for (PokerPlayer player : getNonFoldedPlayers()) {
             showdownPlayers.add(player);
@@ -624,7 +624,7 @@ public class PokerTable extends CardsTable {
 
         displayBoard(null);
 
-        Messages.sendToAllWithinRange(getLocation(), "Use " + PluginExecutor.pokerReveal.getCommandString() + "&f to reveal your hand, or " + "&6/poker muck" + "&f to muck.");
+        sendTableMessage("Use " + PluginExecutor.pokerReveal.getCommandString() + "&f to reveal your hand, or " + "&6/poker muck" + "&f to muck.");
         nextPersonTurn(getNextPlayer(getButton())); // Get the action of the player AFTER the button (the small blind)
     }
 
@@ -634,7 +634,7 @@ public class PokerTable extends CardsTable {
         clearBets();
         board.getCards().add(getDeck().generateCards(1)[0]);
         displayBoard(null); // Specifying null displays the board to everyone
-        Messages.sendToAllWithinRange(getLocation(), "Total amount in pots: &6" + Formatter.formatMoney(getHighestPot()));
+        sendTableMessage("Total amount in pots: &6" + Formatter.formatMoney(getHighestPot()));
         nextPersonTurn(getPokerPlayersThisHand().get(getButton()));
     }
 
@@ -674,8 +674,8 @@ public class PokerTable extends CardsTable {
         if (settings.getDynamicFrequency() > 0) {
             if (getHandNumber() % settings.getDynamicFrequency() == 0 && getHandNumber() != 1) {
                 settings.raiseBlinds();
-                Messages.sendToAllWithinRange(getLocation(), "Raising blinds!");
-                Messages.sendToAllWithinRange(getLocation(), "New ante: &6" + settings.getAnte() + "&f. New SB: &6" + settings.getSb() + ". New BB: &6" + settings.getBb() + "&f.");
+                sendTableMessage("Raising blinds!");
+                sendTableMessage("New ante: &6" + settings.getAnte() + "&f. New SB: &6" + settings.getSb() + ". New BB: &6" + settings.getBb() + "&f.");
             }
         }
         if (settings.isMinRaiseAlwaysBB()) {

@@ -68,8 +68,9 @@ public class TableListSettings extends PluginCommand {
         Messages.sendMessage(getPlayer(), "&6allowRebuys [true|false] - &fIf false, players can't re-buy.");
         Messages.sendMessage(getPlayer(), "&6minBuy [number] - &fThe minimum (re)buy-in amount.");
         Messages.sendMessage(getPlayer(), "&6maxBuy [number] - &fThe maximum (re)buy-in amount.");
-        Messages.sendMessage(getPlayer(), "&6displayTurnsPublicly [true|false] - &fIf true, the player turn announcments will be displayed publicly.");
-        Messages.sendMessage(getPlayer(), "&autoStart [number] - &fAutomatically start new rounds after [number] seconds. 0 = OFF");
+        Messages.sendMessage(getPlayer(), "&6displayTurnsPublicly [true|false] - &fIf true, the player turn announcments will be displayed to all table players.");
+        Messages.sendMessage(getPlayer(), "&6autoStart [number] - &fAutomatically start new rounds after [number] seconds. 0 = OFF");
+        Messages.sendMessage(getPlayer(), "&6publicChatRange [number] - &fDisplays all table messages publicly at the range of [number] for spectators . 0 = OFF");
 
         Messages.sendMessage(getPlayer(), "&cUsage: " + PluginExecutor.tableSet.getCommandString() + " [setting] [value]");
     }

@@ -75,8 +75,8 @@ public class TableCreate extends PluginCommand {
         CardsTable.getTables().add(newTable);
 
         // Send messages
-        Messages.sendToAllWithinRange(newTable.getLocation(), "&6" + getPlayer().getName() + " &fhas created a &6" + gameType + "&f table named " + "&6'" + newTable.getName() + "'&f, ID " + "&6" + Integer.toString(newTable.getId()));
-        Messages.sendToAllWithinRange(newTable.getLocation(), "Bought in for " + "&6" + Formatter.formatMoney(buyin));
+        newTable.sendTableMessage("&6" + getPlayer().getName() + " &fhas created a &6" + gameType + "&f table named " + "&6'" + newTable.getName() + "'&f, ID " + "&6" + Integer.toString(newTable.getId()));
+        newTable.sendTableMessage("Bought in for " + "&6" + Formatter.formatMoney(buyin));
         Messages.sendMessage(getPlayer(), "Edit the rules of your table with " + PluginExecutor.tableSet.getCommandString() + "&f, and open it with " + PluginExecutor.tableOpen.getCommandString() + "&f when ready!");
 
         // Take money

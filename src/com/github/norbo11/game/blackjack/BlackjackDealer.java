@@ -6,7 +6,6 @@ import java.util.List;
 import com.github.norbo11.game.cards.Card;
 import com.github.norbo11.game.cards.Hand;
 import com.github.norbo11.util.Formatter;
-import com.github.norbo11.util.Messages;
 import com.github.norbo11.util.MoneyMethods;
 import com.github.norbo11.util.Sound;
 
@@ -25,7 +24,7 @@ public class BlackjackDealer {
     public void addCards(Card[] cards) {
         for (Card card : cards) {
             getHand().getCards().add(card);
-            Messages.sendToAllWithinRange(table.getLocation(), "&6" + "The dealer&f has been dealt the " + card.toString());
+            table.sendTableMessage("&6" + "The dealer&f has been dealt the " + card.toString());
         }
     }
 
@@ -33,7 +32,7 @@ public class BlackjackDealer {
         List<Card> generated = Arrays.asList(table.getDeck().generateCards(2));
         getHand().getCards().addAll(generated);
 
-        Messages.sendToAllWithinRange(table.getLocation(), "&6" + "The dealer&f has been dealt the " + generated.get(0).toString());
+        table.sendTableMessage("&6" + "The dealer&f has been dealt the " + generated.get(0).toString());
         holeCard = generated.get(1);
         recalculateScore();
         displayScore();
@@ -44,7 +43,7 @@ public class BlackjackDealer {
     }
 
     public void bust() {
-        Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + "The dealer&f has gone bust!");
+        table.sendTableMessage("&6" + "The dealer&f has gone bust!");
         setBust(true);
     }
 
@@ -55,7 +54,7 @@ public class BlackjackDealer {
     }
 
     public void displayScore() {
-        Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + "The dealer&f's score: &6" + score);
+        getTable().sendTableMessage("&6" + "The dealer&f's score: &6" + score);
     }
 
     public Hand getHand() {
@@ -101,7 +100,7 @@ public class BlackjackDealer {
         if (blackjackPlayer.isPushing()) {
             blackjackPlayer.setPushing(0);
         }
-        Messages.sendToAllWithinRange(table.getLocation(), "&6" + "The dealer (" + score + ")&f wins &6" + Formatter.formatMoney(hand.getAmountBet()) + "&f from &6" + blackjackPlayer.getPlayerName() + " (" + hand.getScore() + ")");
+        table.sendTableMessage("&6" + "The dealer (" + score + ")&f wins &6" + Formatter.formatMoney(hand.getAmountBet()) + "&f from &6" + blackjackPlayer.getPlayerName() + " (" + hand.getScore() + ")");
         Sound.lost(blackjackPlayer.getPlayer());
     }
 
@@ -128,7 +127,7 @@ public class BlackjackDealer {
     }
 
     public void reveal() {
-        Messages.sendToAllWithinRange(table.getLocation(), "&6The dealer&f reveals a " + getHoleCard().toString());
+        table.sendTableMessage("&6The dealer&f reveals a " + getHoleCard().toString());
         setHoleCard(null);
         recalculateScore();
         displayScore();

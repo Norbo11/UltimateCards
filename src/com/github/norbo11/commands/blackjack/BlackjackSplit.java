@@ -7,7 +7,6 @@ import com.github.norbo11.game.blackjack.BlackjackTable;
 import com.github.norbo11.game.cards.Card;
 import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.Formatter;
-import com.github.norbo11.util.Messages;
 
 public class BlackjackSplit extends PluginCommand {
 
@@ -75,7 +74,7 @@ public class BlackjackSplit extends PluginCommand {
         blackjackPlayer.getBlackjackTable().getDealer().addMoney(blackjackPlayer.getHands().get(0).getAmountBet());
         blackjackPlayer.getHands().add(new BlackjackHand(blackjackPlayer, blackjackPlayer.getHands().get(0).getAmountBet()));
 
-        Messages.sendToAllWithinRange(blackjackTable.getLocation(), "&6" + blackjackPlayer.getPlayerName() + "&f splits! New bet: &6" + Formatter.formatMoney(blackjackPlayer.getTotalAmountBet()));
+        blackjackTable.sendTableMessage("&6" + blackjackPlayer.getPlayerName() + "&f splits! New bet: &6" + Formatter.formatMoney(blackjackPlayer.getTotalAmountBet()));
 
         Card card = blackjackPlayer.getHands().get(0).getHand().getCards().get(0);
         blackjackPlayer.getHands().get(0).getHand().getCards().remove(card);

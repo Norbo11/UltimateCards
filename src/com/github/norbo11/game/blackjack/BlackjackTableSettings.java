@@ -45,9 +45,9 @@ public class BlackjackTableSettings extends CardsTableSettings {
     public void setAllowDoubleDown(boolean value) {
         allowDoubleDown = value;
         if (value) {
-            Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getTable().getOwner() + "&f has allowed " + "&6Double Down&f!");
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has allowed " + "&6Double Down&f!");
         } else {
-            Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getTable().getOwner() + "&f has disallowed " + "&6Double Down&f!");
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has disallowed " + "&6Double Down&f!");
         }
     }
 
@@ -61,7 +61,7 @@ public class BlackjackTableSettings extends CardsTableSettings {
             amountOfDecks = 15;
         }
         getTable().getDeck().setAmountOfDecks(value);
-        Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getTable().getOwner() + "&f has set the " + "&Amount of Decks" + "&f to &6" + amountOfDecks);
+        getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&Amount of Decks" + "&f to &6" + amountOfDecks);
     }
 
     public void setAmountOfDecksNoMsg(int value) {
@@ -74,7 +74,7 @@ public class BlackjackTableSettings extends CardsTableSettings {
 
     public void setMinBet(double value) {
         minBet = value;
-        Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getTable().getOwner() + "&f has set the " + "&6Minimum Bet" + "&f to &6" + Formatter.formatMoney(value));
+        getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&6Minimum Bet" + "&f to &6" + Formatter.formatMoney(value));
     }
 
     public void setMinBetNoMsg(double value) {

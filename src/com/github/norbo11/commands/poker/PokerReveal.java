@@ -6,7 +6,6 @@ import com.github.norbo11.game.poker.PokerPlayer;
 import com.github.norbo11.game.poker.PokerTable;
 import com.github.norbo11.game.poker.eval.HandEvaluator;
 import com.github.norbo11.util.ErrorMessages;
-import com.github.norbo11.util.Messages;
 
 public class PokerReveal extends PluginCommand {
     public PokerReveal() {
@@ -58,8 +57,8 @@ public class PokerReveal extends PluginCommand {
     @Override
     public void perform() throws Exception {
         pokerPlayer.setRevealed(true);
-        Messages.sendToAllWithinRange(pokerTable.getLocation(), "[ID" + pokerPlayer.getID() + "] " + "&6" + getPlayer().getName() + "&f: " + HandEvaluator.nameHand(pokerPlayer.getEvalHand()));
-        Messages.sendToAllWithinRange(pokerTable.getLocation(), pokerPlayer.getHand().getHand());
+        pokerTable.sendTableMessage("[ID" + pokerPlayer.getID() + "] " + "&6" + getPlayer().getName() + "&f: " + HandEvaluator.nameHand(pokerPlayer.getEvalHand()));
+        pokerTable.sendTableMessage(pokerPlayer.getHand().getHand());
         pokerTable.nextPersonTurn(pokerPlayer);
     }
 }

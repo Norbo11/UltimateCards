@@ -27,7 +27,7 @@ public class CardsDetails extends PluginCommand {
     public boolean conditions() {
         // cards details 5
         if (getArgs().length == 2) {
-            int tableID = NumberMethods.getInteger(getArgs()[1]);
+            int tableID = NumberMethods.getPositiveInteger(getArgs()[1]);
             if (tableID != -99999) {
                 cardsTable = CardsTable.getTable(tableID);
                 if (cardsTable != null) return true;

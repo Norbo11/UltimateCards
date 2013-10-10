@@ -125,7 +125,7 @@ public class PokerTableSettings extends CardsTableSettings {
     public void setAnte(double value) {
         ante = value;
         originalAnte = ante;
-        Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getTable().getOwner() + "&f has set the " + "&6Ante" + "&f to &6" + Formatter.formatMoney(value));
+        getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&6Ante" + "&f to &6" + Formatter.formatMoney(value));
     }
 
     public void setAnteNoMsg(double value) {
@@ -136,7 +136,7 @@ public class PokerTableSettings extends CardsTableSettings {
     public void setBB(double value) {
         bb = value;
         originalSB = bb;
-        Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getTable().getOwner() + "&f has set the " + "&6Big Blind" + "&f to &6" + Formatter.formatMoney(value));
+        getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&6Big Blind" + "&f to &6" + Formatter.formatMoney(value));
     }
 
     public void setBBNoMsg(double value) {
@@ -151,9 +151,9 @@ public class PokerTableSettings extends CardsTableSettings {
         if (!getTable().isInProgress() || getTable().getHandNumber() % dynamicFrequency == 0) {
             dynamicFrequency = value;
             if (dynamicFrequency > 0) {
-                Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getTable().getOwner() + "&f has set the " + "&6Dynamic Frequency " + "&fto " + "&6'Every " + value + " hands'");
+                getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&6Dynamic Frequency " + "&fto " + "&6'Every " + value + " hands'");
             } else {
-                Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getTable().getOwner() + "&f has truned the " + "&6Dynamic Frequency " + "&f&6off.");
+                getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has truned the " + "&6Dynamic Frequency " + "&f&6off.");
             }
         } else {
             Messages.sendMessage(getTable().getOwnerPlayer().getPlayer(), "&cYou may only set the dynamic frequency during a hand where the blinds increased, or if the table is not in progress.");
@@ -172,7 +172,7 @@ public class PokerTableSettings extends CardsTableSettings {
     public void setMinRaise(double value) {
         if (!minRaiseAlwaysBB) {
             minRaise = value;
-            Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getTable().getOwner() + "&f has set the " + "&6Minimum Raise" + "&f to &6" + Formatter.formatMoney(value));
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&6Minimum Raise" + "&f to &6" + Formatter.formatMoney(value));
         } else {
             Messages.sendMessage(getTable().getOwnerPlayer().getPlayer(), "&cThis table's minimum raise is currently set to always be equal to the big blind! Change this with " + PluginExecutor.tableSet.getCommandString() + " minRaiseAlwaySBB false.");
         }
@@ -181,9 +181,9 @@ public class PokerTableSettings extends CardsTableSettings {
     public void setMinRaiseAlwaysBB(boolean value) {
         minRaiseAlwaysBB = value;
         if (value == true) {
-            Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getTable().getOwner() + "&f has made the " + "&6Minimum Raise" + "&f be always equal to the Big Blind!");
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has made the " + "&6Minimum Raise" + "&f be always equal to the Big Blind!");
         } else {
-            Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getTable().getOwner() + "&f has made the " + "&6Minimum Raise" + "&f no longer be equal to the Big Blind!");
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has made the " + "&6Minimum Raise" + "&f no longer be equal to the Big Blind!");
         }
         return;
     }
@@ -202,8 +202,8 @@ public class PokerTableSettings extends CardsTableSettings {
     public void setRake(double value) {
         if (!rakeFixed) {
             rake = value;
-            Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getTable().getOwner() + "&f has set the " + "&6Rake" + "&f to &6" + Formatter.convertToPercentage(value));
-            Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getTable().getOwner() + "&f will now receive &6" + Formatter.convertToPercentage(value) + "&f of each pot to their own pocket!");
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&6Rake" + "&f to &6" + Formatter.convertToPercentage(value));
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f will now receive &6" + Formatter.convertToPercentage(value) + "&f of each pot to their own pocket!");
         } else {
             Messages.sendMessage(getTable().getOwnerPlayer().getPlayer(), "&cThe configuration of the plugin has fixed the rake to &6" + Formatter.convertToPercentage(rake) + "&c. Sorry!");
         }
@@ -218,7 +218,7 @@ public class PokerTableSettings extends CardsTableSettings {
     public void setSB(double value) {
         sb = value;
         originalSB = sb;
-        Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getTable().getOwner() + "&f has set the " + "&6Small Blind" + "&f to &6" + Formatter.formatMoney(value));
+        getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&6Small Blind" + "&f to &6" + Formatter.formatMoney(value));
     }
 
     public void setSBNoMsg(double value) {

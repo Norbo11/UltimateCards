@@ -4,7 +4,6 @@ import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.game.cards.CardsPlayer;
 import com.github.norbo11.game.cards.CardsTable;
 import com.github.norbo11.util.ErrorMessages;
-import com.github.norbo11.util.Messages;
 
 public class TableClose extends PluginCommand {
     public TableClose() {
@@ -50,6 +49,6 @@ public class TableClose extends PluginCommand {
     @Override
     public void perform() throws Exception {
         cardsTable.setOpen(false);
-        Messages.sendToAllWithinRange(cardsTable.getLocation(), "Table named &6" + cardsTable.getName() + "&f, ID #&6" + cardsTable.getId() + "&f is now closed! Players now can't join!");
+        cardsTable.sendTableMessage("Table named &6" + cardsTable.getName() + "&f, ID #&6" + cardsTable.getId() + "&f is now closed! Players now can't join!");
     }
 }

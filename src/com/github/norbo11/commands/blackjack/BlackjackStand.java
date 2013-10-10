@@ -4,7 +4,6 @@ import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.game.blackjack.BlackjackPlayer;
 import com.github.norbo11.game.blackjack.BlackjackTable;
 import com.github.norbo11.util.ErrorMessages;
-import com.github.norbo11.util.Messages;
 import com.github.norbo11.util.NumberMethods;
 
 public class BlackjackStand extends PluginCommand {
@@ -40,7 +39,7 @@ public class BlackjackStand extends PluginCommand {
                         
                         if (getArgs().length == 2) {
                             if (blackjackPlayer.isSplit()) {
-                                hand = NumberMethods.getInteger(getArgs()[1]);
+                                hand = NumberMethods.getPositiveInteger(getArgs()[1]);
                                 if (hand != 0 && hand != 1) {
                                     ErrorMessages.invalidNumber(getPlayer(), getArgs()[1]);
                                     return false;
@@ -84,7 +83,7 @@ public class BlackjackStand extends PluginCommand {
     @Override
     public void perform() throws Exception {
         blackjackPlayer.getHands().get(hand).setStayed(true);
-        Messages.sendToAllWithinRange(blackjackTable.getLocation(), "&6" + blackjackPlayer.getPlayerName() + "&f stands with hand score &6" + blackjackPlayer.getHands().get(hand).getScore());
+        blackjackTable.sendTableMessage("&6" + blackjackPlayer.getPlayerName() + "&f stands with hand score &6" + blackjackPlayer.getHands().get(hand).getScore());
         blackjackTable.nextPersonTurn(blackjackPlayer);
     }
 }

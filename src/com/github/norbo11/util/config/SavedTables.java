@@ -49,7 +49,8 @@ public class SavedTables {
             String name = table;
 
             List<String> coords = tableSection.getStringList("location");
-            Location location = new Location(Bukkit.getWorld(coords.get(0)), NumberMethods.getDouble(coords.get(1)), NumberMethods.getDouble(coords.get(2)), NumberMethods.getDouble(coords.get(3)));
+            System.out.println(coords);
+            Location location = new Location(Bukkit.getWorld(coords.get(0)), NumberMethods.getInteger(coords.get(1)), NumberMethods.getInteger(coords.get(2)), NumberMethods.getInteger(coords.get(3)));
 
             CardsTable cardsTable = null;
             CardsTableSettings tableSettings = null;
@@ -60,8 +61,6 @@ public class SavedTables {
                     cardsTable = new PokerTable(owner, name, CardsTable.getFreeTableID(), location);
                     PokerTableSettings pokerSettings = new PokerTableSettings((PokerTable) cardsTable);
                     pokerSettings.setMinRaiseAlwaysBBNoMsg(settings.getBoolean("minRaiseIsAlwaysBB", UltimateCards.getPluginConfig().isMinRaiseAlwaysBB()));
-                    pokerSettings.setMinBuyNoMsg(settings.getDouble("minBuy", UltimateCards.getPluginConfig().getMinBuy()));
-                    pokerSettings.setMaxBuyNoMsg(settings.getDouble("maxBuy", UltimateCards.getPluginConfig().getMaxBuy()));
                     pokerSettings.setSBNoMsg(settings.getDouble("sb", UltimateCards.getPluginConfig().getSb()));
                     pokerSettings.setBBNoMsg(settings.getDouble("bb", UltimateCards.getPluginConfig().getBb()));
                     pokerSettings.setAnteNoMsg(settings.getDouble("ante", UltimateCards.getPluginConfig().getAnte()));
@@ -87,6 +86,9 @@ public class SavedTables {
             tableSettings.setAllowRebuysNoMsg(settings.getBoolean("allowRebuys", UltimateCards.getPluginConfig().isAllowRebuys()));
             tableSettings.setDisplayTurnsPubliclyNoMsg(settings.getBoolean("displayTurnsPublicly", UltimateCards.getPluginConfig().isDisplayTurnsPublicly()));
             tableSettings.setAutoStartNoMsg(settings.getInt("autoStart", UltimateCards.getPluginConfig().getAutoStart()));
+            tableSettings.setMinBuyNoMsg(settings.getDouble("minBuy", UltimateCards.getPluginConfig().getMinBuy()));
+            tableSettings.setMaxBuyNoMsg(settings.getDouble("maxBuy", UltimateCards.getPluginConfig().getMaxBuy()));
+            tableSettings.setPublicChatRangeNoMsg(settings.getInt("publicChatRange", UltimateCards.getPluginConfig().getPublicChatRange()));
 
             cardsTable.setCardsTableSettings(tableSettings);
             cardsTable.setOpen(true);
@@ -103,8 +105,8 @@ public class SavedTables {
         ConfigurationSection section = config.createSection(table.getName());
 
         section.set("owner", table.getOwner());
-
         ArrayList<String> location = new ArrayList<String>();
+        CardsTableSettings tableSettings = table.getSettings();
         location.add(table.getLocation().getWorld().getName());
         location.add(Math.round(table.getLocation().getX()) + "");
         location.add(Math.round(table.getLocation().getY()) + "");
@@ -112,31 +114,35 @@ public class SavedTables {
         section.set("location", location);
 
         ConfigurationSection settings = section.createSection("settings");
-        settings.set("allowRebuys", table.getSettings().isAllowRebuys());
-        settings.set("displayTurnsPublicly", table.getSettings().isDisplayTurnsPublicly());
-        settings.set("autoStart", table.getSettings().getAutoStart());
 
         if (table instanceof PokerTable) {
             section.set("gameType", "poker");
-            PokerTable pokerTable = (PokerTable) table;
-            settings.set("minRaiseIsAlwaysBB", pokerTable.getSettings().isMinRaiseAlwaysBB());
-            settings.set("minBuy", pokerTable.getSettings().getMinBuy());
-            settings.set("maxBuy", pokerTable.getSettings().getMaxBuy());
-            settings.set("sb", pokerTable.getSettings().getSb());
-            settings.set("bb", pokerTable.getSettings().getBb());
-            settings.set("ante", pokerTable.getSettings().getAnte());
-            settings.set("dynamicFrequency", pokerTable.getSettings().getDynamicFrequency());
-            settings.set("rake", pokerTable.getSettings().getRake());
-            settings.set("minRaise", pokerTable.getSettings().getMinRaise());
+            PokerTableSettings pokerTableSettings = (PokerTableSettings) tableSettings;
+            settings.set("minRaiseIsAlwaysBB", pokerTableSettings.isMinRaiseAlwaysBB());
+            settings.set("minBuy", pokerTableSettings.getMinBuy());
+            settings.set("maxBuy", pokerTableSettings.getMaxBuy());
+            settings.set("sb", pokerTableSettings.getSb());
+            settings.set("bb", pokerTableSettings.getBb());
+            settings.set("ante", pokerTableSettings.getAnte());
+            settings.set("dynamicFrequency", pokerTableSettings.getDynamicFrequency());
+            settings.set("rake", pokerTableSettings.getRake());
+            settings.set("minRaise", pokerTableSettings.getMinRaise());
         }
 
         if (table instanceof BlackjackTable) {
             section.set("gameType", "blackjack");
-            BlackjackTable blackjackTable = (BlackjackTable) table;
-            settings.set("allowDoubleDown", blackjackTable.getSettings().isAllowDoubleDown());
-            settings.set("minBet", blackjackTable.getSettings().getMinBet());
-            settings.set("amountOfDecks", blackjackTable.getSettings().getAmountOfDecks());
+            BlackjackTableSettings blackjackTableSettings = (BlackjackTableSettings) tableSettings;
+            settings.set("allowDoubleDown", blackjackTableSettings.isAllowDoubleDown());
+            settings.set("minBet", blackjackTableSettings.getMinBet());
+            settings.set("amountOfDecks", blackjackTableSettings.getAmountOfDecks());
         }
+        
+        settings.set("allowRebuys", tableSettings.isAllowRebuys());
+        settings.set("displayTurnsPublicly", tableSettings.isDisplayTurnsPublicly());
+        settings.set("autoStart", tableSettings.getAutoStart());
+        settings.set("minBuy", tableSettings.getMinBuy());
+        settings.set("maxBuy", tableSettings.getMaxBuy());
+        settings.set("publicChatRange", tableSettings.getPublicChatRange());
 
         save();
     }

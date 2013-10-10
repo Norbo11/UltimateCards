@@ -38,7 +38,7 @@ public class BlackjackHit extends PluginCommand {
                     if (blackjackPlayer.isAction()) {
                         if (getArgs().length == 2) {
                             if (blackjackPlayer.isSplit()) {
-                                hand = NumberMethods.getInteger(getArgs()[1]);
+                                hand = NumberMethods.getPositiveInteger(getArgs()[1]);
                                 if (hand != 0 && hand != 1) {
                                     ErrorMessages.invalidNumber(getPlayer(), getArgs()[1]);
                                     return false;

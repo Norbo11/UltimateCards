@@ -5,7 +5,6 @@ import com.github.norbo11.game.poker.PokerPhase;
 import com.github.norbo11.game.poker.PokerPlayer;
 import com.github.norbo11.game.poker.PokerTable;
 import com.github.norbo11.util.ErrorMessages;
-import com.github.norbo11.util.Messages;
 
 public class PokerCheck extends PluginCommand {
 
@@ -74,7 +73,7 @@ public class PokerCheck extends PluginCommand {
         // Simply say that the player has took action, and just send a message.
         // Then go to the next player's turn
         pokerPlayer.setActed(true);
-        Messages.sendToAllWithinRange(pokerTable.getLocation(), "&6" + pokerPlayer.getPlayerName() + "&f checks.");
+        pokerTable.sendTableMessage("&6" + pokerPlayer.getPlayerName() + "&f checks.");
         pokerTable.nextPersonTurn(pokerPlayer);
     }
 

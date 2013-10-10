@@ -7,7 +7,6 @@ import com.github.norbo11.game.cards.CardsPlayer;
 import com.github.norbo11.game.cards.CardsTable;
 import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.Formatter;
-import com.github.norbo11.util.Messages;
 import com.github.norbo11.util.MoneyMethods;
 
 public class CardsLeave extends PluginCommand {
@@ -55,7 +54,7 @@ public class CardsLeave extends PluginCommand {
         MoneyMethods.depositMoney(getPlayer().getName(), money);
 
         // Message
-        Messages.sendToAllWithinRange(cardsTable.getLocation(), "&6" + getPlayer().getName() + "&f has left the table with their stack of " + "&6" + Formatter.formatMoney(money));
+        cardsTable.sendTableMessage("&6" + getPlayer().getName() + "&f has left the table with their stack of " + "&6" + Formatter.formatMoney(money));
 
         // Teleport
         Bukkit.getPlayer(getPlayer().getName()).teleport(cardsPlayer.getStartLocation());

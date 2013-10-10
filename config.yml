@@ -11,13 +11,13 @@ options:
     colorNormalMessage: '&f'
     colorErrorMessage: '&c'
     colorHighlight: '&6'
-    chatRange: 30
   generalDefaults:
     allowRebuys: true
     displayTurnsPublicly: false
     autoStart: 30
     minBuy: 0
     maxBuy: 100000
+    publicChatRange: 30
   poker:
     fixRake: -1
     defaults:

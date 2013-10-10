@@ -1,6 +1,6 @@
 name: UltimateCards
 description: 'The ultimate Texas Holdem and Blackjack plugin for Bukkit!'
-version: 1.3
+version: 1.3.1
 main: com.github.norbo11.UltimateCards
 depend: [Vault]
 commands:

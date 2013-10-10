@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 import com.github.norbo11.game.cards.CardsPlayer;
 import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.MapMethods;
-import com.github.norbo11.util.Messages;
 import com.github.norbo11.util.Sound;
 
 public class BlackjackPlayer extends CardsPlayer {
@@ -69,7 +68,7 @@ public class BlackjackPlayer extends CardsPlayer {
     }
 
     public void displayScore() {
-        Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getPlayerName() + "&f's score: &6" + scoreToString());
+        getTable().sendTableMessage("&6" + getPlayerName() + "&f's score: &6" + scoreToString());
     }
 
     public BlackjackTable getBlackjackTable() {
@@ -149,7 +148,7 @@ public class BlackjackPlayer extends CardsPlayer {
         getBlackjackTable().getDealer().removeMoney(hand.getAmountBet() * multiplayer);
         giveMoney(hand.getAmountBet() * multiplayer);
 
-        Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getPlayerName() + "&f has won &6" + Formatter.formatMoney(hand.getAmountBet() * multiplayer) + "&f (" + multiplayer + "x) for hand score &6" + hand.getScore());
+        getTable().sendTableMessage("&6" + getPlayerName() + "&f has won &6" + Formatter.formatMoney(hand.getAmountBet() * multiplayer) + "&f (" + multiplayer + "x) for hand score &6" + hand.getScore());
         Sound.won(getPlayer());
     }
 

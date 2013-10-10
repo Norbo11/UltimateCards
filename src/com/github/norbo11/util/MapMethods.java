@@ -250,6 +250,7 @@ public class MapMethods {
             pg.grabPixels();
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
+                    //If the pixel isn't a transparancy pixel
                     if (pixels[i] != 16777215) {
                         Color c = new Color(img.getRGB(x, y));
 

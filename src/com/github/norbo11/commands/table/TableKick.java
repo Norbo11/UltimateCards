@@ -31,7 +31,7 @@ public class TableKick extends PluginCommand {
             if (cardsPlayer != null) {
                 cardsTable = cardsPlayer.getTable();
                 if (cardsTable.isOwner(cardsPlayer.getPlayerName())) {
-                    int IDtoKick = NumberMethods.getInteger(getArgs()[1]);
+                    int IDtoKick = NumberMethods.getPositiveInteger(getArgs()[1]);
                     if (IDtoKick != -99999) {
                         toKick = CardsPlayer.getCardsPlayer(IDtoKick, cardsTable);
                         if (toKick != null) // Check if the ID specified is a real poker player.

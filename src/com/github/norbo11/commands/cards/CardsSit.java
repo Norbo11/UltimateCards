@@ -8,7 +8,6 @@ import com.github.norbo11.game.cards.CardsTable;
 import com.github.norbo11.game.poker.PokerTable;
 import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.Formatter;
-import com.github.norbo11.util.Messages;
 import com.github.norbo11.util.MoneyMethods;
 import com.github.norbo11.util.NumberMethods;
 
@@ -38,7 +37,7 @@ public class CardsSit extends PluginCommand {
             // not
             CardsPlayer cardsPlayer = CardsPlayer.getCardsPlayer(getPlayer().getName());
             if (cardsPlayer == null) {
-                int id = NumberMethods.getInteger(getArgs()[1]);
+                int id = NumberMethods.getPositiveInteger(getArgs()[1]);
                 // Check if the ID and buyIn are numbers
                 if (id != -99999) {
                     buyin = NumberMethods.getDouble(getArgs()[2]);
@@ -48,25 +47,6 @@ public class CardsSit extends PluginCommand {
                         if (cardsTable != null) {
                             // Check if the player is banned
                             if (!cardsTable.getBannedList().contains(getPlayer().getName())) {
-                                boolean notNearEnough = false;
-                                // Check if they have permission to teleport there, OR if they are close enough to see all of the table's messages
-                                if (!PluginExecutor.cardsTeleport.hasPermission(getPlayer())) {
-                                    if (getPlayer().getWorld() == cardsTable.getLocation().getWorld()) {
-                                        if (getPlayer().getLocation().distance(cardsTable.getLocation()) <= UltimateCards.getPluginConfig().getChatRange()) {
-                                            notNearEnough = false;
-                                        } else {
-                                            notNearEnough = true;
-                                        }
-                                    } else {
-                                        notNearEnough = true;
-                                    }
-                                }
-
-                                if (notNearEnough) {
-                                    ErrorMessages.playerNotNearEnough(getPlayer());
-                                    return false;
-                                }
-
                                 // Check if the table is open
                                 if (cardsTable.isOpen()) {
                                     // Check if the table is in progress
@@ -121,7 +101,7 @@ public class CardsSit extends PluginCommand {
 
         boolean isOwner = cardsTable.getOwner().equalsIgnoreCase(getPlayer().getName());
 
-        Messages.sendToAllWithinRange(cardsTable.getLocation(), "&6" + getPlayer().getName() + "&f" + (isOwner ? " (Owner)" : "") + " has sat down at the table with &6" + Formatter.formatMoney(buyin));
+        cardsTable.sendTableMessage("&6" + getPlayer().getName() + "&f" + (isOwner ? " (Owner)" : "") + " has sat down at the table with &6" + Formatter.formatMoney(buyin));
 
         CardsPlayer cardsPlayer = cardsTable.playerSit(getPlayer(), buyin);
         if (isOwner) {

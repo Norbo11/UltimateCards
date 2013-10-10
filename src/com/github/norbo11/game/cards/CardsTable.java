@@ -119,6 +119,30 @@ public abstract class CardsTable {
     public abstract void dealCards();
 
     public abstract void deleteTable();
+    
+    public void sendTableMessage(String[] messages)
+    {
+        for (String message : messages)
+        {
+            sendTableMessage(message);
+        }
+    }
+    
+    public void sendTableMessage(String message)
+    {
+        ArrayList<String> ignore = new ArrayList<String>();
+        int range = getSettings().getPublicChatRange();
+        
+        //Send private message to all table players
+        for (CardsPlayer cardsPlayer : getPlayers())
+        {
+            cardsPlayer.sendMessage(message);
+            ignore.add(cardsPlayer.getPlayerName());
+        }
+        
+        //Send public message to everyone apart from the table players, if the range setting is enabled
+        if (range > 0) Messages.sendToAllWithinRange(location, range, message, ignore);
+    }
 
     public void displayDetails(Player player) {
         Messages.sendMessage(player, "&6" + UltimateCards.getLineString());
@@ -308,7 +332,7 @@ public abstract class CardsTable {
         if (++button >= getPlayersThisHand().size()) {
             button = 0;
         }
-        Messages.sendToAllWithinRange(getLocation(), "Button moved to &6" + getPlayersThisHand().get(button).getPlayerName());
+        sendTableMessage("Button moved to &6" + getPlayersThisHand().get(button).getPlayerName());
     }
 
     public abstract void nextPersonTurn(CardsPlayer lastPlayer);

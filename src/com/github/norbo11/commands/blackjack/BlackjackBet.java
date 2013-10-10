@@ -5,7 +5,6 @@ import com.github.norbo11.game.blackjack.BlackjackPlayer;
 import com.github.norbo11.game.blackjack.BlackjackTable;
 import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.Formatter;
-import com.github.norbo11.util.Messages;
 import com.github.norbo11.util.NumberMethods;
 
 public class BlackjackBet extends PluginCommand {
@@ -73,7 +72,7 @@ public class BlackjackBet extends PluginCommand {
         blackjackPlayer.removeMoney(amountToBet);
         blackjackPlayer.getBlackjackTable().getDealer().addMoney(amountToBet);
         blackjackPlayer.getHands().get(0).setAmountBet(blackjackPlayer.getHands().get(0).getAmountBet() + amountToBet);
-        Messages.sendToAllWithinRange(blackjackTable.getLocation(), "&6" + blackjackPlayer.getPlayerName() + "&f bets &6" + Formatter.formatMoney(blackjackPlayer.getHands().get(0).getAmountBet()));
+        blackjackTable.sendTableMessage("&6" + blackjackPlayer.getPlayerName() + "&f bets &6" + Formatter.formatMoney(blackjackPlayer.getHands().get(0).getAmountBet()));
         blackjackTable.autoStart();
     }
 }

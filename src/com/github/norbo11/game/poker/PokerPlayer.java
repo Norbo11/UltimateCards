@@ -57,15 +57,15 @@ public class PokerPlayer extends CardsPlayer {
     public void bet(double bet, String blind) {
         if (blind != null) {
             setCurrentBet(getCurrentBet() + bet); // If this is a blind, add to the current bet (for antes to work)
-            Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f posts " + Formatter.formatMoney(bet) + "&f " + blind + "&f (Total: " + "&6" + Formatter.formatMoney(getCurrentBet()) + "&f)");
+            getPokerTable().sendTableMessage("&6" + getPlayerName() + "&f posts " + Formatter.formatMoney(bet) + "&f " + blind + "&f (Total: " + "&6" + Formatter.formatMoney(getCurrentBet()) + "&f)");
         } else if (money - bet == 0) {
-            Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f went all in with " + "&6" + Formatter.formatMoney(bet) + "&f (Total: " + "&6" + Formatter.formatMoney(bet + getTotalBet()) + "&f)");
+            getPokerTable().sendTableMessage("&6" + getPlayerName() + "&f went all in with " + "&6" + Formatter.formatMoney(bet) + "&f (Total: " + "&6" + Formatter.formatMoney(bet + getTotalBet()) + "&f)");
         } else if (getPokerTable().noBetsThisRound()) {
-            Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f bets " + "&6" + Formatter.formatMoney(bet) + "&f (Total: " + "&6" + Formatter.formatMoney(bet + getTotalBet()) + "&f)");
+            getPokerTable().sendTableMessage("&6" + getPlayerName() + "&f bets " + "&6" + Formatter.formatMoney(bet) + "&f (Total: " + "&6" + Formatter.formatMoney(bet + getTotalBet()) + "&f)");
         } else if (bet > getPokerTable().getCurrentBet()) {
-            Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f raises to " + "&6" + Formatter.formatMoney(bet) + "&f (Total: " + "&6" + Formatter.formatMoney(bet + getTotalBet()) + "&f)");
+            getPokerTable().sendTableMessage("&6" + getPlayerName() + "&f raises to " + "&6" + Formatter.formatMoney(bet) + "&f (Total: " + "&6" + Formatter.formatMoney(bet + getTotalBet()) + "&f)");
         } else if (bet == getPokerTable().getCurrentBet()) {
-            Messages.sendToAllWithinRange(getPokerTable().getLocation(), "&6" + getPlayerName() + "&f calls " + "&6" + Formatter.formatMoney(bet) + "&f (Total: " + "&6" + Formatter.formatMoney(bet + getTotalBet()) + "&f)");
+            getPokerTable().sendTableMessage("&6" + getPlayerName() + "&f calls " + "&6" + Formatter.formatMoney(bet) + "&f (Total: " + "&6" + Formatter.formatMoney(bet + getTotalBet()) + "&f)");
         }
 
         if (blind == null) {
@@ -97,7 +97,7 @@ public class PokerPlayer extends CardsPlayer {
         setActed(true);
         setFolded(true);
         setTotalBet(0);
-        Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getPlayerName() + "&f folds.");
+        getTable().sendTableMessage("&6" + getPlayerName() + "&f folds.");
         if (getPokerTable().getActionPlayer() == this) {
             getPokerTable().nextPersonTurn(this);
         }
@@ -169,7 +169,7 @@ public class PokerPlayer extends CardsPlayer {
             Log.addToLog(DateMethods.getDate() + " [ECONOMY] Depositing " + rake + " to " + pokerTable.getOwner());
         }
 
-        Messages.sendToAllWithinRange(pokerTable.getLocation(), "&6" + getPlayerName() + "&f wins &6" + Formatter.formatMoney(potToPay - rake) + (pokerTable.getSettings().getRake() > 0 ? "&f - Rake " + Formatter.formatMoney(rake) : ""));
+        pokerTable.sendTableMessage("&6" + getPlayerName() + "&f wins &6" + Formatter.formatMoney(potToPay - rake) + (pokerTable.getSettings().getRake() > 0 ? "&f - Rake " + Formatter.formatMoney(rake) : ""));
 
         // Get the actual amount that the player wins by subtracting the rake from the pot, then give it to the player's stack
         giveMoney(potToPay - rake);

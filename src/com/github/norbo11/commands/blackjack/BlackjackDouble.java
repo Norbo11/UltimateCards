@@ -5,7 +5,6 @@ import com.github.norbo11.game.blackjack.BlackjackPlayer;
 import com.github.norbo11.game.blackjack.BlackjackTable;
 import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.Formatter;
-import com.github.norbo11.util.Messages;
 
 public class BlackjackDouble extends PluginCommand {
 
@@ -32,7 +31,6 @@ public class BlackjackDouble extends PluginCommand {
             blackjackPlayer = BlackjackPlayer.getBlackjackPlayer(getPlayer().getName());
             if (blackjackPlayer != null) {
                 blackjackTable = blackjackPlayer.getBlackjackTable();
-
                 if (blackjackTable.isInProgress()) {
                     if (blackjackPlayer.isAction()) {
                         if (!blackjackPlayer.isDoubled()) {
@@ -73,7 +71,7 @@ public class BlackjackDouble extends PluginCommand {
         blackjackPlayer.removeMoney(blackjackPlayer.getTotalAmountBet());
         blackjackPlayer.getBlackjackTable().getDealer().addMoney(blackjackPlayer.getTotalAmountBet());
         blackjackPlayer.getHands().get(0).setAmountBet(blackjackPlayer.getTotalAmountBet() * 2);
-        Messages.sendToAllWithinRange(blackjackTable.getLocation(), "&6" + blackjackPlayer.getPlayerName() + "&f doubles down! New bet: &6" + Formatter.formatMoney(blackjackPlayer.getTotalAmountBet()));
+        blackjackTable.sendTableMessage("&6" + blackjackPlayer.getPlayerName() + "&f doubles down! New bet: &6" + Formatter.formatMoney(blackjackPlayer.getTotalAmountBet()));
         blackjackPlayer.getHands().get(0).addCards(blackjackPlayer.getTable().getDeck().generateCards(1));
         blackjackPlayer.displayScore();
         blackjackPlayer.checkForBust();

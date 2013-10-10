@@ -105,7 +105,7 @@ public abstract class CardsPlayer extends PlayerControlled {
     // message
     public void takeAction() {
         if (getTable().getCardsTableSettings().isDisplayTurnsPublicly()) {
-            Messages.sendToAllWithinRange(getTable().getLocation(), ChatColor.DARK_PURPLE + " " + ChatColor.UNDERLINE + "It is " + "&6" + ChatColor.UNDERLINE + getPlayerName() + ChatColor.DARK_PURPLE + ChatColor.UNDERLINE + "'s turn to act!");
+            getTable().sendTableMessage(ChatColor.DARK_PURPLE + " " + ChatColor.UNDERLINE + "It is " + "&6" + ChatColor.UNDERLINE + getPlayerName() + ChatColor.DARK_PURPLE + ChatColor.UNDERLINE + "'s turn to act!");
         } else {
             Messages.sendMessage(getPlayer(), ChatColor.DARK_PURPLE + "" + ChatColor.UNDERLINE + "It is your turn to act!");
         }

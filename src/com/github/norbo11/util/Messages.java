@@ -64,20 +64,21 @@ public class Messages {
         sendMessage(Bukkit.getPlayer(player), message);
     }
 
-    // Sends a single message to all players that are close to the specified
-    // location. The maximum distance is specified in the csonfig
-    public static void sendToAllWithinRange(Location location, String message) {
+    // Sends a single message to all players that are close to the specified location.
+    public static void sendToAllWithinRange(Location location, int range, String message, ArrayList<String> ignore) {
         for (Player player : Bukkit.getOnlinePlayers())
-            if (player.getWorld().equals(location.getWorld())) if (player.getLocation().distance(location) <= UltimateCards.getPluginConfig().getChatRange()) {
-                Messages.sendMessage(player, message);
+            if (player.getWorld().equals(location.getWorld()) && !ignore.contains(player.getName())) {
+                if (player.getLocation().distance(location) <= range) {
+                    Messages.sendMessage(player, message);
+                }
             }
     }
 
     // Sends an array of messages to all players that are close to the specified
     // location. The maximum distance is specified in the config
-    public static void sendToAllWithinRange(Location location, String[] messages) {
+    public static void sendToAllWithinRange(Location location, int range, String[] messages, ArrayList<String> ignore) {
         for (String message : messages) {
-            sendToAllWithinRange(location, message);
+            sendToAllWithinRange(location, range, message, ignore);
         }
     }
 }

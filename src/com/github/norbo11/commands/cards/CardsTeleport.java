@@ -27,7 +27,7 @@ public class CardsTeleport extends PluginCommand {
     @Override
     public boolean conditions() {
         if (getArgs().length == 2) {
-            int id = NumberMethods.getInteger(getArgs()[1]);
+            int id = NumberMethods.getPositiveInteger(getArgs()[1]);
             if (id != -99999) {
                 cardsTable = CardsTable.getTable(id);
                 if (cardsTable != null) return true;

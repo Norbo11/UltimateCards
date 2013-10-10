@@ -18,8 +18,22 @@ public abstract class CardsTableSettings {
     private double minBuy = UltimateCards.getPluginConfig().getMinBuy();
     private double maxBuy = UltimateCards.getPluginConfig().getMaxBuy();
     private int autoStart = UltimateCards.getPluginConfig().getAutoStart();
-
+    private int publicChatRange = UltimateCards.getPluginConfig().getPublicChatRange();
+    
     private CardsTable table;
+
+    public int getPublicChatRange() {
+        return publicChatRange;
+    }
+
+    public void setPublicChatRange(int value) {
+        publicChatRange = value;
+        if (value > 0) {
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has made messages display publicly at the range of &6" + value + "&f blocks.");
+        } else {
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has turned off the public sending of messages.");
+        }
+    }
 
     public String checkBoolean(String v) {
         boolean value;
@@ -46,7 +60,7 @@ public abstract class CardsTableSettings {
     }
 
     public int checkInteger(String v) {
-        int integer = NumberMethods.getInteger(v);
+        int integer = NumberMethods.getPositiveInteger(v);
         if (integer != -99999) return integer;
         else {
             ErrorMessages.invalidNumber(table.getOwnerPlayer().getPlayer(), v);
@@ -96,6 +110,7 @@ public abstract class CardsTableSettings {
         messages.add("Display turns publicly: &6" + displayTurnsPublicly);
         messages.add("Allow rebuys: &6" + allowRebuys);
         messages.add("Auto-start: &6" + autoStart + " seconds");
+        messages.add("Public chat range: &6" + publicChatRange + " blocks");
         messages.addAll(listTableSpecificSettings());
 
         return messages;
@@ -106,9 +121,9 @@ public abstract class CardsTableSettings {
     public void setAllowRebuys(boolean value) {
         allowRebuys = value;
         if (value == true) {
-            Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getTable().getOwner() + "&f has allowed rebuys!");
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has allowed rebuys!");
         } else {
-            Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getTable().getOwner() + "&f has disallowed rebuys!");
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has disallowed rebuys!");
         }
     }
 
@@ -119,9 +134,9 @@ public abstract class CardsTableSettings {
     public void setAutoStart(int autoStart) {
         this.autoStart = autoStart;
         if (autoStart > 0) {
-            Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getTable().getOwner() + "&f has made new rounds start automatically after &6" + autoStart + "&f seconds!");
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has made new rounds start automatically after &6" + autoStart + "&f seconds!");
         } else {
-            Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getTable().getOwner() + "&f has turned off round auto-start.");
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has turned off round auto-start.");
         }
     }
 
@@ -132,9 +147,9 @@ public abstract class CardsTableSettings {
     public void setDisplayTurnsPublicly(boolean value) {
         displayTurnsPublicly = value;
         if (value) {
-            Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getTable().getOwner() + "&f has made turn messages display publicly!");
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has made turn messages display publicly!");
         } else {
-            Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getTable().getOwner() + "&f has made turn messages display privately!");
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has made turn messages display privately!");
         }
     }
 
@@ -144,7 +159,7 @@ public abstract class CardsTableSettings {
 
     public void setMaxBuy(double value) {
         maxBuy = value;
-        Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getTable().getOwner() + "&f has set the " + "&6Maximum Buy-In" + "&f to &6" + Formatter.formatMoney(value));
+        getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&6Maximum Buy-In" + "&f to &6" + Formatter.formatMoney(value));
     }
 
     public void setMaxBuyNoMsg(double value) {
@@ -153,7 +168,7 @@ public abstract class CardsTableSettings {
 
     public void setMinBuy(double value) {
         minBuy = value;
-        Messages.sendToAllWithinRange(getTable().getLocation(), "&6" + getTable().getOwner() + "&f has set the " + "&6Minimum Buy-In" + "&f to &6" + Formatter.formatMoney(value));
+        getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&6Minimum Buy-In" + "&f to &6" + Formatter.formatMoney(value));
     }
 
     public void setMinBuyNoMsg(double value) {
@@ -186,10 +201,19 @@ public abstract class CardsTableSettings {
             if (value != -99999) {
                 setAutoStart(value);
             }
+        } else if (setting.equalsIgnoreCase("publicChatRange")) {
+            int value = checkInteger(v);
+            if (value != -99999) {
+                setPublicChatRange(value);
+            }
         } else {
             setTableSpecificSetting(setting, v);
         }
     }
 
     public abstract void setTableSpecificSetting(String setting, String v);
+
+    public void setPublicChatRangeNoMsg(int value) {
+        publicChatRange = value;
+    }
 }

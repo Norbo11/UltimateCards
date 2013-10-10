@@ -4,7 +4,6 @@ import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.game.cards.CardsPlayer;
 import com.github.norbo11.game.cards.CardsTable;
 import com.github.norbo11.util.ErrorMessages;
-import com.github.norbo11.util.Messages;
 
 public class TableBan extends PluginCommand {
     public TableBan() {
@@ -52,7 +51,7 @@ public class TableBan extends PluginCommand {
     @Override
     public void perform() throws Exception {
         cardsTable.getBannedList().add(toBan);
-        Messages.sendToAllWithinRange(cardsTable.getLocation(), "&6" + cardsPlayer.getPlayerName() + "&f has banned &6" + toBan + "&f from the table!");
+        cardsTable.sendTableMessage("&6" + cardsPlayer.getPlayerName() + "&f has banned &6" + toBan + "&f from the table!");
 
     }
 }

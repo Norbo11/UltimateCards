@@ -37,7 +37,7 @@ public class CardsPlayers extends PluginCommand {
         } else if (getArgs().length == 2)
         // If a table was specified, make sure that the specified table is a real table before displaying all it's players
         {
-            int tableID = NumberMethods.getInteger(getArgs()[1]);
+            int tableID = NumberMethods.getPositiveInteger(getArgs()[1]);
             if (tableID != -99999) {
                 cardsTable = CardsTable.getTable(tableID);
                 if (cardsTable != null) return true;

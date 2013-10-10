@@ -27,17 +27,20 @@ public class PluginConfig {
 
     // General
     private boolean displayTurnsPublicly, allowRebuys;
-    private int autoStart;
+    private int autoStart, publicChatRange;
+
+    public int getPublicChatRange() {
+        return publicChatRange;
+    }
 
     // Poker
-    private int chatRange, dynamicFrequency;
+    private int dynamicFrequency;
     private double maxBuy, sb, bb, ante, minRaise, fixRake, minBuy, rake;
-
     private boolean minRaiseAlwaysBB;
+    
     // Blackjack
-    private boolean allowDoubleDown, serverDealer, serverNeverDealer;
+    private boolean allowDoubleDown;
     private double minBet;
-
     private int amountOfDecks;
 
     public int getAmountOfDecks() {
@@ -54,10 +57,6 @@ public class PluginConfig {
 
     public double getBb() {
         return bb;
-    }
-
-    public int getChatRange() {
-        return chatRange;
     }
 
     public String getColorErrorMessage() {
@@ -147,15 +146,7 @@ public class PluginConfig {
     public boolean isMinRaiseAlwaysBB() {
         return minRaiseAlwaysBB;
     }
-
-    public boolean isServerDealer() {
-        return serverDealer;
-    }
-
-    public boolean isServerNeverDealer() {
-        return serverNeverDealer;
-    }
-
+    
     public void load() {
         config = p.getConfig();
         try {
@@ -164,10 +155,6 @@ public class PluginConfig {
             e.printStackTrace();
         }
         setValues();
-    }
-
-    public void setServerDealer(boolean serverDealer) {
-        this.serverDealer = serverDealer;
     }
 
     private void setValues() {
@@ -185,7 +172,6 @@ public class PluginConfig {
         colorNormalMessage = config.getString("options.chat.colorNormalMessage", config.getDefaults().getString("options.chat.colorNormalMessage"));
         colorErrorMessage = config.getString("options.chat.colorErrorMessage", config.getDefaults().getString("options.chat.colorErrorMessage"));
         colorHighlight = config.getString("options.chat.colorHighlight", config.getDefaults().getString("options.chat.colorHighlight"));
-        chatRange = config.getInt("options.chat.chatRange", config.getDefaults().getInt("options.poker.chatRange"));
 
         // General
         allowRebuys = config.getBoolean("options.generalDefaults.allowRebuys", config.getDefaults().getBoolean("options.generalDefaults.allowRebuys"));
@@ -193,6 +179,7 @@ public class PluginConfig {
         autoStart = config.getInt("options.generalDefaults.autoStart", config.getDefaults().getInt("options.generalDefaults.autoStart"));
         minBuy = config.getDouble("options.generalDefaults.minBuy", config.getDefaults().getDouble("options.generalDefaults.minBuy"));
         maxBuy = config.getDouble("options.generalDefaults.maxBuy", config.getDefaults().getDouble("options.generalDefaults.maxBuy"));
+        publicChatRange = config.getInt("options.generalDefaults.publicChatRange", config.getDefaults().getInt("options.generalDefaults.publicChatRange"));
 
         // Poker
         fixRake = config.getDouble("options.poker.fixRake", config.getDefaults().getDouble("options.poker.fixRake"));
@@ -206,9 +193,7 @@ public class PluginConfig {
 
         // Blackjack
         allowDoubleDown = config.getBoolean("options.blackjack.defaults.allowDoubleDown", config.getDefaults().getBoolean("options.blackjack.defaults.allowDoubleDown"));
-        serverDealer = config.getBoolean("options.blackjack.defaults.serverDealer", config.getDefaults().getBoolean("options.blackjack.defaults.serverDealer"));
         minBet = config.getDouble("options.blackjack.defaults.minBet", config.getDefaults().getDouble("options.blackjack.defaults.minBet"));
         amountOfDecks = config.getInt("options.blackjack.defaults.amountOfDecks", config.getDefaults().getInt("options.blackjack.defaults.amountOfDecks"));
-        serverNeverDealer = config.getBoolean("options.blackjack.serverNeverDealer", config.getDefaults().getBoolean("options.blackjack.serverNeverDealer"));
     }
 }

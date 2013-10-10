@@ -4,7 +4,6 @@ import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.game.cards.CardsPlayer;
 import com.github.norbo11.game.cards.CardsTable;
 import com.github.norbo11.util.ErrorMessages;
-import com.github.norbo11.util.Messages;
 
 public class TableOpen extends PluginCommand {
     public TableOpen() {
@@ -50,7 +49,7 @@ public class TableOpen extends PluginCommand {
     @Override
     public void perform() {
         cardsTable.setOpen(true);
-        Messages.sendToAllWithinRange(cardsTable.getLocation(), "Table named &6" + cardsTable.getName() + "&f, ID #&6" + cardsTable.getId() + "&f is now open! Players can now join!");
+        cardsTable.sendTableMessage("Table named &6" + cardsTable.getName() + "&f, ID #&6" + cardsTable.getId() + "&f is now open! Players can now join!");
 
     }
 }

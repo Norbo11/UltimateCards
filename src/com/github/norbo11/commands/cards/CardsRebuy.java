@@ -7,7 +7,6 @@ import com.github.norbo11.game.cards.CardsTable;
 import com.github.norbo11.game.poker.PokerTable;
 import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.Formatter;
-import com.github.norbo11.util.Messages;
 import com.github.norbo11.util.MoneyMethods;
 import com.github.norbo11.util.NumberMethods;
 
@@ -70,7 +69,7 @@ public class CardsRebuy extends PluginCommand {
         MoneyMethods.withdrawMoney(getPlayer().getName(), amount);
         cardsPlayer.setMoney(cardsPlayer.getMoney() + amount);
 
-        Messages.sendToAllWithinRange(cardsTable.getLocation(), "&6" + getPlayer().getName() + "&f has added &6" + Formatter.formatMoney(amount) + "&f to his stack. New balance: &6" + Formatter.formatMoney(cardsPlayer.getMoney()));
+        cardsTable.sendTableMessage("&6" + getPlayer().getName() + "&f has added &6" + Formatter.formatMoney(amount) + "&f to his stack. New balance: &6" + Formatter.formatMoney(cardsPlayer.getMoney()));
         if (cardsTable instanceof PokerTable) {
             PokerTable pokerTable = (PokerTable) cardsTable;
             pokerTable.autoStart();

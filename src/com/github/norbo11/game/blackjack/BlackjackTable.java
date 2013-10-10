@@ -56,7 +56,7 @@ public class BlackjackTable extends CardsTable {
     @Override
     public void autoStart() {
         if (getSettings().getAutoStart() > 0) {
-            Messages.sendToAllWithinRange(getLocation(), "Next round in &6" + getSettings().getAutoStart() + "&f seconds... or use &6/table start");
+            sendTableMessage("Next round in &6" + getSettings().getAutoStart() + "&f seconds... or use &6/table start");
 
             if (getTimerTask() != null) {
                 getTimerTask().cancel();
@@ -78,7 +78,7 @@ public class BlackjackTable extends CardsTable {
     public boolean canDeal() {
         // If there are not enough players to continue the hand
         if (getPlayersThisHand().size() < getMinPlayers()) {
-            Messages.sendToAllWithinRange(getLocation(), "&cNobody has placed a bet (" + PluginExecutor.blackjackBet.getCommandString() + " [amount]&c)! Cannot start the game.");
+            sendTableMessage("&cNobody has placed a bet (" + PluginExecutor.blackjackBet.getCommandString() + " [amount]&c)! Cannot start the game.");
             return false;
         }
 
@@ -118,8 +118,8 @@ public class BlackjackTable extends CardsTable {
         // If there are enough players to play another hand, then do so
         if (canDeal()) {
             setHandNumber(getHandNumber() + 1);
-            Messages.sendToAllWithinRange(getLocation(), "Dealing hand number &6" + getHandNumber());
-            Messages.sendToAllWithinRange(getLocation(), "&6" + UltimateCards.getLineString());
+            sendTableMessage("Dealing hand number &6" + getHandNumber());
+            sendTableMessage("&6" + UltimateCards.getLineString());
 
             setInProgress(true);
             getDeck().shuffle();
@@ -128,7 +128,7 @@ public class BlackjackTable extends CardsTable {
             dealCards();
             displayScores();
 
-            Messages.sendToAllWithinRange(getLocation(), "&6" + UltimateCards.getLineString());
+            sendTableMessage("&6" + UltimateCards.getLineString());
             nextPersonTurn(getNextPlayer(getButton()));
         }
     }
@@ -149,7 +149,7 @@ public class BlackjackTable extends CardsTable {
     public void deleteTable() {
         // Displays a message, returns money for every player, and removes the
         // table
-        Messages.sendToAllWithinRange(getLocation(), "Table ID '" + "&6" + getName() + "&f', ID #" + "&6" + getId() + " &fhas been deleted!");
+        sendTableMessage("Table ID '" + "&6" + getName() + "&f', ID #" + "&6" + getId() + " &fhas been deleted!");
         MoneyMethods.returnMoney(this);
         CardsTable.getTables().remove(this);
     }
@@ -255,29 +255,29 @@ public class BlackjackTable extends CardsTable {
     public void handEnd() {
         // If not all players are bust
         if (getBustedPlayers().size() != getPlayersThisHand().size()) {
-            Messages.sendToAllWithinRange(getLocation(), "&6" + UltimateCards.getLineString());
+            sendTableMessage("&6" + UltimateCards.getLineString());
             dealer.reveal();
             while (dealer.isUnderStayValue()) {
                 dealer.hit();
             }
         }
 
-        Messages.sendToAllWithinRange(getLocation(), "&6" + UltimateCards.getLineString());
+        sendTableMessage("&6" + UltimateCards.getLineString());
         for (BlackjackPlayer pushingPlayer : payPlayers()) {
-            Messages.sendToAllWithinRange(getLocation(), "&6" + pushingPlayer.getPlayerName() + "&f is pushing for &6" + UltimateCards.getEconomy().format(pushingPlayer.getPushing()) + "&f next hand.");
+            sendTableMessage("&6" + pushingPlayer.getPlayerName() + "&f is pushing for &6" + UltimateCards.getEconomy().format(pushingPlayer.getPushing()) + "&f next hand.");
         }
 
         setToBeContinued(true);
         setInProgress(false);
         clearPlayerVars();
-        Messages.sendToAllWithinRange(getLocation(), "Hand ended. Please place bets again (" + PluginExecutor.blackjackBet.getCommandString() + " [amount]&f).");
+        sendTableMessage("Hand ended. Please place bets again (" + PluginExecutor.blackjackBet.getCommandString() + " [amount]&f).");
     }
 
     @Override
     public void kick(CardsPlayer player) {
         BlackjackPlayer blackjackPlayer = (BlackjackPlayer) player;
 
-        Messages.sendToAllWithinRange(getLocation(), "&6" + getOwner() + "&f has kicked &6" + blackjackPlayer.getPlayerName() + "&f from the table!");
+        sendTableMessage("&6" + getOwner() + "&f has kicked &6" + blackjackPlayer.getPlayerName() + "&f from the table!");
 
         returnMoney(blackjackPlayer);
         removePlayer(blackjackPlayer);
@@ -373,8 +373,8 @@ public class BlackjackTable extends CardsTable {
 
     // Showdown method
     public void phaseShowdown() {
-        Messages.sendToAllWithinRange(getLocation(), "Showdown time!");
-        Messages.sendToAllWithinRange(getLocation(), dealer.getHand().getHand());
+        sendTableMessage("Showdown time!");
+        sendTableMessage(dealer.getHand().getHand());
         nextPersonTurn(getNextPlayer(getButton()));
     }
 
