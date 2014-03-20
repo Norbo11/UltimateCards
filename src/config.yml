@@ -14,7 +14,7 @@ options:
   generalDefaults:
     allowRebuys: true
     displayTurnsPublicly: false
-    autoStart: 30
+    autoStart: 0
     minBuy: 0
     maxBuy: 100000
     publicChatRange: 30

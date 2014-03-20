@@ -24,6 +24,7 @@ import com.github.norbo11.game.blackjack.BlackjackPlayer;
 import com.github.norbo11.game.cards.Card;
 import com.github.norbo11.game.poker.PokerPlayer;
 
+@SuppressWarnings("deprecation")
 public class MapMethods {
     private static class BlackjackRenderer extends MapRenderer {
         public BlackjackRenderer() {

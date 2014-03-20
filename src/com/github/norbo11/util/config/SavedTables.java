@@ -49,7 +49,6 @@ public class SavedTables {
             String name = table;
 
             List<String> coords = tableSection.getStringList("location");
-            System.out.println(coords);
             Location location = new Location(Bukkit.getWorld(coords.get(0)), NumberMethods.getInteger(coords.get(1)), NumberMethods.getInteger(coords.get(2)), NumberMethods.getInteger(coords.get(3)));
 
             CardsTable cardsTable = null;

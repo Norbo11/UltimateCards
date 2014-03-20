@@ -1,6 +1,10 @@
 package com.github.norbo11.util;
 
+import java.security.SecureRandom;
+
 public class NumberMethods {
+    private static SecureRandom random = new SecureRandom();
+    
     public static double getDouble(String amount) {
         try {
             double dbl = Double.parseDouble(amount);
@@ -37,5 +41,10 @@ public class NumberMethods {
         double multipicationFactor = Math.pow(10, numberOfDecimalPlaces);
         double interestedInZeroDPs = valueToRound * multipicationFactor;
         return Math.round(interestedInZeroDPs) / multipicationFactor;
+    }
+    
+    public static int getRandomInteger(int to)
+    {
+        return random.nextInt(to);
     }
 }

@@ -1,10 +1,10 @@
 package com.github.norbo11;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import net.gravitydevelopment.updater.Updater;
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
 
@@ -18,7 +18,6 @@ import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.commands.PluginExecutor;
 import com.github.norbo11.listeners.MapListener;
 import com.github.norbo11.util.MapMethods;
-import com.github.norbo11.util.MetricsLite;
 import com.github.norbo11.util.MoneyMethods;
 import com.github.norbo11.util.ResourceManager;
 import com.github.norbo11.util.Sound;
@@ -189,17 +188,19 @@ public class UltimateCards extends JavaPlugin {
         }
 
         // Metrics
-        try {
+        /*try {
             MetricsLite metrics = new MetricsLite(this);
             metrics.start();
         } catch (IOException e) {
             System.out.println("Couldn't submit Metrics data!");
         }
+ */
 
         // Update
-        Updater updater; if (pluginConfig.isAutoUpdate()) { updater = new Updater(this, "ultimatecards", this.getFile(), Updater.UpdateType.DEFAULT, true); if (updater.getResult() == Updater.UpdateResult.SUCCESS) { log.info("To apply the update, reload/restart your server."); } }
-         
-
+        Updater updater; 
+        if (pluginConfig.isAutoUpdate()) { updater = new Updater(this, 39468, this.getFile(), Updater.UpdateType.DEFAULT, true); if (updater.getResult() == Updater.UpdateResult.SUCCESS) { log.info("To apply the update, reload/restart your server."); } }
+        
+       
         // Set all commands to the command executor
         getCommand("cards").setExecutor(pluginExecutor);
         getCommand("table").setExecutor(pluginExecutor);
