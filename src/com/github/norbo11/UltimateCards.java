@@ -1,6 +1,7 @@
 package com.github.norbo11;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -13,6 +14,7 @@ import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mcstats.MetricsLite;
 
 import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.commands.PluginExecutor;
@@ -188,13 +190,12 @@ public class UltimateCards extends JavaPlugin {
         }
 
         // Metrics
-        /*try {
+        try {
             MetricsLite metrics = new MetricsLite(this);
             metrics.start();
         } catch (IOException e) {
             System.out.println("Couldn't submit Metrics data!");
         }
- */
 
         // Update
         Updater updater; 

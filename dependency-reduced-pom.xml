@@ -4,7 +4,7 @@
   <groupId>UltimateCards</groupId>
   <artifactId>UltimateCards</artifactId>
   <name>UltimateCards</name>
-  <version>1.3.2</version>
+  <version>1.3.3</version>
   <description>UltimateCards plugin for Bukkit</description>
   <build>
     <sourceDirectory>src</sourceDirectory>
