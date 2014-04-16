@@ -18,6 +18,7 @@ options:
     minBuy: 0
     maxBuy: 100000
     publicChatRange: 30
+    turnSeconds: 60
   poker:
     fixRake: -1
     defaults:
@@ -26,7 +27,7 @@ options:
       bb: 1000
       ante: 0
       dynamicFrequency: 0
-      rake: 0.05
+      rake: 0.0
       minRaise: 200
   blackjack:
     defaults:

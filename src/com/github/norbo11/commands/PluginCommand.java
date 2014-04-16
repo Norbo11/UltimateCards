@@ -7,13 +7,22 @@ import org.bukkit.entity.Player;
 import com.github.norbo11.util.Messages;
 
 public abstract class PluginCommand {
-    public static final String PERMISSIONS_BASE_NODE = "ucards.";
+    public PluginCommand() {
+    }
 
+    public PluginCommand(Player player, String[] args) {
+        setPlayer(player);
+        setArgs(args);
+    }
+
+    public static final String PERMISSIONS_BASE_NODE = "ucards.";
     private Player player;
     private String[] args;
     private String description;
     private String argumentsString;
+
     private ArrayList<String> permissionNodes = new ArrayList<String>();
+
     private ArrayList<String> aliases = new ArrayList<String>();
 
     public abstract boolean conditions();
@@ -52,8 +61,7 @@ public abstract class PluginCommand {
     }
 
     public String getCommandString() {
-        if (PluginExecutor.commandsCards.contains(this)) return "&6/cards " + getAlises().get(0);
-        else if (PluginExecutor.commandsTable.contains(this)) return "&6/table " + getAlises().get(0);
+        if (PluginExecutor.commandsTable.contains(this)) return "&6/table " + getAlises().get(0);
         else if (PluginExecutor.commandsPoker.contains(this)) return "&6/poker " + getAlises().get(0);
         else if (PluginExecutor.commandsBlackjack.contains(this)) return "&6/bj " + getAlises().get(0);
         else return "&6ERROR";

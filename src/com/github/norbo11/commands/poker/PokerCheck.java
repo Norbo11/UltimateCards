@@ -1,5 +1,7 @@
 package com.github.norbo11.commands.poker;
 
+import org.bukkit.entity.Player;
+
 import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.game.poker.PokerPhase;
 import com.github.norbo11.game.poker.PokerPlayer;
@@ -9,6 +11,12 @@ import com.github.norbo11.util.ErrorMessages;
 public class PokerCheck extends PluginCommand {
 
     public PokerCheck() {
+        this(null, null);
+    }
+
+    public PokerCheck(Player player, String[] args) {
+        super(player, args);
+
         getAlises().add("check");
         getAlises().add("ch");
 
@@ -70,11 +78,6 @@ public class PokerCheck extends PluginCommand {
     // Checks the turn of the specified player()
     @Override
     public void perform() throws Exception {
-        // Simply say that the player has took action, and just send a message.
-        // Then go to the next player's turn
-        pokerPlayer.setActed(true);
-        pokerTable.sendTableMessage("&6" + pokerPlayer.getPlayerName() + "&f checks.");
-        pokerTable.nextPersonTurn(pokerPlayer);
+        pokerPlayer.check();
     }
-
 }

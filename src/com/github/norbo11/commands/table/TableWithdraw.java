@@ -1,23 +1,21 @@
-package com.github.norbo11.commands.cards;
+package com.github.norbo11.commands.table;
 
-import com.github.norbo11.UltimateCards;
 import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.game.cards.CardsPlayer;
 import com.github.norbo11.game.cards.CardsTable;
-import com.github.norbo11.game.poker.PokerTable;
 import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.MoneyMethods;
 import com.github.norbo11.util.NumberMethods;
 
-public class CardsRebuy extends PluginCommand {
-    public CardsRebuy() {
-        getAlises().add("rebuy");
-        getAlises().add("addmoney");
-        getAlises().add("addstack");
-        getAlises().add("r");
+public class TableWithdraw extends PluginCommand {
 
-        setDescription("Adds more money to your stack.");
+    public TableWithdraw() {
+        getAlises().add("withdraw");
+        getAlises().add("cashin");
+        getAlises().add("w");
+
+        setDescription("Withdraws the specified amount from your stack.");
 
         setArgumentString("[amount]");
 
@@ -28,8 +26,9 @@ public class CardsRebuy extends PluginCommand {
     CardsPlayer cardsPlayer;
     CardsTable cardsTable;
 
-    double amount;
+    double amountToWithdraw;
 
+    // cards withdraw <amount>
     @Override
     public boolean conditions() {
         if (getArgs().length == 2) {
@@ -37,12 +36,12 @@ public class CardsRebuy extends PluginCommand {
             if (cardsPlayer != null) {
                 cardsTable = cardsPlayer.getTable();
                 if (cardsTable.getSettings().isAllowRebuys()) {
-                    if (!cardsTable.isInProgress()) {
-                        amount = NumberMethods.getDouble(getArgs()[1]);
-                        if (amount != -99999) {
-                            if (UltimateCards.getEconomy().has(getPlayer().getName(), amount)) return true;
+                    if (!cardsPlayer.getTable().isInProgress()) {
+                        amountToWithdraw = NumberMethods.getDouble(getArgs()[1]);
+                        if (amountToWithdraw != -99999) {
+                            if (amountToWithdraw <= cardsPlayer.getMoney()) return true;
                             else {
-                                ErrorMessages.notEnoughMoney(getPlayer(), amount, UltimateCards.getEconomy().getBalance(getPlayer().getName()));
+                                ErrorMessages.notEnoughMoney(getPlayer(), cardsPlayer.getMoney(), amountToWithdraw);
                             }
                         } else {
                             ErrorMessages.invalidNumber(getPlayer(), getArgs()[1]);
@@ -62,17 +61,10 @@ public class CardsRebuy extends PluginCommand {
         return false;
     }
 
-    // Adds money to the specified player
     @Override
     public void perform() throws Exception {
-        // Withdraw the desired amount from the ECONOMY, add it to their stack, then display the message
-        MoneyMethods.withdrawMoney(getPlayer().getName(), amount);
-        cardsPlayer.setMoney(cardsPlayer.getMoney() + amount);
-
-        cardsTable.sendTableMessage("&6" + getPlayer().getName() + "&f has added &6" + Formatter.formatMoney(amount) + "&f to his stack. New balance: &6" + Formatter.formatMoney(cardsPlayer.getMoney()));
-        if (cardsTable instanceof PokerTable) {
-            PokerTable pokerTable = (PokerTable) cardsTable;
-            pokerTable.autoStart();
-        }
+        cardsPlayer.setMoney(cardsPlayer.getMoney() - amountToWithdraw);
+        MoneyMethods.depositMoney(getPlayer().getName(), amountToWithdraw);
+        cardsTable.sendTableMessage("&6" + getPlayer().getName() + "&f withdraws " + "&6" + Formatter.formatMoney(amountToWithdraw) + "&f New balance: " + "&6" + Formatter.formatMoney(cardsPlayer.getMoney()));
     }
 }

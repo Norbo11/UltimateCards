@@ -1,11 +1,11 @@
-package com.github.norbo11.commands.cards;
+package com.github.norbo11.commands.table;
 
 import com.github.norbo11.UltimateCards;
 import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.util.Messages;
 
-public class CardsReload extends PluginCommand {
-    public CardsReload() {
+public class TableReload extends PluginCommand {
+    public TableReload() {
         getAlises().add("reload");
 
         setDescription("Reloads the plugin configuration.");

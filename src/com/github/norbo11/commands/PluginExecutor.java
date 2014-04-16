@@ -12,17 +12,6 @@ import com.github.norbo11.commands.blackjack.BlackjackDouble;
 import com.github.norbo11.commands.blackjack.BlackjackHit;
 import com.github.norbo11.commands.blackjack.BlackjackSplit;
 import com.github.norbo11.commands.blackjack.BlackjackStand;
-import com.github.norbo11.commands.cards.CardsDetails;
-import com.github.norbo11.commands.cards.CardsInvite;
-import com.github.norbo11.commands.cards.CardsLeave;
-import com.github.norbo11.commands.cards.CardsMoney;
-import com.github.norbo11.commands.cards.CardsPlayers;
-import com.github.norbo11.commands.cards.CardsRebuy;
-import com.github.norbo11.commands.cards.CardsReload;
-import com.github.norbo11.commands.cards.CardsSit;
-import com.github.norbo11.commands.cards.CardsTables;
-import com.github.norbo11.commands.cards.CardsTeleport;
-import com.github.norbo11.commands.cards.CardsWithdraw;
 import com.github.norbo11.commands.poker.PokerAllin;
 import com.github.norbo11.commands.poker.PokerBet;
 import com.github.norbo11.commands.poker.PokerBoard;
@@ -32,6 +21,17 @@ import com.github.norbo11.commands.poker.PokerFold;
 import com.github.norbo11.commands.poker.PokerHand;
 import com.github.norbo11.commands.poker.PokerPot;
 import com.github.norbo11.commands.poker.PokerReveal;
+import com.github.norbo11.commands.table.TableDetails;
+import com.github.norbo11.commands.table.TableInvite;
+import com.github.norbo11.commands.table.TableLeave;
+import com.github.norbo11.commands.table.TableMoney;
+import com.github.norbo11.commands.table.TablePlayers;
+import com.github.norbo11.commands.table.TableRebuy;
+import com.github.norbo11.commands.table.TableReload;
+import com.github.norbo11.commands.table.TableSit;
+import com.github.norbo11.commands.table.TableTables;
+import com.github.norbo11.commands.table.TableTeleport;
+import com.github.norbo11.commands.table.TableWithdraw;
 import com.github.norbo11.commands.table.TableBan;
 import com.github.norbo11.commands.table.TableClose;
 import com.github.norbo11.commands.table.TableCreate;
@@ -52,17 +52,17 @@ import com.github.norbo11.util.Messages;
 
 public class PluginExecutor implements CommandExecutor {
 
-    public static CardsDetails cardsDetails = new CardsDetails();
-    public static CardsInvite cardsInvite = new CardsInvite();
-    public static CardsLeave cardsLeave = new CardsLeave();
-    public static CardsMoney cardsMoney = new CardsMoney();
-    public static CardsPlayers cardsPlayers = new CardsPlayers();
-    public static CardsRebuy cardsRebuy = new CardsRebuy();
-    public static CardsSit cardsSit = new CardsSit();
-    public static CardsTables cardsTables = new CardsTables();
-    public static CardsTeleport cardsTeleport = new CardsTeleport();
-    public static CardsWithdraw cardsWithdraw = new CardsWithdraw();
-    public static CardsReload cardsReload = new CardsReload();
+    public static TableDetails tableDetails = new TableDetails();
+    public static TableInvite tableInvite = new TableInvite();
+    public static TableLeave tableLeave = new TableLeave();
+    public static TableMoney tableMoney = new TableMoney();
+    public static TablePlayers tablePlayers = new TablePlayers();
+    public static TableRebuy tableRebuy = new TableRebuy();
+    public static TableSit tableSit = new TableSit();
+    public static TableTables tableTables = new TableTables();
+    public static TableTeleport tableTeleport = new TableTeleport();
+    public static TableWithdraw tableWithdraw = new TableWithdraw();
+    public static TableReload tableReload = new TableReload();
 
     public static PokerHand pokerHand = new PokerHand();
     public static PokerAllin pokerAllin = new PokerAllin();
@@ -94,24 +94,23 @@ public class PluginExecutor implements CommandExecutor {
     public static BlackjackSplit blackjackSplit = new BlackjackSplit();
     public static BlackjackDouble blackjackDouble = new BlackjackDouble();
 
-    public static ArrayList<PluginCommand> commandsCards = new ArrayList<PluginCommand>();
     public static ArrayList<PluginCommand> commandsTable = new ArrayList<PluginCommand>();
     public static ArrayList<PluginCommand> commandsPoker = new ArrayList<PluginCommand>();
     public static ArrayList<PluginCommand> commandsBlackjack = new ArrayList<PluginCommand>();
     public static ArrayList<ArrayList<PluginCommand>> commands = new ArrayList<ArrayList<PluginCommand>>();
 
     static {
-        commandsCards.add(cardsDetails);
-        commandsCards.add(cardsInvite);
-        commandsCards.add(cardsLeave);
-        commandsCards.add(cardsMoney);
-        commandsCards.add(cardsPlayers);
-        commandsCards.add(cardsRebuy);
-        commandsCards.add(cardsSit);
-        commandsCards.add(cardsTables);
-        commandsCards.add(cardsTeleport);
-        commandsCards.add(cardsWithdraw);
-        commandsCards.add(cardsReload);
+        commandsTable.add(tableDetails);
+        commandsTable.add(tableInvite);
+        commandsTable.add(tableLeave);
+        commandsTable.add(tableMoney);
+        commandsTable.add(tablePlayers);
+        commandsTable.add(tableRebuy);
+        commandsTable.add(tableSit);
+        commandsTable.add(tableTables);
+        commandsTable.add(tableTeleport);
+        commandsTable.add(tableWithdraw);
+        commandsTable.add(tableReload);
 
         commandsTable.add(tableBan);
         commandsTable.add(tableClose);
@@ -143,7 +142,6 @@ public class PluginExecutor implements CommandExecutor {
         commandsBlackjack.add(blackjackSplit);
         commandsBlackjack.add(blackjackDouble);
 
-        commands.add(commandsCards);
         commands.add(commandsTable);
         commands.add(commandsPoker);
         commands.add(commandsBlackjack);
@@ -165,21 +163,7 @@ public class PluginExecutor implements CommandExecutor {
                         return true;
                     }
 
-                    if (command.getName().equalsIgnoreCase("cards")) {
-                        for (PluginCommand cmd : commandsCards) {
-                            if (cmd.containsAlias(action)) {
-                                if (cmd.hasPermission(player) || player.hasPermission(PluginCommand.PERMISSIONS_BASE_NODE)) {
-                                    performCommand(cmd, args, player);
-                                } else {
-                                    ErrorMessages.noPermission(player);
-                                }
-                                return true;
-                            }
-                        }
-                        Messages.sendMessage(player, "&cNo such cards command. Check help with &6/cards help&c.");
-                    }
-
-                    if (command.getName().equalsIgnoreCase("table")) {
+                    if (command.getName().equalsIgnoreCase("table") || command.getName().equalsIgnoreCase("cards")) {
                         for (PluginCommand cmd : commandsTable) {
                             if (cmd.containsAlias(action)) {
                                 if (cmd.hasPermission(player) || player.hasPermission(PluginCommand.PERMISSIONS_BASE_NODE)) {

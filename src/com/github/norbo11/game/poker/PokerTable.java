@@ -22,7 +22,6 @@ import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.Log;
 import com.github.norbo11.util.MapMethods;
 import com.github.norbo11.util.Messages;
-import com.github.norbo11.util.MoneyMethods;
 import com.github.norbo11.util.Timers;
 
 public class PokerTable extends CardsTable {
@@ -166,16 +165,6 @@ public class PokerTable extends CardsTable {
                 playersThisHand.add(player);
             }
         }
-    }
-
-    @Override
-    public void deleteTable() {
-        // Displays a message, returns money for every player, and removes
-        // the table
-        sendTableMessage("Table ID '" + "&6" + getName() + "&f', ID #" + "&6" + getId() + " &fhas been deleted!");
-        MoneyMethods.returnMoney(this);
-        CardsTable.getTables().remove(this);
-
     }
 
     // Method to display the board. If who is null, display to everyone around
@@ -376,17 +365,19 @@ public class PokerTable extends CardsTable {
         PokerPlayer pokerPlayer = (PokerPlayer) player;
 
         playerLeave(pokerPlayer);
-        
-        sendTableMessage("&6" + getOwner() + "&f has kicked &6" + pokerPlayer + "&f from the table!");        
+
+        sendTableMessage("&6" + pokerPlayer + " &fhas been kicked from the table!", player.getPlayerName());
         if (pokerPlayer.isOnline()) {
             pokerPlayer.getPlayer().teleport(pokerPlayer.getStartLocation());
-            Messages.sendMessage(pokerPlayer.getPlayer(), "&6" + getOwner() + "&c has kicked you from his/her poker table! You receive your remaining stack of &6" + Formatter.formatMoney(pokerPlayer.getMoney()));
-        }        
-        
+            UltimateCards.getEconomy().depositPlayer(pokerPlayer.getPlayerName(), pokerPlayer.getMoney());
+            Log.addToLog(DateMethods.getDate() + " [ECONOMY] Depositing " + Double.toString(pokerPlayer.getMoney() + pokerPlayer.getTotalBet()) + " to " + pokerPlayer);
+            Messages.sendMessage(pokerPlayer.getPlayer(), "&cYou have been kicked from the table! You receive your remaining stack of &6" + Formatter.formatMoney(pokerPlayer.getMoney()));
+        }
+
         removePlayer(player);
 
     }
-    
+
     @Override
     public ArrayList<String> listPlayers() {
         ArrayList<String> list = new ArrayList<String>();
@@ -400,10 +391,6 @@ public class PokerTable extends CardsTable {
                 temp = temp + "&6" + pokerPlayer.getPlayerName() + " - ";
             } else {
                 temp = temp + "&c" + pokerPlayer.getPlayerName() + "&f - ";
-            }
-
-            if (pokerPlayer.isAction()) {
-                temp = temp.replace(pokerPlayer.getPlayerName(), ChatColor.UNDERLINE + pokerPlayer.getPlayerName() + "&6");
             }
 
             if (pokerPlayer.isFolded()) {
@@ -420,7 +407,7 @@ public class PokerTable extends CardsTable {
         }
 
         list.add("Average stack size: &6" + Formatter.formatMoney(getAverageStack()));
-        list.add("&cOFFLINE &f| &6&nACTION&r &f| &6&lCHIP LEADER");
+        list.add("&cOFFLINE &f| &6&lCHIP LEADER");
 
         return list;
     }
@@ -428,13 +415,6 @@ public class PokerTable extends CardsTable {
     @Override
     // Move the action to the players after the one specified in the argument
     public void nextPersonTurn(CardsPlayer lastPlayer) {
-        // If there is only 1 non-folded player left, announce him the winner
-        if (getNonFoldedPlayers().size() == 1) {
-            endPhaseForPlayers();
-            phaseHandEnd();
-            return;
-        }
-
         if (getCurrentPhase() != PokerPhase.SHOWDOWN) {
 
             // If there is 1 or less non-allin players left
@@ -528,61 +508,64 @@ public class PokerTable extends CardsTable {
     public void phaseHandEnd() {
         setCurrentPhase(PokerPhase.HAND_END);
 
-        /* Evaluate all hands */
-        HashMap<PokerPlayer, Integer> handRanks = new HashMap<PokerPlayer, Integer>();
-        for (PokerPlayer player : getNonFoldedPlayers()) {
-            handRanks.put(player, HandEvaluator.rankHand(player.getEvalHand()));
-        }
-
-        /* Sort hand ranks */
-        ArrayList<Integer> sortedRanks = new ArrayList<Integer>();
-        for (Integer value : handRanks.values()) {
-            sortedRanks.add(value);
-        }
-        Collections.sort(sortedRanks);
-
-        /* Pick winners with the highest ranked hands */
-        int highestRank = sortedRanks.get(sortedRanks.size() - 1);
-        ArrayList<PokerPlayer> winners = new ArrayList<PokerPlayer>();
-        for (Entry<PokerPlayer, Integer> entry : handRanks.entrySet()) {
-            if (highestRank == entry.getValue()) {
-                winners.add(entry.getKey());
+        if (getPlayersThisHand().size() > 1)
+        {
+            /* Evaluate all hands */
+            HashMap<PokerPlayer, Integer> handRanks = new HashMap<PokerPlayer, Integer>();
+            for (PokerPlayer player : getNonFoldedPlayers()) {
+                handRanks.put(player, HandEvaluator.rankHand(player.getEvalHand()));
             }
-        }
-
-        /* Pay pots to winners */
-        if (winners.size() == 1) {
-            winners.get(0).payPot();
-        } else {
-            for (PokerPlayer player : winners) {
-                player.payPot(winners.size());
+    
+            /* Sort hand ranks */
+            ArrayList<Integer> sortedRanks = new ArrayList<Integer>();
+            for (Integer value : handRanks.values()) {
+                sortedRanks.add(value);
             }
-        }
-
-        /* Pay pots to any people that still have money invested (from split pots and such) */
-        for (PokerPlayer player : getNonFoldedPlayers()) {
-            if (player.getPot() > 0) {
-                player.payPot();
+            Collections.sort(sortedRanks);
+    
+            /* Pick winners with the highest ranked hands */
+            int highestRank = sortedRanks.get(sortedRanks.size() - 1);
+            ArrayList<PokerPlayer> winners = new ArrayList<PokerPlayer>();
+            for (Entry<PokerPlayer, Integer> entry : handRanks.entrySet()) {
+                if (highestRank == entry.getValue()) {
+                    winners.add(entry.getKey());
+                }
             }
-        }
-
-        /* Cleanup */
-        raiseBlinds();
-        setInProgress(false);
-        setToBeContinued(true);
-        
-        for (PokerPlayer player : getPokerPlayers()) {
-            player.setTotalBet(0);
-            if (player.getMoney() < getHighestBlind()) {
-                sendTableMessage("&6" + player + "&f has been eliminated!");
+    
+            /* Pay pots to winners */
+            if (winners.size() == 1) {
+                winners.get(0).payPot();
+            } else {
+                for (PokerPlayer player : winners) {
+                    player.payPot(winners.size());
+                }
             }
+    
+            /* Pay pots to any people that still have money invested (from split pots and such) */
+            for (PokerPlayer player : getNonFoldedPlayers()) {
+                if (player.getPot() > 0) {
+                    player.payPot();
+                }
+            }
+    
+            /* Cleanup */
+            raiseBlinds();
+            setInProgress(false);
+            setToBeContinued(true);
+    
+            for (PokerPlayer player : getPokerPlayers()) {
+                player.setTotalBet(0);
+                if (player.getMoney() < getHighestBlind()) {
+                    sendTableMessage("&6" + player + "&f has been eliminated!");
+                }
+            }
+    
+            getShowdownPlayers().clear();
+            playersThisHand.clear();
+            setCurrentPhase(PokerPhase.HAND_END);
+
+            autoStart();
         }
-
-        getShowdownPlayers().clear();
-        playersThisHand.clear();
-        setCurrentPhase(PokerPhase.HAND_END);
-
-        autoStart();
     }
 
     // Deals the preflop

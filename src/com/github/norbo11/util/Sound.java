@@ -7,6 +7,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.github.norbo11.UltimateCards;
+import com.github.norbo11.game.cards.CardsPlayer;
+import com.github.norbo11.game.cards.CardsTable;
 
 public class Sound {
     public static UltimateCards p;
@@ -35,6 +37,15 @@ public class Sound {
         if (player != null) {
             player.playSound(player.getLocation(), org.bukkit.Sound.NOTE_BASS_DRUM, 1.0F, 1.0F);
             player.playSound(player.getLocation(), org.bukkit.Sound.NOTE_BASS_DRUM, 1.0F, 2.0F);
+        }
+    }
+
+    // Plays turn sounds at a table apart from the player specified in the argument
+    public static void tableTurnSounds(CardsTable table, String player) {
+        for (CardsPlayer p : table.getPlayersThisHand()) {
+            if (player.equals(p.getPlayerName())) {
+                Sound.otherTurn(p.getPlayer());
+            }
         }
     }
 

@@ -1,4 +1,4 @@
-package com.github.norbo11.commands.cards;
+package com.github.norbo11.commands.table;
 
 import java.util.ArrayList;
 
@@ -14,8 +14,8 @@ import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.MoneyMethods;
 import com.github.norbo11.util.NumberMethods;
 
-public class CardsSit extends PluginCommand {
-    public CardsSit() {
+public class TableSit extends PluginCommand {
+    public TableSit() {
         getAlises().add("sit");
         getAlises().add("join");
         getAlises().add("s");
@@ -54,7 +54,7 @@ public class CardsSit extends PluginCommand {
                 } else {
                     cardsTable = CardsTable.getTable(id);
                 }
-            
+
                 buyin = NumberMethods.getDouble(getArgs()[2]);
                 if (buyin != -99999) {
                     if (cardsTable != null) {
@@ -96,7 +96,7 @@ public class CardsSit extends PluginCommand {
 
     @Override
     public void perform() throws Exception {
-        if (PluginExecutor.cardsTeleport.hasPermission(getPlayer())) {
+        if (PluginExecutor.tableTeleport.hasPermission(getPlayer())) {
             getPlayer().teleport(cardsTable.getLocation());
         }
 
@@ -104,7 +104,7 @@ public class CardsSit extends PluginCommand {
 
         boolean isOwner = cardsTable.getOwner().equalsIgnoreCase(getPlayer().getName());
 
-        cardsTable.sendTableMessage("&6" + getPlayer().getName() + "&f" + (isOwner ? " (Owner)" : "") + " has sat down at &6" + cardsTable.getName() + "&f with &6" + Formatter.formatMoney(buyin));
+        cardsTable.sendTableMessage("&6" + getPlayer().getName() + "&f" + (isOwner ? " (Owner)" : "") + " sits at &6" + cardsTable.getName() + " &f(" + Formatter.formatMoneyWithoutColor(buyin) + ")");
 
         CardsPlayer cardsPlayer = cardsTable.playerSit(getPlayer(), buyin);
         if (isOwner) {

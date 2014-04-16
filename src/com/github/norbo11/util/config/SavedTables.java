@@ -44,7 +44,8 @@ public class SavedTables {
                 System.out.println("Error while loading tables: Invalid config for table '" + table + "'");
                 continue;
             }
-            String owner = tableSection.getString("owner");
+            String owner = "";
+            if (tableSection.getString("owner") != null) owner = tableSection.getString("owner");
             String type = tableSection.getString("gameType");
             String name = table;
 
@@ -85,6 +86,7 @@ public class SavedTables {
             tableSettings.setAllowRebuysNoMsg(settings.getBoolean("allowRebuys", UltimateCards.getPluginConfig().isAllowRebuys()));
             tableSettings.setDisplayTurnsPubliclyNoMsg(settings.getBoolean("displayTurnsPublicly", UltimateCards.getPluginConfig().isDisplayTurnsPublicly()));
             tableSettings.setAutoStartNoMsg(settings.getInt("autoStart", UltimateCards.getPluginConfig().getAutoStart()));
+            tableSettings.setTurnSecondsNoMsg(settings.getInt("turnSeconds", UltimateCards.getPluginConfig().getTurnSeconds()));
             tableSettings.setMinBuyNoMsg(settings.getDouble("minBuy", UltimateCards.getPluginConfig().getMinBuy()));
             tableSettings.setMaxBuyNoMsg(settings.getDouble("maxBuy", UltimateCards.getPluginConfig().getMaxBuy()));
             tableSettings.setPublicChatRangeNoMsg(settings.getInt("publicChatRange", UltimateCards.getPluginConfig().getPublicChatRange()));
@@ -135,10 +137,11 @@ public class SavedTables {
             settings.set("minBet", blackjackTableSettings.getMinBet());
             settings.set("amountOfDecks", blackjackTableSettings.getAmountOfDecks());
         }
-        
+
         settings.set("allowRebuys", tableSettings.isAllowRebuys());
         settings.set("displayTurnsPublicly", tableSettings.isDisplayTurnsPublicly());
         settings.set("autoStart", tableSettings.getAutoStart());
+        settings.set("turnSeconds", tableSettings.getTurnSeconds());
         settings.set("minBuy", tableSettings.getMinBuy());
         settings.set("maxBuy", tableSettings.getMaxBuy());
         settings.set("publicChatRange", tableSettings.getPublicChatRange());

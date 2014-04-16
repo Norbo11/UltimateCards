@@ -2,6 +2,7 @@ package com.github.norbo11.game.cards;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.scheduler.BukkitTask;
 
 import com.github.norbo11.util.Messages;
 import com.github.norbo11.util.PlayerControlled;
@@ -12,7 +13,8 @@ public abstract class CardsPlayer extends PlayerControlled {
     private CardsTable table;       // This holds the table that the player is sitting at
     protected double money;         // This is the player's stack
     private int ID;                 // ID of the player every single statistic associated with this player
-    
+    private BukkitTask turnTimer;
+
     public static CardsPlayer getCardsPlayer(int id, CardsTable table) {
         if (table != null) {
             for (CardsPlayer cardsPlayer : table.getPlayers())
@@ -39,6 +41,13 @@ public abstract class CardsPlayer extends PlayerControlled {
         return null; // If no match is found, or table doesnt exist, return null
     }
 
+    public void cancelTurnTimer() {
+        if (turnTimer != null) {
+            turnTimer.cancel();
+            turnTimer = null;
+        }
+    }
+
     public abstract boolean canPlay();
 
     public int getID() {
@@ -55,6 +64,10 @@ public abstract class CardsPlayer extends PlayerControlled {
 
     public CardsTable getTable() {
         return table;
+    }
+
+    public BukkitTask getTurnTimer() {
+        return turnTimer;
     }
 
     public void giveMoney(double amount) {
@@ -101,16 +114,22 @@ public abstract class CardsPlayer extends PlayerControlled {
         this.table = table;
     }
 
-    // Sets the player's action flag to true and gives them an eye-catching
-    // message
+    public void setTurnTimer(BukkitTask turnTimer) {
+        this.turnTimer = turnTimer;
+    }
+
+    public abstract void startTurnTimer();
+
+    // Sets the player's action flag to true and gives them an eye-catching message
     public void takeAction() {
         if (getTable().getCardsTableSettings().isDisplayTurnsPublicly()) {
-            getTable().sendTableMessage(ChatColor.DARK_PURPLE + " " + ChatColor.UNDERLINE + "It is " + "&6" + ChatColor.UNDERLINE + getPlayerName() + ChatColor.DARK_PURPLE + ChatColor.UNDERLINE + "'s turn to act!");
+            getTable().sendTableMessage(ChatColor.DARK_PURPLE + getPlayerName() + " has &6" + table.getSettings().getTurnSeconds() + " seconds" + ChatColor.DARK_PURPLE + " to act!");
         } else {
-            Messages.sendMessage(getPlayer(), ChatColor.DARK_PURPLE + "" + ChatColor.UNDERLINE + "It is your turn to act!");
+            Messages.sendMessage(getPlayer(), ChatColor.DARK_PURPLE + "You have &6" + table.getSettings().getTurnSeconds() + " seconds" + ChatColor.DARK_PURPLE + " to act!");
         }
-        table.playTurnSounds(getPlayerName());
+        Sound.tableTurnSounds(getTable(), getPlayerName());
         Sound.turn(getPlayer());
+        startTurnTimer();
     }
 
 }

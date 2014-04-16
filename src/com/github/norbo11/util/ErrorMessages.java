@@ -29,7 +29,7 @@ public class ErrorMessages {
     }
 
     public static void cantCheck(PokerPlayer player) {
-        Messages.sendMessage(player.getPlayer(), "&cYou cannot check at this time! You need to call " + "&6" + Formatter.formatMoney(player.getPokerTable().getCurrentBet() - player.getCurrentBet()) + "&c more, or raise!");
+        Messages.sendMessage(player.getPlayer(), "&cYou cannot check! You need to call " + "&6" + Formatter.formatMoney(player.getPokerTable().getCurrentBet() - player.getCurrentBet()) + "&c, or raise!");
     }
 
     public static void cantContinue(Player player) {
@@ -49,16 +49,7 @@ public class ErrorMessages {
     }
 
     public static void displayHelp(Player player, String command) {
-        if (command.equalsIgnoreCase("cards") || command.equalsIgnoreCase("c")) {
-            for (PluginCommand pluginCommand : PluginExecutor.commandsCards) {
-                if (pluginCommand.hasPermission(player)) {
-                    Messages.sendMessage(player, "&6/cards " + pluginCommand.getAliasesString() + " &b" + pluginCommand.getArgumentsString());
-                }
-            }
-
-            Messages.sendMessage(player, "&6/cards help &b[command]");
-            Messages.sendMessage(player, "&6UltimateCards &bv" + UltimateCards.getVersion() + " &fby &6Norbo11");
-        } else if (command.equalsIgnoreCase("table") || command.equalsIgnoreCase("t")) {
+        if (command.equalsIgnoreCase("table") || command.equalsIgnoreCase("t") || command.equalsIgnoreCase("cards") || command.equalsIgnoreCase("c")) {
             for (PluginCommand pluginCommand : PluginExecutor.commandsTable) {
                 if (pluginCommand.hasPermission(player)) {
                     Messages.sendMessage(player, "&6/table " + pluginCommand.getAliasesString() + " &b" + pluginCommand.getArgumentsString());
@@ -156,7 +147,7 @@ public class ErrorMessages {
     }
 
     public static void notSittingAtTable(Player player) {
-        Messages.sendMessage(player, "&cYou are not currently sitting at any table! Sit with " + PluginExecutor.cardsSit.getCommandString() + " [id] [buy-in]&c.");
+        Messages.sendMessage(player, "&cYou are not currently sitting at any table! Sit with " + PluginExecutor.tableSit.getCommandString() + " [id] [buy-in]&c.");
     }
 
     public static void notTable(Player player, String id) {

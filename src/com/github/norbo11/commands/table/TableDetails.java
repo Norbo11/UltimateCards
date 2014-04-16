@@ -1,4 +1,4 @@
-package com.github.norbo11.commands.cards;
+package com.github.norbo11.commands.table;
 
 import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.game.cards.CardsPlayer;
@@ -6,8 +6,8 @@ import com.github.norbo11.game.cards.CardsTable;
 import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.NumberMethods;
 
-public class CardsDetails extends PluginCommand {
-    public CardsDetails() {
+public class TableDetails extends PluginCommand {
+    public TableDetails() {
         getAlises().add("details");
         getAlises().add("info");
         getAlises().add("d");

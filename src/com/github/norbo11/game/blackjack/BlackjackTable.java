@@ -16,7 +16,6 @@ import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.Log;
 import com.github.norbo11.util.MapMethods;
 import com.github.norbo11.util.Messages;
-import com.github.norbo11.util.MoneyMethods;
 import com.github.norbo11.util.Timers;
 
 public class BlackjackTable extends CardsTable {
@@ -145,15 +144,6 @@ public class BlackjackTable extends CardsTable {
         dealer.addInitialCards();
     }
 
-    @Override
-    public void deleteTable() {
-        // Displays a message, returns money for every player, and removes the
-        // table
-        sendTableMessage("Table ID '" + "&6" + getName() + "&f', ID #" + "&6" + getId() + " &fhas been deleted!");
-        MoneyMethods.returnMoney(this);
-        CardsTable.getTables().remove(this);
-    }
-
     public void displayScores() {
         for (BlackjackPlayer player : getBjPlayersThisHand()) {
             player.displayScore();
@@ -264,7 +254,7 @@ public class BlackjackTable extends CardsTable {
 
         sendTableMessage("&6" + UltimateCards.getLineString());
         for (BlackjackPlayer pushingPlayer : payPlayers()) {
-            sendTableMessage("&6" + pushingPlayer.getPlayerName() + "&f is pushing for &6" + UltimateCards.getEconomy().format(pushingPlayer.getPushing()) + "&f next hand.");
+            sendTableMessage("&6" + pushingPlayer.getPlayerName() + "&f is pushing for &6" + Formatter.formatMoney(pushingPlayer.getPushingAmount()) + "&f next hand.");
         }
 
         setToBeContinued(true);
@@ -277,7 +267,7 @@ public class BlackjackTable extends CardsTable {
     public void kick(CardsPlayer player) {
         BlackjackPlayer blackjackPlayer = (BlackjackPlayer) player;
 
-        sendTableMessage("&6" + getOwner() + "&f has kicked &6" + blackjackPlayer.getPlayerName() + "&f from the table!");
+        sendTableMessage("&6" + blackjackPlayer + " &fhas been kicked from the table!", player.getPlayerName());
 
         returnMoney(blackjackPlayer);
         removePlayer(blackjackPlayer);
@@ -285,7 +275,7 @@ public class BlackjackTable extends CardsTable {
 
         if (blackjackPlayer.isOnline()) {
             blackjackPlayer.getPlayer().teleport(blackjackPlayer.getStartLocation());
-            Messages.sendMessage(blackjackPlayer.getPlayer(), "&6" + getOwner() + "&c has kicked you from his/her blackjack table! You receive your remaining stack of &6" + Formatter.formatMoney(blackjackPlayer.getMoney()));
+            Messages.sendMessage(blackjackPlayer.getPlayer(), "&6You have been kicked from this blackjack table! You receive your remaining stack of &6" + Formatter.formatMoney(blackjackPlayer.getMoney()));
         }
 
         if (blackjackPlayer == getActionPlayer()) {
@@ -309,7 +299,7 @@ public class BlackjackTable extends CardsTable {
             }
 
             if (blackjackPlayer.isAction()) {
-                temp = temp.replace(blackjackPlayer.getPlayerName(), ChatColor.UNDERLINE + blackjackPlayer.getPlayerName() + "&6");
+                temp = temp.replace(blackjackPlayer.getPlayerName(), ChatColor.BOLD + blackjackPlayer.getPlayerName() + "&6");
             }
 
             if (getChipLeader() == blackjackPlayer) {
@@ -345,6 +335,7 @@ public class BlackjackTable extends CardsTable {
         getActionBlackjackPlayer().takeAction();
     }
 
+    // Pays players and returns pushing list
     public ArrayList<BlackjackPlayer> payPlayers() {
         ArrayList<BlackjackPlayer> pushingPlayers = new ArrayList<BlackjackPlayer>();
 
@@ -355,7 +346,7 @@ public class BlackjackTable extends CardsTable {
                         if (hand.getScore() > dealer.getScore()) {
                             blackjackPlayer.pay(hand);
                         } else if (hand.getScore() == dealer.getScore() && blackjackPlayer.isHitted()) {
-                            blackjackPlayer.setPushing(hand.getAmountBet());
+                            blackjackPlayer.setPushingAmount(hand.getAmountBet());
                             pushingPlayers.add(blackjackPlayer);
                         } else {
                             dealer.pay(blackjackPlayer, hand);

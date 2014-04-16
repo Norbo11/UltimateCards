@@ -27,20 +27,18 @@ public class PluginConfig {
 
     // General
     private boolean displayTurnsPublicly, allowRebuys;
-    private int autoStart, publicChatRange;
-
-    public int getPublicChatRange() {
-        return publicChatRange;
-    }
+    private int autoStart, turnSeconds, publicChatRange;
 
     // Poker
     private int dynamicFrequency;
+
     private double maxBuy, sb, bb, ante, minRaise, fixRake, minBuy, rake;
+
     private boolean minRaiseAlwaysBB;
-    
     // Blackjack
     private boolean allowDoubleDown;
     private double minBet;
+
     private int amountOfDecks;
 
     public int getAmountOfDecks() {
@@ -107,12 +105,20 @@ public class PluginConfig {
         return minRaise;
     }
 
+    public int getPublicChatRange() {
+        return publicChatRange;
+    }
+
     public double getRake() {
         return rake;
     }
 
     public double getSb() {
         return sb;
+    }
+
+    public int getTurnSeconds() {
+        return turnSeconds;
     }
 
     public boolean isAllowDoubleDown() {
@@ -146,7 +152,7 @@ public class PluginConfig {
     public boolean isMinRaiseAlwaysBB() {
         return minRaiseAlwaysBB;
     }
-    
+
     public void load() {
         config = p.getConfig();
         try {
@@ -177,6 +183,7 @@ public class PluginConfig {
         allowRebuys = config.getBoolean("options.generalDefaults.allowRebuys", config.getDefaults().getBoolean("options.generalDefaults.allowRebuys"));
         displayTurnsPublicly = config.getBoolean("options.generalDefaults.displayTurnsPublicly", config.getDefaults().getBoolean("options.generalDefaults.displayTurnsPublicly"));
         autoStart = config.getInt("options.generalDefaults.autoStart", config.getDefaults().getInt("options.generalDefaults.autoStart"));
+        turnSeconds = config.getInt("options.generalDefaults.turnSeconds", config.getDefaults().getInt("options.generalDefaults.turnSeconds"));
         minBuy = config.getDouble("options.generalDefaults.minBuy", config.getDefaults().getDouble("options.generalDefaults.minBuy"));
         maxBuy = config.getDouble("options.generalDefaults.maxBuy", config.getDefaults().getDouble("options.generalDefaults.maxBuy"));
         publicChatRange = config.getInt("options.generalDefaults.publicChatRange", config.getDefaults().getInt("options.generalDefaults.publicChatRange"));

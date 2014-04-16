@@ -198,10 +198,14 @@ public class UltimateCards extends JavaPlugin {
         }
 
         // Update
-        Updater updater; 
-        if (pluginConfig.isAutoUpdate()) { updater = new Updater(this, 39468, this.getFile(), Updater.UpdateType.DEFAULT, true); if (updater.getResult() == Updater.UpdateResult.SUCCESS) { log.info("To apply the update, reload/restart your server."); } }
-        
-       
+        Updater updater;
+        if (pluginConfig.isAutoUpdate()) {
+            updater = new Updater(this, 39468, getFile(), Updater.UpdateType.DEFAULT, true);
+            if (updater.getResult() == Updater.UpdateResult.SUCCESS) {
+                log.info("To apply the update, reload/restart your server.");
+            }
+        }
+
         // Set all commands to the command executor
         getCommand("cards").setExecutor(pluginExecutor);
         getCommand("table").setExecutor(pluginExecutor);

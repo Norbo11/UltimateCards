@@ -32,13 +32,7 @@ public class Log {
             // back of the arguments variable
             arguments = arguments + " " + argument;
         }
-        addToLog(DateMethods.getDate() + " " + sender.getName() + ": /" + command.getName() + arguments); // Adds
-                                                                                                          // the
-                                                                                                          // timestamped
-                                                                                                          // result
-                                                                                                          // to
-                                                                                                          // the
-                                                                                                          // log
+        addToLog(DateMethods.getDate() + " " + sender.getName() + ": /" + command.getName() + arguments);
     }
 
 }

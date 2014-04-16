@@ -1,5 +1,7 @@
 package com.github.norbo11.commands.poker;
 
+import org.bukkit.entity.Player;
+
 import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.game.poker.PokerPhase;
 import com.github.norbo11.game.poker.PokerPlayer;
@@ -9,6 +11,12 @@ import com.github.norbo11.util.ErrorMessages;
 public class PokerFold extends PluginCommand {
 
     public PokerFold() {
+        this(null, null);
+    }
+
+    public PokerFold(Player player, String[] args) {
+        super(player, args);
+
         getAlises().add("fold");
         getAlises().add("muck");
         getAlises().add("f");
@@ -22,7 +30,6 @@ public class PokerFold extends PluginCommand {
     }
 
     PokerPlayer pokerPlayer;
-
     PokerTable pokerTable;
 
     @Override

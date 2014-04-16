@@ -1,5 +1,7 @@
 package com.github.norbo11.commands.blackjack;
 
+import org.bukkit.entity.Player;
+
 import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.game.blackjack.BlackjackPlayer;
 import com.github.norbo11.game.blackjack.BlackjackTable;
@@ -9,6 +11,12 @@ import com.github.norbo11.util.NumberMethods;
 public class BlackjackStand extends PluginCommand {
 
     public BlackjackStand() {
+        this(null, null);
+    }
+
+    public BlackjackStand(Player player, String[] args) {
+        super(player, args);
+
         getAlises().add("stand");
         getAlises().add("stay");
         getAlises().add("s");
@@ -33,10 +41,10 @@ public class BlackjackStand extends PluginCommand {
             blackjackPlayer = BlackjackPlayer.getBlackjackPlayer(getPlayer().getName());
 
             if (blackjackPlayer != null) {
-                blackjackTable = blackjackPlayer.getBlackjackTable();
+                blackjackTable = blackjackPlayer.getTable();
                 if (blackjackTable.isInProgress()) {
                     if (blackjackPlayer.isAction()) {
-                        
+
                         if (getArgs().length == 2) {
                             if (blackjackPlayer.isSplit()) {
                                 hand = NumberMethods.getPositiveInteger(getArgs()[1]);
@@ -54,10 +62,10 @@ public class BlackjackStand extends PluginCommand {
                                 return false;
                             }
                         }
-                        
+
                         if (!blackjackPlayer.getHands().get(hand).isBust()) {
                             if (!blackjackPlayer.getHands().get(hand).isStayed()) {
-                                blackjackTable = blackjackPlayer.getBlackjackTable();
+                                blackjackTable = blackjackPlayer.getTable();
                                 return true;
                             } else {
                                 ErrorMessages.playerIsStayed(getPlayer());
@@ -82,8 +90,6 @@ public class BlackjackStand extends PluginCommand {
 
     @Override
     public void perform() throws Exception {
-        blackjackPlayer.getHands().get(hand).setStayed(true);
-        blackjackTable.sendTableMessage("&6" + blackjackPlayer.getPlayerName() + "&f stands with hand score &6" + blackjackPlayer.getHands().get(hand).getScore());
-        blackjackTable.nextPersonTurn(blackjackPlayer);
+        blackjackPlayer.stand(hand);
     }
 }

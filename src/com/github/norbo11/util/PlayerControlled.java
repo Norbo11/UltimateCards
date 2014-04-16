@@ -4,8 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class PlayerControlled {
-    private String playerName; // This holds the player's name. Should never be
-                               // changed
+    private String playerName; // This holds the player's name. Should never be changed
 
     public Player getPlayer() {
         return Bukkit.getPlayer(playerName);
@@ -23,4 +22,8 @@ public class PlayerControlled {
         this.playerName = playerName;
     }
 
+    @Override
+    public String toString() {
+        return getPlayerName();
+    }
 }

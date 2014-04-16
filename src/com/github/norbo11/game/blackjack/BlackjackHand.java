@@ -30,9 +30,9 @@ public class BlackjackHand {
 
     public void bust() {
         if (!player.isSplit()) {
-            player.getBlackjackTable().sendTableMessage("&6" + player.getPlayerName() + "&f has gone bust!");
+            player.getTable().sendTableMessage("&6" + player.getPlayerName() + "&f has gone bust!");
         } else {
-            player.getBlackjackTable().sendTableMessage("&6" + player.getPlayerName() + "&f's hand score &6" + score + "&f has gone bust!");
+            player.getTable().sendTableMessage("&6" + player.getPlayerName() + "&f's hand score &6" + score + "&f has gone bust!");
         }
     }
 

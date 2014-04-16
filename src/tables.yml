@@ -6,6 +6,7 @@ EditYourConfig:
         allowRebuys: true
         displayTurnsPublicly: false
         autoStart: 0
+        turnSeconds: 60
         minRaiseIsAlwaysBB: true
         minBuy: 0
         maxBuy: 100000
@@ -23,6 +24,7 @@ EditYourConfig2:
         allowRebuys: true
         displayTurnsPublicly: false
         autoStart: 0
+        turnSeconds: 60
         allowDoubleDown: true
         minBet: 100
         amountOfDecks: 5

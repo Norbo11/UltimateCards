@@ -1,4 +1,4 @@
-package com.github.norbo11.commands.cards;
+package com.github.norbo11.commands.table;
 
 import org.bukkit.ChatColor;
 
@@ -9,8 +9,8 @@ import com.github.norbo11.game.cards.CardsTable;
 import com.github.norbo11.game.poker.PokerTable;
 import com.github.norbo11.util.Messages;
 
-public class CardsTables extends PluginCommand {
-    public CardsTables() {
+public class TableTables extends PluginCommand {
+    public TableTables() {
         getAlises().add("tables");
         getAlises().add("list");
         getAlises().add("l");
@@ -56,6 +56,6 @@ public class CardsTables extends PluginCommand {
         }
 
         Messages.sendMessage(getPlayer(), ChatColor.GREEN + "GREEN = Open. &cRED = Closed.");
-        Messages.sendMessage(getPlayer(), "Use " + PluginExecutor.cardsSit.getCommandString() + " [table ID] [buy-in] " + "&fto join a table.");
+        Messages.sendMessage(getPlayer(), "Use " + PluginExecutor.tableSit.getCommandString() + " [table ID] [buy-in] " + "&fto join a table.");
     }
 }

@@ -1,4 +1,4 @@
-package com.github.norbo11.commands.cards;
+package com.github.norbo11.commands.table;
 
 import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.game.cards.CardsPlayer;
@@ -6,8 +6,8 @@ import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.Messages;
 
-public class CardsMoney extends PluginCommand {
-    public CardsMoney() {
+public class TableMoney extends PluginCommand {
+    public TableMoney() {
         getAlises().add("money");
         getAlises().add("balance");
         getAlises().add("m");

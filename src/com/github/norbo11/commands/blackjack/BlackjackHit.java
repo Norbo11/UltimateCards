@@ -32,8 +32,8 @@ public class BlackjackHit extends PluginCommand {
         if (getArgs().length == 1 || getArgs().length == 2) {
             blackjackPlayer = BlackjackPlayer.getBlackjackPlayer(getPlayer().getName());
             if (blackjackPlayer != null) {
-                blackjackTable = blackjackPlayer.getBlackjackTable();
-            
+                blackjackTable = blackjackPlayer.getTable();
+
                 if (blackjackTable.isInProgress()) {
                     if (blackjackPlayer.isAction()) {
                         if (getArgs().length == 2) {
@@ -53,7 +53,7 @@ public class BlackjackHit extends PluginCommand {
                                 return false;
                             }
                         }
-                        
+
                         if (!blackjackPlayer.getHands().get(hand).isBust()) {
                             if (!blackjackPlayer.getHands().get(hand).isStayed()) return true;
                             else {
@@ -79,10 +79,6 @@ public class BlackjackHit extends PluginCommand {
 
     @Override
     public void perform() throws Exception {
-        blackjackPlayer.getHands().get(hand).addCards(blackjackPlayer.getBlackjackTable().getDeck().generateCards(1));
-        blackjackPlayer.displayScore();
-        blackjackPlayer.checkForBust();
-        blackjackPlayer.setHitted(true);
-        blackjackTable.nextPersonTurn(blackjackPlayer);
+        blackjackPlayer.hit(hand);
     }
 }

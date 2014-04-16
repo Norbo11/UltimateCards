@@ -4,7 +4,6 @@ import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.game.blackjack.BlackjackPlayer;
 import com.github.norbo11.game.blackjack.BlackjackTable;
 import com.github.norbo11.util.ErrorMessages;
-import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.NumberMethods;
 
 public class BlackjackBet extends PluginCommand {
@@ -32,11 +31,11 @@ public class BlackjackBet extends PluginCommand {
             blackjackPlayer = BlackjackPlayer.getBlackjackPlayer(getPlayer().getName());
             if (blackjackPlayer != null) {
                 if (blackjackPlayer.getTable().getOwnerPlayer() != blackjackPlayer) {
-                    blackjackTable = blackjackPlayer.getBlackjackTable();
+                    blackjackTable = blackjackPlayer.getTable();
                     amountToBet = NumberMethods.getDouble(getArgs()[1]);
                     if (amountToBet != -99999) {
                         if (blackjackPlayer.getMoney() >= amountToBet) {
-                            blackjackTable = blackjackPlayer.getBlackjackTable();
+                            blackjackTable = blackjackPlayer.getTable();
                             if (blackjackTable.getDealer().hasEnoughMoney(amountToBet)) {
                                 if (amountToBet >= blackjackTable.getSettings().getMinBet()) {
                                     if (!blackjackTable.isInProgress()) return true;
@@ -69,10 +68,6 @@ public class BlackjackBet extends PluginCommand {
 
     @Override
     public void perform() throws Exception {
-        blackjackPlayer.removeMoney(amountToBet);
-        blackjackPlayer.getBlackjackTable().getDealer().addMoney(amountToBet);
-        blackjackPlayer.getHands().get(0).setAmountBet(blackjackPlayer.getHands().get(0).getAmountBet() + amountToBet);
-        blackjackTable.sendTableMessage("&6" + blackjackPlayer.getPlayerName() + "&f bets &6" + Formatter.formatMoney(blackjackPlayer.getHands().get(0).getAmountBet()));
-        blackjackTable.autoStart();
+        blackjackPlayer.bet(amountToBet);
     }
 }

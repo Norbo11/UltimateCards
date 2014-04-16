@@ -42,10 +42,10 @@ public class MapMethods {
                     if (!blackjackPlayer.isSplit()) {
                         mapCanvas.drawImage(0, 0, blackjack_base);
 
-                        ArrayList<Card> dealerCards = blackjackPlayer.getBlackjackTable().getDealer().getHand().getCards();
+                        ArrayList<Card> dealerCards = blackjackPlayer.getTable().getDealer().getHand().getCards();
                         for (int i = 0; i < 5; i++) {
                             if (i < dealerCards.size()) {
-                                if (dealerCards.get(i) != blackjackPlayer.getBlackjackTable().getDealer().getHoleCard()) {
+                                if (dealerCards.get(i) != blackjackPlayer.getTable().getDealer().getHoleCard()) {
                                     drawImageWithTransparency(mapCanvas, dealerCards.get(i).getImage(), x, y);
                                 } else {
                                     drawImageWithTransparency(mapCanvas, card_facedown, x, y);
@@ -86,7 +86,7 @@ public class MapMethods {
                     int i = 1;
                     x = 5;
                     y = 98;
-                    for (BlackjackPlayer temp : blackjackPlayer.getBlackjackTable().getBjPlayersThisHand()) {
+                    for (BlackjackPlayer temp : blackjackPlayer.getTable().getBjPlayersThisHand()) {
                         if (i == 9) {
                             break;
                         }
@@ -109,13 +109,13 @@ public class MapMethods {
                     }
 
                     // Draw dealer score
-                    mapCanvas.drawText(80, 18, MinecraftFont.Font, "§32;" + blackjackPlayer.getBlackjackTable().getDealer().getScore());
+                    mapCanvas.drawText(80, 18, MinecraftFont.Font, "§32;" + blackjackPlayer.getTable().getDealer().getScore());
 
                     // Draw player score
                     mapCanvas.drawText(80, 47, MinecraftFont.Font, "§32;" + blackjackPlayer.scoreToString());
 
                     // Draw your bet
-                    mapCanvas.drawText(80, 76, MinecraftFont.Font, "§32;" + Formatter.formatMoneyWithoutCurrency(blackjackPlayer.getTotalAmountBet()));
+                    mapCanvas.drawText(80, 76, MinecraftFont.Font, "§32;" + Formatter.formatMoneyWithoutColor(blackjackPlayer.getTotalAmountBet()));
 
                     redrawsNeeded.put(player.getName(), false);
                     player.sendMap(mapView);
@@ -185,10 +185,10 @@ public class MapMethods {
                     }
 
                     // Draw current bet
-                    mapCanvas.drawText(56, 94, MinecraftFont.Font, "§32;" + Formatter.formatMoneyWithoutCurrency(pokerPlayer.getPokerTable().getCurrentBet()));
+                    mapCanvas.drawText(56, 94, MinecraftFont.Font, "§32;" + Formatter.formatMoneyWithoutColor(pokerPlayer.getPokerTable().getCurrentBet()));
 
                     // Draw total in pots
-                    mapCanvas.drawText(56, 115, MinecraftFont.Font, "§32;" + Formatter.formatMoneyWithoutCurrency(pokerPlayer.getPokerTable().getHighestPot()));
+                    mapCanvas.drawText(56, 115, MinecraftFont.Font, "§32;" + Formatter.formatMoneyWithoutColor(pokerPlayer.getPokerTable().getHighestPot()));
 
                     redrawsNeeded.put(player.getName(), false);
                     player.sendMap(mapView);
@@ -251,7 +251,7 @@ public class MapMethods {
             pg.grabPixels();
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
-                    //If the pixel isn't a transparancy pixel
+                    // If the pixel isn't a transparancy pixel
                     if (pixels[i] != 16777215) {
                         Color c = new Color(img.getRGB(x, y));
 
@@ -304,7 +304,7 @@ public class MapMethods {
 
         }, 0L, 20L));
 
-        if (HelperMethods.hasOpenSlotInInventory(player)) {
+        if (InventoryHelper.hasOpenSlotInInventory(player)) {
             ItemStack held = player.getInventory().getItem(0) == null ? new ItemStack(Material.AIR) : player.getInventory().getItem(0);
             player.getInventory().setItem(0, mapItem);
             player.getInventory().addItem(held);

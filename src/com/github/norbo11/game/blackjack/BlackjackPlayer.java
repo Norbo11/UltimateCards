@@ -4,10 +4,13 @@ import java.util.ArrayList;
 
 import org.bukkit.entity.Player;
 
+import com.github.norbo11.commands.blackjack.BlackjackStand;
+import com.github.norbo11.game.cards.Card;
 import com.github.norbo11.game.cards.CardsPlayer;
 import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.MapMethods;
 import com.github.norbo11.util.Sound;
+import com.github.norbo11.util.Timers;
 
 public class BlackjackPlayer extends CardsPlayer {
     public BlackjackPlayer(Player player, BlackjackTable table, double buyin) throws Exception {
@@ -21,9 +24,8 @@ public class BlackjackPlayer extends CardsPlayer {
     }
 
     private boolean hitted;
-
     private boolean doubled;
-    private double pushing;
+    private double pushingAmount;
     private ArrayList<BlackjackHand> hands = new ArrayList<BlackjackHand>();
 
     public static BlackjackPlayer getBlackjackPlayer(int id, BlackjackTable table) {
@@ -39,9 +41,17 @@ public class BlackjackPlayer extends CardsPlayer {
         return cardsPlayer instanceof BlackjackPlayer ? (BlackjackPlayer) CardsPlayer.getCardsPlayer(name) : null;
     }
 
+    public void bet(double amountToBet) {
+        removeMoney(amountToBet);
+        getTable().getDealer().addMoney(amountToBet);
+        getHands().get(0).setAmountBet(getHands().get(0).getAmountBet() + amountToBet);
+        getTable().sendTableMessage("&6" + getPlayerName() + "&f bets &6" + Formatter.formatMoney(getHands().get(0).getAmountBet()));
+        getTable().autoStart();
+    }
+
     @Override
     public boolean canPlay() {
-        return getMoney() > getBlackjackTable().getSettings().getMinBet() || getBlackjackTable().getSettings().isAllowRebuys();
+        return getMoney() > getTable().getSettings().getMinBet() || getTable().getSettings().isAllowRebuys();
     }
 
     public void checkForBust() {
@@ -71,16 +81,34 @@ public class BlackjackPlayer extends CardsPlayer {
         getTable().sendTableMessage("&6" + getPlayerName() + "&f's score: &6" + scoreToString());
     }
 
-    public BlackjackTable getBlackjackTable() {
-        return (BlackjackTable) getTable();
+    public void doubleDown() {
+        removeMoney(getTotalAmountBet());
+        getTable().getDealer().addMoney(getTotalAmountBet());
+        getHands().get(0).setAmountBet(getTotalAmountBet() * 2);
+        getTable().sendTableMessage("&6" + getPlayerName() + "&f doubles down! New bet: &6" + Formatter.formatMoney(getTotalAmountBet()));
+        getHands().get(0).addCards(getTable().getDeck().generateCards(1));
+        displayScore();
+        checkForBust();
+
+        setDoubled(true);
+        setHitted(true);
+        getHands().get(0).setStayed(true);
+
+        cancelTurnTimer();
+        getTable().nextPersonTurn(this);
     }
 
     public ArrayList<BlackjackHand> getHands() {
         return hands;
     }
 
-    public double getPushing() {
-        return pushing;
+    public double getPushingAmount() {
+        return pushingAmount;
+    }
+
+    @Override
+    public BlackjackTable getTable() {
+        return (BlackjackTable) super.getTable();
     }
 
     public double getTotalAmountBet() {
@@ -91,6 +119,15 @@ public class BlackjackPlayer extends CardsPlayer {
         }
 
         return returnValue;
+    }
+
+    public void hit(int hand) {
+        getHands().get(hand).addCards(getTable().getDeck().generateCards(1));
+        displayScore();
+        checkForBust();
+        setHitted(true);
+        cancelTurnTimer();
+        getTable().nextPersonTurn(this);
     }
 
     public boolean isBustOnAllHands() {
@@ -109,7 +146,7 @@ public class BlackjackPlayer extends CardsPlayer {
     public boolean isDrawing() {
         int handsDrawing = 0;
         for (BlackjackHand hand : hands)
-            if (hand.getScore() == getBlackjackTable().getDealer().getScore()) {
+            if (hand.getScore() == getTable().getDealer().getScore()) {
                 handsDrawing++;
             }
         return handsDrawing == hands.size();
@@ -120,7 +157,7 @@ public class BlackjackPlayer extends CardsPlayer {
     }
 
     public boolean isPushing() {
-        return pushing > 0;
+        return pushingAmount > 0;
     }
 
     public boolean isSplit() {
@@ -142,10 +179,10 @@ public class BlackjackPlayer extends CardsPlayer {
     public void pay(BlackjackHand hand) {
         double multiplayer = hand.getScore() == 21 && !hand.getPlayer().isHitted() ? 2.5 : 2;
         if (isPushing()) {
-            pushing = 0;
+            pushingAmount = 0;
         }
 
-        getBlackjackTable().getDealer().removeMoney(hand.getAmountBet() * multiplayer);
+        getTable().getDealer().removeMoney(hand.getAmountBet() * multiplayer);
         giveMoney(hand.getAmountBet() * multiplayer);
 
         getTable().sendTableMessage("&6" + getPlayerName() + "&f has won &6" + Formatter.formatMoney(hand.getAmountBet() * multiplayer) + "&f (" + multiplayer + "x) for hand score &6" + hand.getScore());
@@ -188,7 +225,69 @@ public class BlackjackPlayer extends CardsPlayer {
         this.hitted = hitted;
     }
 
-    public void setPushing(double pushing) {
-        this.pushing += pushing;
+    public void setPushingAmount(double pushing) {
+        pushingAmount += pushing;
+    }
+
+    public void split() {
+        removeMoney(getHands().get(0).getAmountBet());
+        getTable().getDealer().addMoney(getHands().get(0).getAmountBet());
+        getHands().add(new BlackjackHand(this, getHands().get(0).getAmountBet()));
+
+        getTable().sendTableMessage("&6" + getPlayerName() + "&f splits! New bet: &6" + Formatter.formatMoney(getTotalAmountBet()));
+
+        Card card = getHands().get(0).getHand().getCards().get(0);
+        getHands().get(0).getHand().getCards().remove(card);
+        getHands().get(1).getHand().getCards().add(card);
+
+        // Hit both hands
+        getHands().get(0).recalculateScore();
+        getHands().get(0).addCards(getTable().getDeck().generateCards(1));
+        getHands().get(1).recalculateScore();
+        getHands().get(1).addCards(getTable().getDeck().generateCards(1));
+        displayScore();
+        setHitted(true);
+
+        cancelTurnTimer();
+        getTable().nextPersonTurn(this);
+    }
+
+    public void stand(int hand) {
+        getHands().get(hand).setStayed(true);
+        getTable().sendTableMessage("&6" + getPlayerName() + "&f stands with hand score &6" + getHands().get(hand).getScore());
+        cancelTurnTimer();
+        getTable().nextPersonTurn(this);
+    }
+
+    @Override
+    public void startTurnTimer() {
+        BlackjackTableSettings settings = getTable().getSettings();
+        if (settings.getTurnSeconds() > 0) {
+            // Clear old timer
+            if (getTurnTimer() != null) {
+                getTurnTimer().cancel();
+                setTurnTimer(null);
+            }
+
+            setTurnTimer(Timers.startTimerAsync(new Runnable() {
+                @Override
+                public void run() {
+                    BlackjackStand stand = new BlackjackStand(getPlayer(), new String[] { "stand" });
+                    getTable().sendTableMessage("&6" + getPlayerName() + "&f's turn timer has ended!");
+
+                    try {
+                        if (stand.conditions()) {
+                            stand.perform();
+                            return;
+                        } else {
+                            getTable().kick(getBlackjackPlayer(getPlayerName()));
+                            return;
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }, settings.getTurnSeconds()));
+        }
     }
 }

@@ -3,16 +3,22 @@ package com.github.norbo11.game.poker;
 import org.bukkit.entity.Player;
 
 import com.github.norbo11.UltimateCards;
+import com.github.norbo11.commands.poker.PokerCheck;
+import com.github.norbo11.commands.poker.PokerFold;
+import com.github.norbo11.commands.poker.PokerReveal;
 import com.github.norbo11.game.cards.Card;
 import com.github.norbo11.game.cards.CardsPlayer;
 import com.github.norbo11.game.cards.CardsTable;
 import com.github.norbo11.game.cards.Hand;
+import com.github.norbo11.game.poker.eval.EvalHand;
+import com.github.norbo11.game.poker.eval.HandEvaluator;
 import com.github.norbo11.util.DateMethods;
 import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.Log;
 import com.github.norbo11.util.MapMethods;
 import com.github.norbo11.util.Messages;
 import com.github.norbo11.util.Sound;
+import com.github.norbo11.util.Timers;
 
 public class PokerPlayer extends CardsPlayer {
     public PokerPlayer(Player player, CardsTable table, double buyin) throws Exception {
@@ -52,7 +58,6 @@ public class PokerPlayer extends CardsPlayer {
             Messages.sendMessage(getPlayer(), "You have been dealt the " + card.toString());
         }
     }
-    
 
     public void bet(double bet, String blind) {
         if (blind != null) {
@@ -77,6 +82,7 @@ public class PokerPlayer extends CardsPlayer {
             p.updatePot();
         }
 
+        cancelTurnTimer();
         if (blind == null) {
             setActed(true);
             getPokerTable().nextPersonTurn(this);
@@ -86,6 +92,15 @@ public class PokerPlayer extends CardsPlayer {
     @Override
     public boolean canPlay() {
         return getMoney() > getPokerTable().getHighestBlind();
+    }
+
+    public void check() {
+        // Simply say that the player has took action, and just send a message.
+        // Then go to the next player's turn
+        setActed(true);
+        getPokerTable().sendTableMessage("&6" + getPlayerName() + "&f checks.");
+        cancelTurnTimer();
+        getPokerTable().nextPersonTurn(this);
     }
 
     public void clearBet() {
@@ -98,10 +113,19 @@ public class PokerPlayer extends CardsPlayer {
         setFolded(true);
         setTotalBet(0);
         getTable().sendTableMessage("&6" + getPlayerName() + "&f folds.");
+        Sound.lost(getPlayer());
+        
+        cancelTurnTimer();
+        
+        // If there is only 1 non-folded player left, announce him the winner
+        if (getPokerTable().getNonFoldedPlayers().size() == 1) {
+            getPokerTable().endPhaseForPlayers();
+            getPokerTable().phaseHandEnd();
+            return;
+        }
         if (getPokerTable().getActionPlayer() == this) {
             getPokerTable().nextPersonTurn(this);
         }
-        Sound.lost(getPlayer());
     }
 
     public double getCurrentBet() {
@@ -109,8 +133,8 @@ public class PokerPlayer extends CardsPlayer {
     }
 
     // Converts this player's hand + the community cards into the special format used by the hand evaluator
-    public com.github.norbo11.game.poker.eval.EvalHand getEvalHand() {
-        return new com.github.norbo11.game.poker.eval.EvalHand(getHand().getEvalString() + " " + getPokerTable().getBoard().getEvalString());
+    public EvalHand getEvalHand() {
+        return new EvalHand(getHand().getEvalString() + " " + getPokerTable().getBoard().getEvalString());
     }
 
     public Hand getHand() {
@@ -206,10 +230,19 @@ public class PokerPlayer extends CardsPlayer {
         }
 
         bet(amount, blind);
+        cancelTurnTimer();
     }
 
     public void resetDeltaPot() {
         deltaPot = 0;
+    }
+
+    public void reveal() {
+        setRevealed(true);
+        getPokerTable().sendTableMessage("&6" + getPlayer().getName() + "&f: " + HandEvaluator.nameHand(getEvalHand()));
+        getPokerTable().sendTableMessage(getHand().getHand());
+        cancelTurnTimer();
+        getPokerTable().nextPersonTurn(this);
     }
 
     public void setActed(boolean acted) {
@@ -236,16 +269,54 @@ public class PokerPlayer extends CardsPlayer {
         this.totalBet = totalBet;
     }
 
+    @Override
+    public void startTurnTimer() {
+        PokerTableSettings settings = getPokerTable().getSettings();
+
+        if (settings.getTurnSeconds() > 0) {
+
+            // Clear old timer
+            if (getTurnTimer() != null) {
+                getTurnTimer().cancel();
+                setTurnTimer(null);
+            }
+
+            setTurnTimer(Timers.startTimerAsync(new Runnable() {
+                @Override
+                public void run() {
+                    PokerCheck check = new PokerCheck(getPlayer(), new String[] { "check" });
+                    PokerFold fold = new PokerFold(getPlayer(), new String[] { "fold" });
+                    PokerReveal reveal = new PokerReveal(getPlayer(), new String[] { "reveal" });
+                    getPokerTable().sendTableMessage("&6" + getPlayerName() + "&f's turn timer has ended!");
+
+                    try {
+                        if (check.conditions()) {
+                            check.perform();
+                            return;
+                        } else if (reveal.conditions()) {
+                            reveal.perform();
+                            return;
+                        } else if (fold.conditions()) {
+                            fold.perform();
+                            getPokerTable().kick(getPokerPlayer(getPlayerName()));
+                            return;
+                        } else {
+                            getPokerTable().kick(getPokerPlayer(getPlayerName()));
+                            return;
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }, settings.getTurnSeconds()));
+        }
+    }
+
     public void tableLeave(CardsPlayer cardsPlayer) throws Exception {
         PokerPlayer pokerPlayer = (PokerPlayer) cardsPlayer;
         if (pokerPlayer.getTable().isInProgress() && !pokerPlayer.isFolded() && !pokerPlayer.isEliminated()) {
             fold();
         }
-    }
-
-    @Override
-    public String toString() {
-        return getPlayerName();
     }
 
     public void updatePot() {

@@ -1,7 +1,10 @@
 package com.github.norbo11.game.cards;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -11,8 +14,8 @@ import com.github.norbo11.game.poker.PokerPhase;
 import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.MapMethods;
 import com.github.norbo11.util.Messages;
+import com.github.norbo11.util.MoneyMethods;
 import com.github.norbo11.util.NumberMethods;
-import com.github.norbo11.util.Sound;
 import com.github.norbo11.util.config.SavedTables;
 
 public abstract class CardsTable {
@@ -118,44 +121,28 @@ public abstract class CardsTable {
 
     public abstract void dealCards();
 
-    public abstract void deleteTable();
-    
-    public void sendTableMessage(String[] messages)
-    {
-        for (String message : messages)
+    public void deleteTable() {
+        sendTableMessage("Table ID '" + "&6" + getName() + "&f', ID #" + "&6" + getId() + " &fhas been deleted!");
+        MoneyMethods.returnMoney(this);
+        for (CardsPlayer player : players)
         {
-            sendTableMessage(message);
+            if (player.getTurnTimer() != null) player.getTurnTimer().cancel();
         }
-    }
-    
-    public void sendTableMessage(String message)
-    {
-        ArrayList<String> ignore = new ArrayList<String>();
-        int range = getSettings().getPublicChatRange();
-        
-        //Send private message to all table players
-        for (CardsPlayer cardsPlayer : getPlayers())
-        {
-            cardsPlayer.sendMessage(message);
-            ignore.add(cardsPlayer.getPlayerName());
-        }
-        
-        //Send public message to everyone apart from the table players, if the range setting is enabled
-        if (range > 0) Messages.sendToAllWithinRange(location, range, message, ignore);
+        CardsTable.getTables().remove(this);
     }
 
     public void displayDetails(Player player) {
         Messages.sendMessage(player, "&6" + UltimateCards.getLineString());
-        Messages.sendMessage(player, "&6&nSettings");
+        Messages.sendMessage(player, ChatColor.BOLD + "&6Settings");
         Messages.sendMessage(player, getSettings().listSettings());
 
         Messages.sendMessage(player, "&6" + UltimateCards.getLineString());
-        Messages.sendMessage(player, "&6&nPlayers");
+        Messages.sendMessage(player, ChatColor.BOLD + "&6Players");
         Messages.sendMessage(player, listPlayers());
 
         Messages.sendMessage(player, "&6" + UltimateCards.getLineString());
-        Messages.sendMessage(player, "&6&nGeneral Details");
-        Messages.sendMessage(player, "Owner: &6" + getOwner());
+        Messages.sendMessage(player,  "&6General Details");
+        Messages.sendMessage(player, "Owner: &6" + (getOwner().equals("") == false ? getOwner() : "SERVER"));
         Messages.sendMessage(player, "Hands played: &6" + getHandNumber());
         Messages.sendMessage(player, "Open: &6" + isOpen());
         Messages.sendMessage(player, "In progress: " + "&6" + isInProgress());
@@ -341,15 +328,6 @@ public abstract class CardsTable {
 
     public abstract CardsPlayer playerSit(Player player, double buyin) throws Exception;
 
-    // Plays turn sounds apart from the player specified in the argument
-    public void playTurnSounds(String player) {
-        for (CardsPlayer p : getPlayersThisHand()) {
-            if (player.equals(p.getPlayerName())) {
-                Sound.otherTurn(p.getPlayer());
-            }
-        }
-    }
-
     public void removePlayer(CardsPlayer cardsPlayer) {
         players.remove(cardsPlayer);
         if (players.size() == 0) setOpen(true);
@@ -362,6 +340,36 @@ public abstract class CardsTable {
     }
 
     public abstract void returnMoney(CardsPlayer player);
+
+    public void sendTableMessage(String message) {
+        sendTableMessage(message, Collections.<String> emptyList());
+    }
+
+    public void sendTableMessage(String message, List<String> toIgnore) {
+        ArrayList<String> ignore = new ArrayList<String>(toIgnore);
+        int range = getSettings().getPublicChatRange();
+
+        // Send private message to all table players, also add them to the ignore list
+        for (CardsPlayer cardsPlayer : getPlayers()) {
+            if (!toIgnore.contains(cardsPlayer.getPlayerName())) cardsPlayer.sendMessage(message);
+            ignore.add(cardsPlayer.getPlayerName());
+        }
+
+        // Send public message to everyone apart from the table players, if the range setting is enabled
+        if (range > 0) Messages.sendToAllWithinRange(location, range, message, ignore);
+    }
+
+    public void sendTableMessage(String message, String ignore) {
+        ArrayList<String> ignoreList = new ArrayList<String>();
+        ignoreList.add(ignore);
+        sendTableMessage(message, ignoreList);
+    }
+
+    public void sendTableMessage(String[] messages) {
+        for (String message : messages) {
+            sendTableMessage(message);
+        }
+    }
 
     public void setActionPlayer(CardsPlayer cardsPlayer) {
         actionPlayer = cardsPlayer;
@@ -434,5 +442,9 @@ public abstract class CardsTable {
             if (getPlayers().get(i).getID() != i) {
                 getPlayers().get(i).setID(i);
             }
+    }
+
+    public void cancelTimerTask() {
+        if (getTimerTask() != null) getTimerTask().cancel();
     }
 }

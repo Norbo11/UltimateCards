@@ -18,7 +18,6 @@ public class BlackjackDealer {
     private Card holeCard = null;
     private BlackjackTable table;
     private Hand hand = new Hand();
-
     private boolean bust;
 
     public void addCards(Card[] cards) {
@@ -39,7 +38,7 @@ public class BlackjackDealer {
     }
 
     public void addMoney(double amount) {
-        MoneyMethods.depositMoney(table.getOwner(), amount);
+        if (table.getOwner() != null) MoneyMethods.depositMoney(table.getOwner(), amount);
     }
 
     public void bust() {
@@ -66,7 +65,8 @@ public class BlackjackDealer {
     }
 
     public double getMoney() {
-        return MoneyMethods.getMoney(table.getOwner());
+        if (table.getOwner() != null) return MoneyMethods.getMoney(table.getOwner());
+        return Double.MAX_VALUE;
     }
 
     public int getScore() {
@@ -78,7 +78,7 @@ public class BlackjackDealer {
     }
 
     public boolean hasEnoughMoney(double amountToBet) {
-        return amountToBet <= getMoney() / ((table.getPlayers().size() - 1) * 2);
+        return table.getOwner().equals("") || (amountToBet <= getMoney() / ((table.getPlayers().size() - 1) * 2));
     }
 
     public void hit() {
@@ -98,8 +98,9 @@ public class BlackjackDealer {
 
     public void pay(BlackjackPlayer blackjackPlayer, BlackjackHand hand) {
         if (blackjackPlayer.isPushing()) {
-            blackjackPlayer.setPushing(0);
+            blackjackPlayer.setPushingAmount(0);
         }
+        // No need to actually give any money here as money has already been received upon /blackjack bet
         table.sendTableMessage("&6" + "The dealer (" + score + ")&f wins &6" + Formatter.formatMoney(hand.getAmountBet()) + "&f from &6" + blackjackPlayer.getPlayerName() + " (" + hand.getScore() + ")");
         Sound.lost(blackjackPlayer.getPlayer());
     }
@@ -123,7 +124,7 @@ public class BlackjackDealer {
     }
 
     public void removeMoney(double amount) {
-        MoneyMethods.withdrawMoney(table.getOwner(), amount);
+        if (table.getOwner() != null) MoneyMethods.withdrawMoney(table.getOwner(), amount);
     }
 
     public void reveal() {

@@ -1,12 +1,9 @@
 package com.github.norbo11.commands.blackjack;
 
 import com.github.norbo11.commands.PluginCommand;
-import com.github.norbo11.game.blackjack.BlackjackHand;
 import com.github.norbo11.game.blackjack.BlackjackPlayer;
 import com.github.norbo11.game.blackjack.BlackjackTable;
-import com.github.norbo11.game.cards.Card;
 import com.github.norbo11.util.ErrorMessages;
-import com.github.norbo11.util.Formatter;
 
 public class BlackjackSplit extends PluginCommand {
 
@@ -23,7 +20,6 @@ public class BlackjackSplit extends PluginCommand {
     }
 
     BlackjackPlayer blackjackPlayer;
-
     BlackjackTable blackjackTable;
 
     @Override
@@ -31,7 +27,7 @@ public class BlackjackSplit extends PluginCommand {
         if (getArgs().length == 1) {
             blackjackPlayer = BlackjackPlayer.getBlackjackPlayer(getPlayer().getName());
             if (blackjackPlayer != null) {
-                blackjackTable = blackjackPlayer.getBlackjackTable();
+                blackjackTable = blackjackPlayer.getTable();
 
                 if (blackjackTable.isInProgress()) {
                     if (blackjackPlayer.isAction()) {
@@ -39,7 +35,7 @@ public class BlackjackSplit extends PluginCommand {
                             if (!blackjackPlayer.isHitted()) {
                                 if (blackjackPlayer.sameHoleCards()) {
                                     if (blackjackPlayer.hasMoney(blackjackPlayer.getTotalAmountBet())) {
-                                        blackjackTable = blackjackPlayer.getBlackjackTable();
+                                        blackjackTable = blackjackPlayer.getTable();
                                         return true;
                                     } else {
                                         ErrorMessages.notEnoughMoney(getPlayer(), blackjackPlayer.getTotalAmountBet(), blackjackPlayer.getMoney());
@@ -70,24 +66,6 @@ public class BlackjackSplit extends PluginCommand {
 
     @Override
     public void perform() throws Exception {
-        blackjackPlayer.removeMoney(blackjackPlayer.getHands().get(0).getAmountBet());
-        blackjackPlayer.getBlackjackTable().getDealer().addMoney(blackjackPlayer.getHands().get(0).getAmountBet());
-        blackjackPlayer.getHands().add(new BlackjackHand(blackjackPlayer, blackjackPlayer.getHands().get(0).getAmountBet()));
-
-        blackjackTable.sendTableMessage("&6" + blackjackPlayer.getPlayerName() + "&f splits! New bet: &6" + Formatter.formatMoney(blackjackPlayer.getTotalAmountBet()));
-
-        Card card = blackjackPlayer.getHands().get(0).getHand().getCards().get(0);
-        blackjackPlayer.getHands().get(0).getHand().getCards().remove(card);
-        blackjackPlayer.getHands().get(1).getHand().getCards().add(card);
-
-        // Hit both hands
-        blackjackPlayer.getHands().get(0).recalculateScore();
-        blackjackPlayer.getHands().get(0).addCards(blackjackTable.getDeck().generateCards(1));
-        blackjackPlayer.getHands().get(1).recalculateScore();
-        blackjackPlayer.getHands().get(1).addCards(blackjackTable.getDeck().generateCards(1));
-        blackjackPlayer.displayScore();
-        blackjackPlayer.setHitted(true);
-
-        blackjackTable.nextPersonTurn(blackjackPlayer);
+        blackjackPlayer.split();
     }
 }

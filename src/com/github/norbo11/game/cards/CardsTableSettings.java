@@ -19,21 +19,9 @@ public abstract class CardsTableSettings {
     private double maxBuy = UltimateCards.getPluginConfig().getMaxBuy();
     private int autoStart = UltimateCards.getPluginConfig().getAutoStart();
     private int publicChatRange = UltimateCards.getPluginConfig().getPublicChatRange();
-    
+    private int turnSeconds = UltimateCards.getPluginConfig().getTurnSeconds();
+
     private CardsTable table;
-
-    public int getPublicChatRange() {
-        return publicChatRange;
-    }
-
-    public void setPublicChatRange(int value) {
-        publicChatRange = value;
-        if (value > 0) {
-            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has made messages display publicly at the range of &6" + value + "&f blocks.");
-        } else {
-            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has turned off the public sending of messages.");
-        }
-    }
 
     public String checkBoolean(String v) {
         boolean value;
@@ -90,8 +78,16 @@ public abstract class CardsTableSettings {
         return minBuy;
     }
 
+    public int getPublicChatRange() {
+        return publicChatRange;
+    }
+
     public CardsTable getTable() {
         return table;
+    }
+
+    public int getTurnSeconds() {
+        return turnSeconds;
     }
 
     public boolean isAllowRebuys() {
@@ -110,6 +106,7 @@ public abstract class CardsTableSettings {
         messages.add("Display turns publicly: &6" + displayTurnsPublicly);
         messages.add("Allow rebuys: &6" + allowRebuys);
         messages.add("Auto-start: &6" + autoStart + " seconds");
+        messages.add("Turn timer: &6" + turnSeconds + " seconds");
         messages.add("Public chat range: &6" + publicChatRange + " blocks");
         messages.addAll(listTableSpecificSettings());
 
@@ -134,9 +131,10 @@ public abstract class CardsTableSettings {
     public void setAutoStart(int autoStart) {
         this.autoStart = autoStart;
         if (autoStart > 0) {
-            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has made new rounds start automatically after &6" + autoStart + "&f seconds!");
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set round auto-start to &6" + autoStart + "&f seconds!");
         } else {
             getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has turned off round auto-start.");
+            getTable().cancelTimerTask();
         }
     }
 
@@ -175,6 +173,19 @@ public abstract class CardsTableSettings {
         minBuy = value;
     }
 
+    public void setPublicChatRange(int value) {
+        publicChatRange = value;
+        if (value > 0) {
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has enabled public display of &6" + value + "&f blocks.");
+        } else {
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has turned off the public display.");
+        }
+    }
+
+    public void setPublicChatRangeNoMsg(int value) {
+        publicChatRange = value;
+    }
+
     public void setSetting(String setting, String v) {
         if (setting.equalsIgnoreCase("displayTurnsPublicly")) {
             String value = checkBoolean(v);
@@ -206,6 +217,11 @@ public abstract class CardsTableSettings {
             if (value != -99999) {
                 setPublicChatRange(value);
             }
+        } else if (setting.equalsIgnoreCase("turnSeconds")) {
+            int value = checkInteger(v);
+            if (value != -99999) {
+                setTurnSeconds(value);
+            }
         } else {
             setTableSpecificSetting(setting, v);
         }
@@ -213,7 +229,16 @@ public abstract class CardsTableSettings {
 
     public abstract void setTableSpecificSetting(String setting, String v);
 
-    public void setPublicChatRangeNoMsg(int value) {
-        publicChatRange = value;
+    public void setTurnSeconds(int turnSeconds) {
+        this.turnSeconds = turnSeconds;
+        if (turnSeconds > 0) {
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the turn time limit to &6" + turnSeconds + "&f seconds!");
+        } else {
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has allowed unlimited turn time.");
+        }
+    }
+
+    public void setTurnSecondsNoMsg(int turnSeconds) {
+        this.turnSeconds = turnSeconds;
     }
 }

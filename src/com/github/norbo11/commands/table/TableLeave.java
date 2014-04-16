@@ -1,4 +1,4 @@
-package com.github.norbo11.commands.cards;
+package com.github.norbo11.commands.table;
 
 import org.bukkit.Bukkit;
 
@@ -9,8 +9,8 @@ import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.MoneyMethods;
 
-public class CardsLeave extends PluginCommand {
-    public CardsLeave() {
+public class TableLeave extends PluginCommand {
+    public TableLeave() {
         getAlises().add("leave");
         getAlises().add("getup");
         getAlises().add("stand");
@@ -54,7 +54,7 @@ public class CardsLeave extends PluginCommand {
         MoneyMethods.depositMoney(getPlayer().getName(), money);
 
         // Message
-        cardsTable.sendTableMessage("&6" + getPlayer().getName() + "&f has left the table with their stack of " + "&6" + Formatter.formatMoney(money));
+        cardsTable.sendTableMessage("&6" + getPlayer().getName() + "&f has left the table with " + "&6" + Formatter.formatMoney(money));
 
         // Teleport
         Bukkit.getPlayer(getPlayer().getName()).teleport(cardsPlayer.getStartLocation());

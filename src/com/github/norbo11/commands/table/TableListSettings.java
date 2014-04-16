@@ -53,7 +53,7 @@ public class TableListSettings extends PluginCommand {
             Messages.sendMessage(getPlayer(), "&6bb [number] - &fThe big blind");
             Messages.sendMessage(getPlayer(), "&6ante [number] - &fThe ante.");
             Messages.sendMessage(getPlayer(), "&6dynamicFrequency [number] - &fEvery [number] hands, the ante + blinds will increase by their original setting. 0 = OFF.");
-            Messages.sendMessage(getPlayer(), "&6rake [number] - &fHow much of the pot you will get every hand, in percentages. Example: 0.05 = 5% rake.");
+            Messages.sendMessage(getPlayer(), "&6rake [number] - &fPercentage of the pot earned every hand as rake. Example: 0.05 = 5% rake.");
             Messages.sendMessage(getPlayer(), "&6minRaise [number] - &fThe minimum raise at the table.");
             Messages.sendMessage(getPlayer(), "&6minRaiseAlwaysBB [true|false] - &fIf true, the minimum raise will always be equal big blind.");
         } else if (cardsTable instanceof BlackjackTable) {
@@ -68,9 +68,10 @@ public class TableListSettings extends PluginCommand {
         Messages.sendMessage(getPlayer(), "&6allowRebuys [true|false] - &fIf false, players can't re-buy.");
         Messages.sendMessage(getPlayer(), "&6minBuy [number] - &fThe minimum (re)buy-in amount.");
         Messages.sendMessage(getPlayer(), "&6maxBuy [number] - &fThe maximum (re)buy-in amount.");
-        Messages.sendMessage(getPlayer(), "&6displayTurnsPublicly [true|false] - &fIf true, the player turn announcments will be displayed to all table players.");
+        Messages.sendMessage(getPlayer(), "&6displayTurnsPublicly [true|false] - &fDisplays player turns publicly.");
         Messages.sendMessage(getPlayer(), "&6autoStart [number] - &fAutomatically start new rounds after [number] seconds. 0 = OFF");
-        Messages.sendMessage(getPlayer(), "&6publicChatRange [number] - &fDisplays all table messages publicly at the range of [number] for spectators . 0 = OFF");
+        Messages.sendMessage(getPlayer(), "&6turnSeconds [number] - &fAllowed player action time. 0 = OFF");
+        Messages.sendMessage(getPlayer(), "&6publicChatRange [number] - &fSpectator message display range. 0 = OFF");
 
         Messages.sendMessage(getPlayer(), "&cUsage: " + PluginExecutor.tableSet.getCommandString() + " [setting] [value]");
     }

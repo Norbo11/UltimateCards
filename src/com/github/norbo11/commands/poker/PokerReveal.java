@@ -1,14 +1,16 @@
 package com.github.norbo11.commands.poker;
 
+import org.bukkit.entity.Player;
+
 import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.game.poker.PokerPhase;
 import com.github.norbo11.game.poker.PokerPlayer;
 import com.github.norbo11.game.poker.PokerTable;
-import com.github.norbo11.game.poker.eval.HandEvaluator;
 import com.github.norbo11.util.ErrorMessages;
 
 public class PokerReveal extends PluginCommand {
-    public PokerReveal() {
+    public PokerReveal(Player player, String[] args) {
+        super(player, args);
         getAlises().add("reveal");
         getAlises().add("show");
         getAlises().add("display");
@@ -19,6 +21,10 @@ public class PokerReveal extends PluginCommand {
 
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "poker");
         getPermissionNodes().add(PERMISSIONS_BASE_NODE + "poker." + getAlises().get(0));
+    }
+    
+    public PokerReveal() {
+        this(null, null);
     }
 
     PokerPlayer pokerPlayer;
@@ -56,9 +62,6 @@ public class PokerReveal extends PluginCommand {
     // Publicly reveals the player's hand to everybody
     @Override
     public void perform() throws Exception {
-        pokerPlayer.setRevealed(true);
-        pokerTable.sendTableMessage("[ID" + pokerPlayer.getID() + "] " + "&6" + getPlayer().getName() + "&f: " + HandEvaluator.nameHand(pokerPlayer.getEvalHand()));
-        pokerTable.sendTableMessage(pokerPlayer.getHand().getHand());
-        pokerTable.nextPersonTurn(pokerPlayer);
+        pokerPlayer.reveal();
     }
 }
