@@ -60,8 +60,8 @@ public class PokerTable extends CardsTable {
 
     @Override
     public void autoStart() {
-        if (getSettings().getAutoStart() > 0) {
-            sendTableMessage("Next round in &6" + getSettings().getAutoStart() + "&f seconds... or use &6/table start");
+        if (getSettings().autoStart.getValue() > 0) {
+            sendTableMessage("Next round in &6" + getSettings().autoStart.getValue() + "&f seconds... or use &6/table start");
 
             if (getTimerTask() != null) {
                 getTimerTask().cancel();
@@ -73,7 +73,7 @@ public class PokerTable extends CardsTable {
                 public void run() {
                     deal();
                 }
-            }, getSettings().getAutoStart()));
+            }, getSettings().autoStart.getValue()));
         }
     }
 
@@ -247,13 +247,13 @@ public class PokerTable extends CardsTable {
 
     public double getHighestBlind() {
 
-        double returnValue = getSettings().getAnte();
+        double returnValue = getSettings().ante.getValue();
 
-        if (getSettings().getBb() > returnValue) {
-            returnValue = getSettings().getBb();
+        if (getSettings().bb.getValue() > returnValue) {
+            returnValue = getSettings().bb.getValue();
         }
-        if (getSettings().getSb() > returnValue) {
-            returnValue = getSettings().getSb();
+        if (getSettings().sb.getValue() > returnValue) {
+            returnValue = getSettings().sb.getValue();
         }
 
         return returnValue;
@@ -641,7 +641,7 @@ public class PokerTable extends CardsTable {
     // Post the blinds for every player on the table
     public void postBlinds() {
         // Post antes if there is one
-        if (((PokerTableSettings) getCardsTableSettings()).getAnte() > 0) {
+        if (((PokerTableSettings) getCardsTableSettings()).ante.getValue() > 0) {
             for (CardsPlayer player : getPlayers()) {
                 ((PokerPlayer) player).postBlind("ante");
             }
@@ -654,14 +654,14 @@ public class PokerTable extends CardsTable {
     public void raiseBlinds() {
         PokerTableSettings settings = (PokerTableSettings) getCardsTableSettings();
         // If the current hand number is a multiple of the dynamic ante frequency, and dynamic ante frequency is turned on, increase the blinds/ante by what it was set to most recently
-        if (settings.getDynamicFrequency() > 0) {
-            if (getHandNumber() % settings.getDynamicFrequency() == 0 && getHandNumber() != 1) {
+        if (settings.dynamicFrequency.getValue() > 0) {
+            if (getHandNumber() % settings.dynamicFrequency.getValue() == 0 && getHandNumber() != 1) {
                 settings.raiseBlinds();
                 sendTableMessage("Raising blinds!");
-                sendTableMessage("New ante: &6" + settings.getAnte() + "&f. New SB: &6" + settings.getSb() + ". New BB: &6" + settings.getBb() + "&f.");
+                sendTableMessage("New ante: &6" + settings.ante.getValue() + "&f. New SB: &6" + settings.sb.getValue() + ". New BB: &6" + settings.bb.getValue() + "&f.");
             }
         }
-        if (settings.isMinRaiseAlwaysBB()) {
+        if (settings.minRaiseAlwaysBB.getValue()) {
             settings.updateMinRaise();
         }
     }

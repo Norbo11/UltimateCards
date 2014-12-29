@@ -62,13 +62,13 @@ public class TableSit extends PluginCommand {
                             if (cardsTable.isOpen()) {
                                 if (!cardsTable.isInProgress()) {
                                     // Check if the buy-in is within the bounds of the table
-                                    if (buyin >= cardsTable.getSettings().getMinBuy() && buyin <= cardsTable.getSettings().getMaxBuy()) {
+                                    if (buyin >= cardsTable.getSettings().minBuy.getValue() && buyin <= cardsTable.getSettings().maxBuy.getValue()) {
                                         if (UltimateCards.getEconomy().has(getPlayer().getName(), buyin)) return true;
                                         else {
                                             ErrorMessages.notEnoughMoney(getPlayer(), buyin, UltimateCards.getEconomy().getBalance(getPlayer().getName()));
                                         }
                                     } else {
-                                        ErrorMessages.notWithinBuyinBounds(getPlayer(), buyin, cardsTable.getSettings().getMinBuy(), cardsTable.getSettings().getMaxBuy());
+                                        ErrorMessages.notWithinBuyinBounds(getPlayer(), buyin, cardsTable.getSettings().minBuy.getValue(), cardsTable.getSettings().maxBuy.getValue());
                                     }
                                 } else {
                                     ErrorMessages.tableInProgress(getPlayer());

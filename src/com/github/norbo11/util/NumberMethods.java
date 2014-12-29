@@ -5,34 +5,33 @@ import java.security.SecureRandom;
 public class NumberMethods {
     private static SecureRandom random = new SecureRandom();
 
-    public static double getDouble(String amount) {
+    public static double getDouble(String amount) throws NumberFormatException {
         try {
             double dbl = Double.parseDouble(amount);
             if (dbl >= 0) return dbl;
-            else return -99999;
+            else throw new NumberFormatException();
         } catch (Exception e) {
-            return -99999;
+            throw new NumberFormatException();
         }
     }
 
-    public static int getInteger(String string) {
+    public static int getInteger(String string) throws NumberFormatException {
         return getInteger(string, false);
     }
 
-    private static int getInteger(String string, boolean positive) {
+    private static int getInteger(String string, boolean positive) throws NumberFormatException  {
         try {
             int integer = Integer.parseInt(string);
             if (positive) {
-                if (integer < 0) return -99999;
+                if (integer < 0) throw new NumberFormatException();
             }
             return integer;
         } catch (Exception e) {
-            return -99999;
+            throw new NumberFormatException();
         }
     }
 
-    // Returns integer if the supplied string is a positiveinteger, otherwise returns -99999
-    public static int getPositiveInteger(String string) {
+    public static int getPositiveInteger(String string) throws NumberFormatException {
         return getInteger(string, true);
     }
 

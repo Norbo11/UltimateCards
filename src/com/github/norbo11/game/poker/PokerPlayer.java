@@ -186,14 +186,14 @@ public class PokerPlayer extends CardsPlayer {
         double potToPay = getPot() / divide;
         double rake = 0;
         PokerTable pokerTable = getPokerTable();
-        if (pokerTable.getSettings().getRake() > 0) {
-            rake = potToPay * pokerTable.getSettings().getRake();
+        if (pokerTable.getSettings().rake.getValue() > 0) {
+            rake = potToPay * pokerTable.getSettings().rake.getValue();
 
             UltimateCards.getEconomy().depositPlayer(pokerTable.getOwner(), rake);
             Log.addToLog(DateMethods.getDate() + " [ECONOMY] Depositing " + rake + " to " + pokerTable.getOwner());
         }
 
-        pokerTable.sendTableMessage("&6" + getPlayerName() + "&f wins &6" + Formatter.formatMoney(potToPay - rake) + (pokerTable.getSettings().getRake() > 0 ? "&f - Rake " + Formatter.formatMoney(rake) : ""));
+        pokerTable.sendTableMessage("&6" + getPlayerName() + "&f wins &6" + Formatter.formatMoney(potToPay - rake) + (pokerTable.getSettings().rake.getValue() > 0 ? "&f - Rake " + Formatter.formatMoney(rake) : ""));
 
         // Get the actual amount that the player wins by subtracting the rake from the pot, then give it to the player's stack
         giveMoney(potToPay - rake);
@@ -222,11 +222,11 @@ public class PokerPlayer extends CardsPlayer {
 
         double amount = 0;
         if (blind.equals("small blind")) {
-            amount = settings.getSb();
+            amount = settings.sb.getValue();
         } else if (blind.equals("big blind")) {
-            amount = settings.getBb();
+            amount = settings.bb.getValue();
         } else if (blind.equals("ante")) {
-            amount = settings.getAnte();
+            amount = settings.ante.getValue();
         }
 
         bet(amount, blind);
@@ -273,7 +273,7 @@ public class PokerPlayer extends CardsPlayer {
     public void startTurnTimer() {
         PokerTableSettings settings = getPokerTable().getSettings();
 
-        if (settings.getTurnSeconds() > 0) {
+        if (settings.turnSeconds.getValue() > 0) {
 
             // Clear old timer
             if (getTurnTimer() != null) {
@@ -308,7 +308,7 @@ public class PokerPlayer extends CardsPlayer {
                         e.printStackTrace();
                     }
                 }
-            }, settings.getTurnSeconds()));
+            }, settings.turnSeconds.getValue()));
         }
     }
 

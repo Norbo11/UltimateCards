@@ -122,10 +122,10 @@ public abstract class CardsPlayer extends PlayerControlled {
 
     // Sets the player's action flag to true and gives them an eye-catching message
     public void takeAction() {
-        if (getTable().getCardsTableSettings().isDisplayTurnsPublicly()) {
-            getTable().sendTableMessage(ChatColor.DARK_PURPLE + getPlayerName() + " has &6" + table.getSettings().getTurnSeconds() + " seconds" + ChatColor.DARK_PURPLE + " to act!");
+        if (getTable().getCardsTableSettings().displayTurnsPublicly.getValue()) {
+            getTable().sendTableMessage(ChatColor.DARK_PURPLE + getPlayerName() + " has &6" + table.getSettings().turnSeconds.getValue() + " seconds" + ChatColor.DARK_PURPLE + " to act!");
         } else {
-            Messages.sendMessage(getPlayer(), ChatColor.DARK_PURPLE + "You have &6" + table.getSettings().getTurnSeconds() + " seconds" + ChatColor.DARK_PURPLE + " to act!");
+            Messages.sendMessage(getPlayer(), ChatColor.DARK_PURPLE + "You have &6" + table.getSettings().turnSeconds.getValue() + " seconds" + ChatColor.DARK_PURPLE + " to act!");
         }
         Sound.tableTurnSounds(getTable(), getPlayerName());
         Sound.turn(getPlayer());

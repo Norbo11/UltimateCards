@@ -2,28 +2,327 @@ package com.github.norbo11.game.cards;
 
 import java.util.ArrayList;
 
+import org.bukkit.Location;
+
 import com.github.norbo11.UltimateCards;
 import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.Messages;
 import com.github.norbo11.util.NumberMethods;
 
+
 public abstract class CardsTableSettings {
-    public CardsTableSettings(CardsTable table) {
-        this.table = table;
+    public class AllowRebuys extends TableSetting<Boolean> {
+        public AllowRebuys(Boolean value) {
+            super(value, "allowRebuys");
+        }
+
+        @Override
+        public void setValueUsingInput(String value) {
+            try { setValue(checkBoolean(value)); } catch (NumberFormatException e) { return; }
+            if (getValue()) {
+                getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has allowed rebuys!");
+            } else {
+                getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has disallowed rebuys!");
+            }
+        }
+        
+        @Override
+        public String toString() {
+            return "Allow rebuys: &6" + getValue();
+        }
+
+        @Override
+        public String getHelpString() {
+            return "&6allowRebuys [true|false] - &fIf false, players can't re-buy.";
+        }
+    }
+    
+    public class DisplayTurnsPublicly extends TableSetting<Boolean> {
+        public DisplayTurnsPublicly(Boolean value) {
+            super(value, "displayTurnsPublicly");
+        }
+
+        @Override
+        public void setValueUsingInput(String value) {
+            try { setValue(checkBoolean(value)); } catch (NumberFormatException e) { return; }
+            if (getValue()) {
+                getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has made turn messages display publicly!");
+            } else {
+                getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has made turn messages display privately!");
+            }
+        }
+        
+        @Override
+        public String toString() {
+            return "Display turns publicly: &6" + getValue();
+        }
+
+        @Override
+        public String getHelpString() {
+            return "&6displayTurnsPublicly [true|false] - &fDisplays player turns publicly.";
+        }
+    }
+    
+    public class AutoStart extends TableSetting<Integer> {
+        public AutoStart(Integer value) {
+            super(value, "autoStart");
+        }
+
+        @Override
+        public void setValueUsingInput(String value) {
+            if (checkInteger(value) == -99999) return;
+            
+            setValue(checkInteger(value));
+            if (getValue() > 0) {
+                getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set round auto-start to &6" + getValue()  + "&f seconds!");
+            } else {
+                getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has turned off round auto-start.");
+                getTable().cancelTimerTask();
+            }
+        }
+        
+        @Override
+        public String toString() {
+            return "Display turns publicly: &6" + getValue();
+        }
+
+        @Override
+        public String getHelpString() {
+            return "&6autoStart [number] - &fAutomatically start new rounds after [number] seconds. 0 = OFF";
+        }
     }
 
-    private boolean allowRebuys = UltimateCards.getPluginConfig().isAllowRebuys();
-    private boolean displayTurnsPublicly = UltimateCards.getPluginConfig().isDisplayTurnsPublicly();
-    private double minBuy = UltimateCards.getPluginConfig().getMinBuy();
-    private double maxBuy = UltimateCards.getPluginConfig().getMaxBuy();
-    private int autoStart = UltimateCards.getPluginConfig().getAutoStart();
-    private int publicChatRange = UltimateCards.getPluginConfig().getPublicChatRange();
-    private int turnSeconds = UltimateCards.getPluginConfig().getTurnSeconds();
+    public class MaxBuy extends TableSetting<Double> {
+        public MaxBuy(Double value) {
+            super(value, "maxBuy");
+        }
 
-    private CardsTable table;
+        @Override
+        public void setValueUsingInput(String value) {
+            if (checkDouble(value) == -99999) return;
+            
+            setValue(checkDouble(value));
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&6Maximum Buy-In" + "&f to &6" + Formatter.formatMoney(getValue()));
+        }
+        
+        @Override
+        public String toString() {
+            return "Maximum Buy-in: &6" + Formatter.formatMoney(getValue());
+        }
 
-    public String checkBoolean(String v) {
+        @Override
+        public String getHelpString() {
+            return "&6maxBuy [number] - &fThe maximum (re)buy-in amount.";
+        }
+    }
+    
+    public class MinBuy extends TableSetting<Double> {
+        public MinBuy(Double value) {
+            super(value, "minBuy");
+        }
+
+        @Override
+        public void setValueUsingInput(String value) {
+            if (checkDouble(value) == -99999) return;
+            
+            setValue(checkDouble(value));
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&6Minimum Buy-In" + "&f to &6" + Formatter.formatMoney(getValue()));
+        }
+        
+        @Override
+        public String toString() {
+            return "Minimum Buy-in: &6" + Formatter.formatMoney(getValue());
+        }
+
+        @Override
+        public String getHelpString() {
+            return "&6minBuy [number] - &fThe minimum (re)buy-in amount.";
+        }
+    }
+    
+    public class PublicChatRange extends TableSetting<Integer> {
+        public PublicChatRange(Integer value) {
+            super(value, "publicChatRange");
+        }
+
+        @Override
+        public void setValueUsingInput(String value) {
+            if (checkInteger(value) == -99999) return;
+            
+            setValue(checkInteger(value));
+            if (getValue() > 0) {
+                getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has enabled public display of &6" + value + "&f blocks.");
+            } else {
+                getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has turned off the public display.");
+            }        }
+        
+        @Override
+        public String toString() {
+            return "Public chat range: &6" + getValue() + " blocks";
+        }
+
+        @Override
+        public String getHelpString() {
+            return "&6publicChatRange [number] - &fSpectator message display range. 0 = OFF";
+        }
+    }
+    
+    public class TurnSeconds extends TableSetting<Integer> {
+        public TurnSeconds(Integer value) {
+            super(value, "turnSeconds");
+        }
+
+        @Override
+        public void setValueUsingInput(String value) {
+            if (checkInteger(value) == -99999) return;
+            
+            setValue(checkInteger(value));
+            if (getValue() > 0) {
+                getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the turn time limit to &6" + getValue() + "&f seconds!");
+            } else {
+                getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has allowed unlimited turn time.");
+            }        }
+        
+        @Override
+        public String toString() {
+            return "Turn timer: &6" + getValue() + " seconds";
+        }
+
+        @Override
+        public String getHelpString() {
+            return "&6turnSeconds [number] - &fAllowed player action time. 0 = OFF";
+        }
+    }
+    
+    public class LeaveLocation extends TableSetting<Location> {
+        public LeaveLocation() {
+            super("leaveLocation");
+        }
+        
+        @Override
+        public void setValue(Location value) {
+            if (getValue() != null) {
+                super.setValue(null);
+            } else {
+                super.setValue(value);
+            }
+        }
+        
+        @Override
+        public String toString() {
+            return "Leave location: " + Formatter.formatLocation(getValue());
+        }
+
+        @Override
+        public void setValueUsingInput(String value) {
+            //Doesn't do anything, there is no string input to process
+        }
+
+        @Override
+        public String getHelpString() {
+            return "&6leaveLocation - &fThe location players will be teleported to after leaving.";
+        }
+    }
+    
+    public class StartLocation extends TableSetting<Location> {
+        public StartLocation() {
+            super("startLocation");
+        }
+
+        @Override
+        public void setValue(Location value) {
+            if (getValue() != null) {
+                super.setValue(null);
+            } else {
+                super.setValue(value);
+            }
+        }
+        
+        @Override
+        public String toString() {
+            return "Start location: " + Formatter.formatLocation(getValue());
+        }
+
+        @Override
+        public void setValueUsingInput(String value) {
+            //Doesn't do anything, there is no string input to process
+        }
+
+        @Override
+        public String getHelpString() {
+            return "&6startLocation - &fThe location players will be teleported to after joi.";
+        }
+    }
+    
+    //--------------------------------------------------------------------------------------------------
+    
+    public CardsTableSettings(CardsTable table) {
+        this.parentTable = table;
+    }
+
+    public AllowRebuys allowRebuys = new AllowRebuys(UltimateCards.getPluginConfig().isAllowRebuys());
+    public DisplayTurnsPublicly displayTurnsPublicly = new DisplayTurnsPublicly(UltimateCards.getPluginConfig().isDisplayTurnsPublicly());
+    public MinBuy minBuy = new MinBuy(UltimateCards.getPluginConfig().getMinBuy());
+    public MaxBuy maxBuy = new MaxBuy(UltimateCards.getPluginConfig().getMaxBuy());
+    public AutoStart autoStart = new AutoStart(UltimateCards.getPluginConfig().getAutoStart());
+    public PublicChatRange publicChatRange = new PublicChatRange(UltimateCards.getPluginConfig().getPublicChatRange());
+    public TurnSeconds turnSeconds = new TurnSeconds(UltimateCards.getPluginConfig().getTurnSeconds());
+    public StartLocation startLocation = new StartLocation();
+    public LeaveLocation leaveLocation = new LeaveLocation();
+    
+    public TableSetting<?>[] allSettings = {
+        allowRebuys, displayTurnsPublicly, minBuy, maxBuy, autoStart, publicChatRange, turnSeconds, startLocation, leaveLocation
+    };
+    
+    private CardsTable parentTable;
+
+
+    public CardsTable getTable() {
+        return parentTable;
+    }
+
+
+    public static ArrayList<String> listSettings(TableSetting<?>[] settings) {
+        ArrayList<String> list = new ArrayList<String>();
+
+        for (TableSetting<?> setting : settings) {
+            list.add(setting.toString());
+        }
+
+        return list;
+    }
+    
+    public static boolean setSetting(String inputSetting, String inputValue, TableSetting<?>[] settings) {
+        for (TableSetting<?> setting : settings)
+        {
+            if (setting.getName().equalsIgnoreCase(inputSetting)) {
+                setting.setValueUsingInput(inputValue);
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    
+    public ArrayList<String> listSettings() {
+        ArrayList<String> messages = listSettings(allSettings);
+        messages.addAll(listTableSpecificSettings());
+        return messages;
+    }
+    
+
+    public abstract ArrayList<String> listTableSpecificSettings();
+
+    public void setSetting(String inputSetting, String inputValue) {
+        if (!setSetting(inputSetting, inputValue, allSettings)) {
+            setTableSpecificSetting(inputSetting, inputValue);
+        }
+    }
+
+    public abstract void setTableSpecificSetting(String setting, String v);
+    
+    public boolean checkBoolean(String v) {
         boolean value;
 
         if (v.equalsIgnoreCase("true") || v.equalsIgnoreCase("yes")) {
@@ -31,214 +330,37 @@ public abstract class CardsTableSettings {
         } else if (v.equalsIgnoreCase("false") || v.equalsIgnoreCase("no")) {
             value = false;
         } else {
-            Messages.sendMessage(table.getOwnerPlayer().getPlayer(), "&6" + v + "&c is an invalid value! Please specify " + "&6true|yes &cor" + "&6 false|no &conly.");
-            return "";
+            Messages.sendMessage(parentTable.getOwnerPlayer().getPlayer(), "&6" + v + "&c is an invalid value! Please specify " + "&6true &cor" + "&6 false&c.");
+            throw new NumberFormatException();
         }
-        return Boolean.toString(value);
+        return value;
     }
 
-    public double checkDouble(String v) {
-        double value = NumberMethods.getDouble(v);
-
-        if (value != -99999) return value;
-        else {
-            ErrorMessages.invalidNumber(table.getOwnerPlayer().getPlayer(), v);
+    public double checkDouble(String v)  {
+        try {
+            return NumberMethods.getDouble(v);
+        } catch (NumberFormatException e) {
+            ErrorMessages.invalidNumber(parentTable.getOwnerPlayer().getPlayer(), v);
+            return -99999;
         }
-        return -99999;
     }
 
     public int checkInteger(String v) {
-        int integer = NumberMethods.getPositiveInteger(v);
-        if (integer != -99999) return integer;
-        else {
-            ErrorMessages.invalidNumber(table.getOwnerPlayer().getPlayer(), v);
+        try {
+            return NumberMethods.getPositiveInteger(v);
+        } catch (NumberFormatException e) {
+            ErrorMessages.invalidNumber(parentTable.getOwnerPlayer().getPlayer(), v);
+            return -99999;
         }
-        return -99999;
     }
 
     public double checkPercentage(String v) {
-        double value = NumberMethods.getDouble(v);
-
-        if (value >= 0 && value <= 1) return value;
-        else {
-            ErrorMessages.invalidPercentage(table.getOwnerPlayer().getPlayer());
+        try {
+            double value = NumberMethods.getDouble(v);
+            if (value >= 0 && value <= 1) return value;
+        } catch (NumberFormatException e) {
+            ErrorMessages.invalidPercentage(parentTable.getOwnerPlayer().getPlayer());
         }
         return -99999;
-    }
-
-    public int getAutoStart() {
-        return autoStart;
-    }
-
-    public double getMaxBuy() {
-        return maxBuy;
-    }
-
-    public double getMinBuy() {
-        return minBuy;
-    }
-
-    public int getPublicChatRange() {
-        return publicChatRange;
-    }
-
-    public CardsTable getTable() {
-        return table;
-    }
-
-    public int getTurnSeconds() {
-        return turnSeconds;
-    }
-
-    public boolean isAllowRebuys() {
-        return allowRebuys;
-    }
-
-    public boolean isDisplayTurnsPublicly() {
-        return displayTurnsPublicly;
-    }
-
-    public ArrayList<String> listSettings() {
-        ArrayList<String> messages = new ArrayList<String>();
-
-        messages.add("Minimum Buy-in: &6" + Formatter.formatMoney(minBuy));
-        messages.add("Maximum Buy-in: &6" + Formatter.formatMoney(maxBuy));
-        messages.add("Display turns publicly: &6" + displayTurnsPublicly);
-        messages.add("Allow rebuys: &6" + allowRebuys);
-        messages.add("Auto-start: &6" + autoStart + " seconds");
-        messages.add("Turn timer: &6" + turnSeconds + " seconds");
-        messages.add("Public chat range: &6" + publicChatRange + " blocks");
-        messages.addAll(listTableSpecificSettings());
-
-        return messages;
-    }
-
-    public abstract ArrayList<String> listTableSpecificSettings();
-
-    public void setAllowRebuys(boolean value) {
-        allowRebuys = value;
-        if (value == true) {
-            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has allowed rebuys!");
-        } else {
-            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has disallowed rebuys!");
-        }
-    }
-
-    public void setAllowRebuysNoMsg(boolean value) {
-        allowRebuys = value;
-    }
-
-    public void setAutoStart(int autoStart) {
-        this.autoStart = autoStart;
-        if (autoStart > 0) {
-            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set round auto-start to &6" + autoStart + "&f seconds!");
-        } else {
-            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has turned off round auto-start.");
-            getTable().cancelTimerTask();
-        }
-    }
-
-    public void setAutoStartNoMsg(int value) {
-        autoStart = value;
-    }
-
-    public void setDisplayTurnsPublicly(boolean value) {
-        displayTurnsPublicly = value;
-        if (value) {
-            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has made turn messages display publicly!");
-        } else {
-            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has made turn messages display privately!");
-        }
-    }
-
-    public void setDisplayTurnsPubliclyNoMsg(boolean value) {
-        displayTurnsPublicly = value;
-    }
-
-    public void setMaxBuy(double value) {
-        maxBuy = value;
-        getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&6Maximum Buy-In" + "&f to &6" + Formatter.formatMoney(value));
-    }
-
-    public void setMaxBuyNoMsg(double value) {
-        maxBuy = value;
-    }
-
-    public void setMinBuy(double value) {
-        minBuy = value;
-        getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&6Minimum Buy-In" + "&f to &6" + Formatter.formatMoney(value));
-    }
-
-    public void setMinBuyNoMsg(double value) {
-        minBuy = value;
-    }
-
-    public void setPublicChatRange(int value) {
-        publicChatRange = value;
-        if (value > 0) {
-            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has enabled public display of &6" + value + "&f blocks.");
-        } else {
-            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has turned off the public display.");
-        }
-    }
-
-    public void setPublicChatRangeNoMsg(int value) {
-        publicChatRange = value;
-    }
-
-    public void setSetting(String setting, String v) {
-        if (setting.equalsIgnoreCase("displayTurnsPublicly")) {
-            String value = checkBoolean(v);
-            if (!value.equals("")) {
-                setDisplayTurnsPublicly(Boolean.parseBoolean(value));
-            }
-        } else if (setting.equalsIgnoreCase("minBuy")) {
-            double value = checkDouble(v);
-            if (value != -99999) {
-                setMinBuy(value);
-            }
-        } else if (setting.equalsIgnoreCase("maxBuy")) {
-            double value = checkDouble(v);
-            if (value != -99999) {
-                setMaxBuy(value);
-            }
-        } else if (setting.equalsIgnoreCase("allowRebuys")) {
-            String value = checkBoolean(v);
-            if (!value.equals("")) {
-                setAllowRebuys(Boolean.parseBoolean(value));
-            }
-        } else if (setting.equalsIgnoreCase("autoStart")) {
-            int value = checkInteger(v);
-            if (value != -99999) {
-                setAutoStart(value);
-            }
-        } else if (setting.equalsIgnoreCase("publicChatRange")) {
-            int value = checkInteger(v);
-            if (value != -99999) {
-                setPublicChatRange(value);
-            }
-        } else if (setting.equalsIgnoreCase("turnSeconds")) {
-            int value = checkInteger(v);
-            if (value != -99999) {
-                setTurnSeconds(value);
-            }
-        } else {
-            setTableSpecificSetting(setting, v);
-        }
-    }
-
-    public abstract void setTableSpecificSetting(String setting, String v);
-
-    public void setTurnSeconds(int turnSeconds) {
-        this.turnSeconds = turnSeconds;
-        if (turnSeconds > 0) {
-            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the turn time limit to &6" + turnSeconds + "&f seconds!");
-        } else {
-            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has allowed unlimited turn time.");
-        }
-    }
-
-    public void setTurnSecondsNoMsg(int turnSeconds) {
-        this.turnSeconds = turnSeconds;
     }
 }

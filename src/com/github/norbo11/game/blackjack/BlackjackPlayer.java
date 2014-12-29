@@ -51,7 +51,7 @@ public class BlackjackPlayer extends CardsPlayer {
 
     @Override
     public boolean canPlay() {
-        return getMoney() > getTable().getSettings().getMinBet() || getTable().getSettings().isAllowRebuys();
+        return getMoney() > getTable().getSettings().minBet.getValue() || getTable().getSettings().allowRebuys.getValue();
     }
 
     public void checkForBust() {
@@ -262,7 +262,7 @@ public class BlackjackPlayer extends CardsPlayer {
     @Override
     public void startTurnTimer() {
         BlackjackTableSettings settings = getTable().getSettings();
-        if (settings.getTurnSeconds() > 0) {
+        if (settings.turnSeconds.getValue() > 0) {
             // Clear old timer
             if (getTurnTimer() != null) {
                 getTurnTimer().cancel();
@@ -287,7 +287,7 @@ public class BlackjackPlayer extends CardsPlayer {
                         e.printStackTrace();
                     }
                 }
-            }, settings.getTurnSeconds()));
+            }, settings.turnSeconds.getValue()));
         }
     }
 }

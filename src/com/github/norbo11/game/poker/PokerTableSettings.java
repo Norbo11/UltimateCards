@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.github.norbo11.UltimateCards;
 import com.github.norbo11.commands.PluginExecutor;
 import com.github.norbo11.game.cards.CardsTableSettings;
+import com.github.norbo11.game.cards.TableSetting;
 import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.Messages;
 
@@ -12,24 +13,22 @@ public class PokerTableSettings extends CardsTableSettings {
     public PokerTableSettings(PokerTable table) {
         super(table);
 
-        // If the min raise is always BB, set it to the BB. If not, make it
-        // whatever is in the settings
-        if (minRaiseAlwaysBB) {
-            minRaise = bb;
+        // If the min raise is always BB, set it to the BB. If not, make it whatever is in the settings
+        if (minRaiseAlwaysBB.getValue()) {
+            minRaise.setValue(bb.getValue());
         }
 
         // Set originals, required for dynamic antes/blinds
-        originalSB = sb;
-        originalBB = bb;
-        originalAnte = ante;
+        originalSB = sb.getValue();
+        originalBB = bb.getValue();
+        originalAnte = ante.getValue();
 
-        // Negative number allows players to set their rake. 0 or positive
-        // number fixes the rake to that amount.
+        // Negative number allows players to set their rake. 0 or positive number fixes the rake to that amount.
         if (UltimateCards.getPluginConfig().getFixRake() > -1) {
-            rake = UltimateCards.getPluginConfig().getFixRake();
+            rake.setValue(UltimateCards.getPluginConfig().getFixRake());
             rakeFixed = true;
         } else {
-            rake = UltimateCards.getPluginConfig().getRake();
+            rake.setValue(UltimateCards.getPluginConfig().getRake());
             rakeFixed = false;
         }
     }
@@ -37,33 +36,21 @@ public class PokerTableSettings extends CardsTableSettings {
     private double originalSB;
     private double originalBB;
     private double originalAnte;
-    private double sb = UltimateCards.getPluginConfig().getSb();
-    private double bb = UltimateCards.getPluginConfig().getBb();
-    private double ante = UltimateCards.getPluginConfig().getAnte();
-    private double rake = UltimateCards.getPluginConfig().getRake(); // A number from 0-1 which represents the rake that the owner of the table gets after paying a pot.
-
-    private double minRaise = UltimateCards.getPluginConfig().getMinRaise();
+    
+    public SB sb = new SB(UltimateCards.getPluginConfig().getSb());
+    public BB bb = new BB(UltimateCards.getPluginConfig().getBb());
+    public Ante ante = new Ante(UltimateCards.getPluginConfig().getAnte());
+    public Rake rake = new Rake(UltimateCards.getPluginConfig().getRake()); // A number from 0-1 which represents the rake that the owner of the table gets after paying a pot.
+    public MinRaise minRaise = new MinRaise(UltimateCards.getPluginConfig().getMinRaise());
+    public DynamicFrequency dynamicFrequency = new DynamicFrequency(UltimateCards.getPluginConfig().getDynamicFrequency());
+    public MinRaiseAlwaysBB minRaiseAlwaysBB = new MinRaiseAlwaysBB(UltimateCards.getPluginConfig().isMinRaiseAlwaysBB());
+   
     private boolean rakeFixed = false;
-    private int dynamicFrequency = UltimateCards.getPluginConfig().getDynamicFrequency();
 
-    private boolean minRaiseAlwaysBB = UltimateCards.getPluginConfig().isMinRaiseAlwaysBB();
-
-    public double getAnte() {
-        return ante;
-    }
-
-    public double getBb() {
-        return bb;
-    }
-
-    public int getDynamicFrequency() {
-        return dynamicFrequency;
-    }
-
-    public double getMinRaise() {
-        return minRaise;
-    }
-
+    public TableSetting<?>[] allSettings = {
+        sb, bb, ante, rake, minRaise, dynamicFrequency, minRaiseAlwaysBB
+    };
+    
     public double getOriginalAnte() {
         return originalAnte;
     }
@@ -76,199 +63,257 @@ public class PokerTableSettings extends CardsTableSettings {
         return originalSB;
     }
 
-    public double getRake() {
-        return rake;
-    }
-
-    public double getSb() {
-        return sb;
-    }
-
-    public boolean isMinRaiseAlwaysBB() {
-        return minRaiseAlwaysBB;
-    }
-
-    public boolean isRakeFixed() {
-        return rakeFixed;
-    }
-
-    // Lists the settings of the table, returning a string array
     @Override
     public ArrayList<String> listTableSpecificSettings() {
-        ArrayList<String> list = new ArrayList<String>();
-        list.add("Ante: &6" + Formatter.formatMoney(ante));
-        list.add("Small Blind: &6" + Formatter.formatMoney(sb));
-        list.add("Big Blind: &6" + Formatter.formatMoney(bb));
-        list.add("Rake: &6" + Formatter.convertToPercentage(rake));
-
-        if (minRaiseAlwaysBB) {
-            list.add("Minimum Raise: &6equal to the Big Blind");
-        } else {
-            list.add("Minimum Raise: &6" + Formatter.formatMoney(minRaise));
-        }
-
-        if (dynamicFrequency > 0) {
-            list.add("Dynamic Frequency: &6" + "Every " + dynamicFrequency + " hands");
-        } else {
-            list.add("Dynamic Frequency: &6" + "OFF");
-        }
-
-        return list;
+        return listSettings(allSettings);
     }
 
     public void raiseBlinds() {
-        ante += getOriginalAnte();
-        bb += getOriginalBB();
-        sb += getOriginalSB();
+        ante.setValue(ante.getValue() + getOriginalAnte());
+        bb.setValue(bb.getValue() + getOriginalBB());
+        sb.setValue(sb.getValue() + getOriginalSB());
     }
 
-    public void setAnte(double value) {
-        ante = value;
-        originalAnte = ante;
-        getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&6Ante" + "&f to &6" + Formatter.formatMoney(value));
-    }
+    public class BB extends TableSetting<Double> {
+        public BB(Double value) {
+            super(value, "bb");
+        }
 
-    public void setAnteNoMsg(double value) {
-        ante = value;
-        originalAnte = ante;
-    }
+        @Override
+        public void setValueUsingInput(String value) {   
+            if (checkDouble(value) == -99999) return;
+            setValue(checkDouble(value));
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&6Big Blind" + "&f to &6" + Formatter.formatMoney(getValue()));
+        }
+        
+        @Override
+        public void setValue(Double value) {
+            super.setValue(value);
+            originalBB = getValue();
+        }
+        
+        @Override
+        public String toString() {
+            return "Big Blind: &6" + Formatter.formatMoney(getValue());
+        }
 
-    public void setBB(double value) {
-        bb = value;
-        originalSB = bb;
-        getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&6Big Blind" + "&f to &6" + Formatter.formatMoney(value));
+        @Override
+        public String getHelpString() {
+            return "&6bb [number] - &fThe big blind";
+        }
     }
+    
+    public class Ante extends TableSetting<Double> {
+        public Ante(Double value) {
+            super(value, "ante");
+        }
 
-    public void setBBNoMsg(double value) {
-        bb = value;
-        originalSB = bb;
+        @Override
+        public void setValueUsingInput(String value) {    
+            if (checkDouble(value) == -99999) return;
+            setValue(checkDouble(value));
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&6Ante" + "&f to &6" + Formatter.formatMoney(getValue()));
+        }
+        
+        @Override
+        public void setValue(Double value) {
+            super.setValue(value);
+            originalAnte = getValue();
+        }
+        
+        @Override
+        public String toString() {
+            return "Ante: &6" + Formatter.formatMoney(getValue());
+        }
+
+        @Override
+        public String getHelpString() {
+            return "&6ante [number] - &fThe ante.";
+        }
     }
+    
+    public class DynamicFrequency extends TableSetting<Integer> {
+        public DynamicFrequency(Integer value) {
+            super(value, "dynamicFrequency");
+        }
 
-    public void setDynamicFrequency(int value) {
-        // Only allow the player to set the dynamic frequency if the blinds
-        // increased on the current hand, or the table is not currently in
-        // progress
-        if (!getTable().isInProgress() || getTable().getHandNumber() % dynamicFrequency == 0) {
-            dynamicFrequency = value;
-            if (dynamicFrequency > 0) {
-                getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&6Dynamic Frequency " + "&fto " + "&6'Every " + value + " hands'");
+        @Override
+        public void setValueUsingInput(String value) {
+            if (checkInteger(value) == -99999) return;
+            
+            // Only allow the player to set the dynamic frequency if the blinds increased on the current hand, or the table is not currently in progress
+            if (!getTable().isInProgress() || getTable().getHandNumber() % getValue() == 0) {
+                setValue(checkInteger(value));
+                if (getValue() > 0) {
+                    getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&6Dynamic Frequency " + "&fto " + "&6'Every " + value + " hands'");
+                } else {
+                    getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has truned the " + "&6Dynamic Frequency " + "&f&6off.");
+                }
             } else {
-                getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has truned the " + "&6Dynamic Frequency " + "&f&6off.");
+                Messages.sendMessage(getTable().getOwnerPlayer().getPlayer(), "&cYou may only set the dynamic frequency during a hand where the blinds increased, or if the table is not in progress.");
             }
-        } else {
-            Messages.sendMessage(getTable().getOwnerPlayer().getPlayer(), "&cYou may only set the dynamic frequency during a hand where the blinds increased, or if the table is not in progress.");
+        }
+        
+        @Override
+        public void setValue(Integer value) {
+            if (!getTable().isInProgress() || getTable().getHandNumber() % getValue() == 0) {
+                super.setValue(value);
+            }
+        }
+        
+        @Override
+        public String toString() {
+            if (getValue() > 0) {
+                return "Dynamic Frequency: &6" + "Every " + getValue() + " hands";
+            } else {
+                return "Dynamic Frequency: &6" + "OFF";
+            }
+        }
+
+        @Override
+        public String getHelpString() {
+            return "&6dynamicFrequency [number] - &fEvery [number] hands, the ante + blinds will increase by their original setting. 0 = OFF.";
         }
     }
 
-    public void setDynamicFrequencyNoMsg(int value) {
-        // Only allow the player to set the dynamic frequency if the blinds
-        // increased on the current hand, or the table is not currently in
-        // progress
-        if (!getTable().isInProgress() || getTable().getHandNumber() % dynamicFrequency == 0) {
-            dynamicFrequency = value;
+    public class MinRaise extends TableSetting<Double> {
+        public MinRaise(Double value) {
+            super(value, "minRaise");
+        }
+
+        @Override
+        public void setValueUsingInput(String value) {  
+            if (checkDouble(value) == -99999) return;
+            
+            if (!minRaiseAlwaysBB.getValue()) {
+                setValue(checkDouble(value));
+                getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&6Minimum Raise" + "&f to &6" + Formatter.formatMoney(getValue()));
+            } else {
+                Messages.sendMessage(getTable().getOwnerPlayer().getPlayer(), "&cThis table's minimum raise is currently set to always be equal to the big blind! Change this with " + PluginExecutor.tableSet.getCommandString() + " minRaiseAlwaySBB false.");
+            }
+        }
+        
+        @Override
+        public void setValue(Double value) {
+            if (!minRaiseAlwaysBB.getValue()) {
+                super.setValue(value);
+            }
+        }
+        
+        @Override
+        public String toString() {
+            if (minRaiseAlwaysBB.getValue()) {
+                return "Minimum Raise: &6equal to the Big Blind";
+            } else {
+                return "Minimum Raise: &6" + Formatter.formatMoney(getValue());
+            }
+        }
+
+        @Override
+        public String getHelpString() {
+            return "&6minRaise [number] - &fThe minimum raise at the table.";
+        }
+    }
+    
+    public class MinRaiseAlwaysBB extends TableSetting<Boolean> {
+        public MinRaiseAlwaysBB(Boolean value) {
+            super(value, "minRaiseAlwaysBB");
+        }
+
+        @Override
+        public void setValueUsingInput(String value) {  
+            try { setValue(checkBoolean(value)); } catch (NumberFormatException e) { return; }
+            if (getValue()) {
+                getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has made the " + "&6Minimum Raise" + "&f be always equal to the Big Blind!");
+            } else {
+                getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has made the " + "&6Minimum Raise" + "&f no longer be equal to the Big Blind!");
+            }
+        }
+        
+        @Override
+        public String toString() {
+            return ""; //Handled by MinRaise
+        }
+
+        @Override
+        public String getHelpString() {
+            return "&6minRaiseAlwaysBB [true|false] - &fIf true, the minimum raise will always be equal big blind.";
+        }
+    }
+   
+    public class Rake extends TableSetting<Double> {
+        public Rake(Double value) {
+            super(value, "rake");
+        }
+
+        @Override
+        public void setValueUsingInput(String value) {    
+            if (checkPercentage(value) == -99999) return;
+            
+            if (!rakeFixed) {
+                setValue(checkPercentage(value));
+                getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&6Rake" + "&f to &6" + Formatter.convertToPercentage(getValue()));
+                getTable().sendTableMessage("&6" + getTable().getOwner() + "&f will now receive &6" + Formatter.convertToPercentage(getValue()) + "&f of each pot to their own pocket!");
+            } else {
+                Messages.sendMessage(getTable().getOwnerPlayer().getPlayer(), "&cThe configuration of the plugin has fixed the rake to &6" + Formatter.convertToPercentage(getValue()) + "&c. Sorry!");
+            }
+        }
+        
+        @Override
+        public void setValue(Double value) {
+            if (!rakeFixed) {
+                super.setValue(value);
+            }
+        }
+        
+        @Override
+        public String toString() {
+            return "Rake: &6" + Formatter.convertToPercentage(getValue());
+        }
+
+        @Override
+        public String getHelpString() {
+            return "&6rake [number] - &fPercentage of the pot earned every hand as rake. Example: 0.05 = 5% rake.";
         }
     }
 
-    public void setMinRaise(double value) {
-        if (!minRaiseAlwaysBB) {
-            minRaise = value;
-            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&6Minimum Raise" + "&f to &6" + Formatter.formatMoney(value));
-        } else {
-            Messages.sendMessage(getTable().getOwnerPlayer().getPlayer(), "&cThis table's minimum raise is currently set to always be equal to the big blind! Change this with " + PluginExecutor.tableSet.getCommandString() + " minRaiseAlwaySBB false.");
+    public class SB extends TableSetting<Double> {
+        public SB(Double value) {
+            super(value, "sb");
         }
-    }
 
-    public void setMinRaiseAlwaysBB(boolean value) {
-        minRaiseAlwaysBB = value;
-        if (value == true) {
-            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has made the " + "&6Minimum Raise" + "&f be always equal to the Big Blind!");
-        } else {
-            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has made the " + "&6Minimum Raise" + "&f no longer be equal to the Big Blind!");
+        @Override
+        public void setValueUsingInput(String value) { 
+            if (checkDouble(value) == -99999) return;
+
+            setValue(checkDouble(value));
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&6Small Blind" + "&f to &6" + Formatter.formatMoney(getValue()));
         }
-        return;
-    }
-
-    public void setMinRaiseAlwaysBBNoMsg(boolean value) {
-        minRaiseAlwaysBB = value;
-
-    }
-
-    public void setMinRaiseNoMsg(double value) {
-        if (!minRaiseAlwaysBB) {
-            minRaise = value;
+        
+        @Override
+        public void setValue(Double value) {
+            super.setValue(value);
+            originalSB = getValue();
         }
-    }
-
-    public void setRake(double value) {
-        if (!rakeFixed) {
-            rake = value;
-            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&6Rake" + "&f to &6" + Formatter.convertToPercentage(value));
-            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f will now receive &6" + Formatter.convertToPercentage(value) + "&f of each pot to their own pocket!");
-        } else {
-            Messages.sendMessage(getTable().getOwnerPlayer().getPlayer(), "&cThe configuration of the plugin has fixed the rake to &6" + Formatter.convertToPercentage(rake) + "&c. Sorry!");
+        
+        @Override
+        public String toString() {
+            return "Small Blind: &6" + Formatter.formatMoney(getValue());
         }
-    }
 
-    public void setRakeNoMsg(double value) {
-        if (!rakeFixed) {
-            rake = value;
-        }
-    }
-
-    public void setSB(double value) {
-        sb = value;
-        originalSB = sb;
-        getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&6Small Blind" + "&f to &6" + Formatter.formatMoney(value));
-    }
-
-    public void setSBNoMsg(double value) {
-        sb = value;
-        originalSB = sb;
-    }
-
-    @Override
-    public void setTableSpecificSetting(String setting, String v) {
-        if (setting.equalsIgnoreCase("sb")) {
-            double value = checkDouble(v);
-            if (value != -99999) {
-                setSB(value);
-            }
-        } else if (setting.equalsIgnoreCase("bb")) {
-            double value = checkDouble(v);
-            if (value != -99999) {
-                setBB(value);
-            }
-        } else if (setting.equalsIgnoreCase("ante")) {
-            double value = checkDouble(v);
-            if (value != -99999) {
-                setAnte(value);
-            }
-        } else if (setting.equalsIgnoreCase("minRaise")) {
-            double value = checkDouble(v);
-            if (value != -99999) {
-                setMinRaise(value);
-            }
-        } else if (setting.equalsIgnoreCase("minRaiseAlwaysBB")) {
-            String value = checkBoolean(v);
-            if (!value.equals("")) {
-                setMinRaiseAlwaysBB(Boolean.parseBoolean(value));
-            }
-        } else if (setting.equalsIgnoreCase("dynamicFrequency")) {
-            int value = checkInteger(v);
-            if (value != -99999) {
-                setDynamicFrequency(value);
-            }
-        } else if (setting.equalsIgnoreCase("rake")) {
-            double value = checkPercentage(v);
-            if (value != -99999) {
-                setRake(value);
-            }
-        } else {
-            Messages.sendMessage(getTable().getOwner(), "&cInvalid setting. Check available settings with " + PluginExecutor.tableListSettings.getCommandString() + ".");
+        @Override
+        public String getHelpString() {
+            return "&6sb [number] - &fThe small blind.";
         }
     }
 
     public void updateMinRaise() {
-        minRaise = getBb();
+        minRaise.setValue(bb.getValue());
+    }
+    
+    @Override
+    public void setTableSpecificSetting(String inputSetting, String inputValue) {
+        if (!setSetting(inputSetting, inputValue, allSettings))        
+            Messages.sendMessage(getTable().getOwner(), "&cInvalid setting. Check available settings with " + PluginExecutor.tableListSettings.getCommandString() + ".");
     }
 }

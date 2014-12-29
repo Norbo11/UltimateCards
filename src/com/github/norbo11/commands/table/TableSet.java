@@ -23,6 +23,8 @@ public class TableSet extends PluginCommand {
     @Override
     // table set <Setting> <value>
     public boolean conditions() {
+        
+        //TODO: rework this and make it work with no arguments (for locations)
         if (getArgs().length == 3) {
             cardsPlayer = CardsPlayer.getCardsPlayer(getPlayer().getName());
             if (cardsPlayer != null) {
@@ -47,7 +49,7 @@ public class TableSet extends PluginCommand {
     // Sets the specified setting on the player's table, to the specified
     // value.
     @Override
-    public void perform() throws Exception {
+    public void perform() throws Exception {        
         cardsTable.getSettings().setSetting(getArgs()[1], getArgs()[2]);
     }
 }

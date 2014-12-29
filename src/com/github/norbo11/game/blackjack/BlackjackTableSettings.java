@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.github.norbo11.UltimateCards;
 import com.github.norbo11.commands.PluginExecutor;
 import com.github.norbo11.game.cards.CardsTableSettings;
+import com.github.norbo11.game.cards.TableSetting;
 import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.Messages;
 
@@ -13,94 +14,108 @@ public class BlackjackTableSettings extends CardsTableSettings {
         super(table);
     }
 
-    private boolean allowDoubleDown = UltimateCards.getPluginConfig().isAllowDoubleDown();
-    private double minBet = UltimateCards.getPluginConfig().getMinBet();
+    public AllowDoubleDown allowDoubleDown = new AllowDoubleDown(UltimateCards.getPluginConfig().isAllowDoubleDown());
+    public MinBet minBet = new MinBet(UltimateCards.getPluginConfig().getMinBet());
+    public AmountOfDecks amountOfDecks = new AmountOfDecks(UltimateCards.getPluginConfig().getAmountOfDecks());
 
-    private int amountOfDecks = UltimateCards.getPluginConfig().getAmountOfDecks();
-
-    public int getAmountOfDecks() {
-        return amountOfDecks;
-    }
-
-    public double getMinBet() {
-        return minBet;
-    }
-
-    public boolean isAllowDoubleDown() {
-        return allowDoubleDown;
-    }
-
+    public TableSetting<?>[] allSettings = {
+        allowDoubleDown, minBet, amountOfDecks
+    };
+    
     // Lists the settings of the table, returning a string array
     @Override
     public ArrayList<String> listTableSpecificSettings() {
-        ArrayList<String> list = new ArrayList<String>();
-
-        list.add("Minimum Bet: &6" + Formatter.formatMoney(minBet));
-        list.add("Allow double down: &6" + allowDoubleDown);
-        list.add("Amount of decks: &6" + amountOfDecks);
-
-        return list;
+        return listSettings(allSettings);
     }
+    
+    public class AllowDoubleDown extends TableSetting<Boolean> {
+        public AllowDoubleDown(Boolean value) {
+            super(value, "allowDoubleDown");
+        }
 
-    public void setAllowDoubleDown(boolean value) {
-        allowDoubleDown = value;
-        if (value) {
-            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has allowed " + "&6Double Down&f!");
-        } else {
-            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has disallowed " + "&6Double Down&f!");
+        @Override
+        public void setValueUsingInput(String value) {            
+            try { setValue(checkBoolean(value)); } catch (NumberFormatException e) { return; }
+            if (getValue()) {
+                getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has allowed " + "&6Double Down&f!");
+            } else {
+                getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has disallowed " + "&6Double Down&f!");
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "Allow double down: &6" + getValue();
+        }
+
+        @Override
+        public String getHelpString() {
+            return "&6allowDoubleDown [true|false] - &fIf true, players can double down.";
         }
     }
 
-    public void setAllowDoubleDownNoMsg(boolean value) {
-        allowDoubleDown = value;
-    }
-
-    public void setAmountOfDecks(int value) {
-        amountOfDecks = value;
-        if (amountOfDecks > 15) {
-            amountOfDecks = 15;
+    public class AmountOfDecks extends TableSetting<Integer> {
+        public AmountOfDecks(Integer value) {
+            super(value, "amountOfDecks");
         }
-        getTable().getDeck().setAmountOfDecks(value);
-        getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&Amount of Decks" + "&f to &6" + amountOfDecks);
-    }
 
-    public void setAmountOfDecksNoMsg(int value) {
-        amountOfDecks = value;
-        if (amountOfDecks > 15) {
-            amountOfDecks = 15;
+        @Override
+        public void setValueUsingInput(String value) {        
+            if (checkInteger(value) == -99999) return;
+            
+            setValue(checkInteger(value));
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&Amount of Decks" + "&f to &6" + amountOfDecks);
         }
-        getTable().getDeck().setAmountOfDecks(value);
+
+        @Override
+        public void setValue(Integer value) {
+            super.setValue(value);
+            if (amountOfDecks.getValue() > 15) {
+                amountOfDecks.setValue(15);
+            }
+            getTable().getDeck().setAmountOfDecks(value);
+        }
+        
+        @Override
+        public String toString() {
+            return "Amount of decks: &6" + getValue();
+        }
+
+        @Override
+        public String getHelpString() {
+            return "&6amountOfDecks [number] - &fThe amount of decks used for the game.";
+        }
+    }
+    
+    public class MinBet extends TableSetting<Double> {
+        public MinBet(Double value) {
+            super(value, "minBet");
+        }
+
+        @Override
+        public void setValueUsingInput(String value) {  
+            if (checkDouble(value) == -99999) return;
+            
+            setValue(checkDouble(value));
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&6Minimum Bet" + "&f to &6" + Formatter.formatMoney(getValue()));
+        }
+        
+        @Override
+        public String toString() {
+            return "Minimum Bet: &6" + Formatter.formatMoney(getValue());
+        }
+
+        @Override
+        public String getHelpString() {
+            return "&6minBet [number] - &fThe minimum bet allowed at the table.";
+        }
     }
 
-    public void setMinBet(double value) {
-        minBet = value;
-        getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the " + "&6Minimum Bet" + "&f to &6" + Formatter.formatMoney(value));
-    }
-
-    public void setMinBetNoMsg(double value) {
-        minBet = value;
-    }
 
     @Override
-    public void setTableSpecificSetting(String setting, String v) {
-        if (setting.equalsIgnoreCase("minBet")) {
-            double value = checkDouble(v);
-            if (value != -99999) {
-                setMinBet(value);
-            }
-        } else if (setting.equalsIgnoreCase("allowDoubleDown")) {
-            String value = checkBoolean(v);
-            if (!value.equalsIgnoreCase("")) {
-                setAllowDoubleDown(Boolean.parseBoolean(checkBoolean(v)));
-            }
-        } else if (setting.equalsIgnoreCase("amountOfDecks")) {
-            int value = checkInteger(v);
-            if (value != -99999) {
-                setAmountOfDecks(value);
-            }
-        } else {
+    public void setTableSpecificSetting(String inputSetting, String inputValue) {
+        if (!setSetting(inputSetting, inputValue, allSettings))
             Messages.sendMessage(getTable().getOwnerPlayer().getPlayer(), "&cInvalid setting. Check available settings with " + PluginExecutor.tableListSettings.getCommandString() + ".");
-        }
     }
 
 }

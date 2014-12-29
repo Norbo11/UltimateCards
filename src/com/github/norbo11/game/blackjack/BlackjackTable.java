@@ -54,8 +54,8 @@ public class BlackjackTable extends CardsTable {
 
     @Override
     public void autoStart() {
-        if (getSettings().getAutoStart() > 0) {
-            sendTableMessage("Next round in &6" + getSettings().getAutoStart() + "&f seconds... or use &6/table start");
+        if (getSettings().autoStart.getValue() > 0) {
+            sendTableMessage("Next round in &6" + getSettings().autoStart.getValue() + "&f seconds... or use &6/table start");
 
             if (getTimerTask() != null) {
                 getTimerTask().cancel();
@@ -69,7 +69,7 @@ public class BlackjackTable extends CardsTable {
                         deal();
                     }
                 }
-            }, getSettings().getAutoStart()));
+            }, getSettings().autoStart.getValue()));
         }
     }
 
@@ -85,7 +85,7 @@ public class BlackjackTable extends CardsTable {
     }
 
     public boolean canPlay(CardsPlayer player) {
-        return player.getMoney() > getSettings().getMinBet();
+        return player.getMoney() > getSettings().minBet.getValue();
     }
 
     public void clearDealerVars() {

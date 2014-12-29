@@ -35,7 +35,7 @@ public class TableWithdraw extends PluginCommand {
             cardsPlayer = CardsPlayer.getCardsPlayer(getPlayer().getName());
             if (cardsPlayer != null) {
                 cardsTable = cardsPlayer.getTable();
-                if (cardsTable.getSettings().isAllowRebuys()) {
+                if (cardsTable.getSettings().allowRebuys.getValue()) {
                     if (!cardsPlayer.getTable().isInProgress()) {
                         amountToWithdraw = NumberMethods.getDouble(getArgs()[1]);
                         if (amountToWithdraw != -99999) {

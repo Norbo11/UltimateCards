@@ -11,7 +11,6 @@ import org.bukkit.scheduler.BukkitTask;
 
 import com.github.norbo11.UltimateCards;
 import com.github.norbo11.game.poker.PokerPhase;
-import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.MapMethods;
 import com.github.norbo11.util.Messages;
 import com.github.norbo11.util.MoneyMethods;
@@ -146,7 +145,6 @@ public abstract class CardsTable {
         Messages.sendMessage(player, "Hands played: &6" + getHandNumber());
         Messages.sendMessage(player, "Open: &6" + isOpen());
         Messages.sendMessage(player, "In progress: " + "&6" + isInProgress());
-        Messages.sendMessage(player, "Location: " + Formatter.formatLocation(location));
     }
 
     public CardsPlayer getActionPlayer() {
@@ -347,7 +345,7 @@ public abstract class CardsTable {
 
     public void sendTableMessage(String message, List<String> toIgnore) {
         ArrayList<String> ignore = new ArrayList<String>(toIgnore);
-        int range = getSettings().getPublicChatRange();
+        int range = getSettings().publicChatRange.getValue();
 
         // Send private message to all table players, also add them to the ignore list
         for (CardsPlayer cardsPlayer : getPlayers()) {

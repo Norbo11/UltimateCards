@@ -36,7 +36,7 @@ public class TableRebuy extends PluginCommand {
             cardsPlayer = CardsPlayer.getCardsPlayer(getPlayer().getName());
             if (cardsPlayer != null) {
                 cardsTable = cardsPlayer.getTable();
-                if (cardsTable.getSettings().isAllowRebuys()) {
+                if (cardsTable.getSettings().allowRebuys.getValue()) {
                     if (!cardsTable.isInProgress()) {
                         amount = NumberMethods.getDouble(getArgs()[1]);
                         if (amount != -99999) {
