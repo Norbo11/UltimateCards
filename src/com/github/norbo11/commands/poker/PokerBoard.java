@@ -37,6 +37,6 @@ public class PokerBoard extends PluginCommand {
     // Displays the board to the specified player
     @Override
     public void perform() throws Exception {
-        pokerPlayer.getPokerTable().displayBoard(getPlayer());
+        pokerPlayer.getPokerTable().displayBoard(getPlayer(), pokerPlayer.getPokerTable().getBoard().getCards());
     }
 }

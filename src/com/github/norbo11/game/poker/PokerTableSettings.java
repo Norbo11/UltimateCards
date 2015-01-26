@@ -2,12 +2,12 @@ package com.github.norbo11.game.poker;
 
 import java.util.ArrayList;
 
-import com.github.norbo11.UltimateCards;
 import com.github.norbo11.commands.PluginExecutor;
 import com.github.norbo11.game.cards.CardsTableSettings;
 import com.github.norbo11.game.cards.TableSetting;
 import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.Messages;
+import com.github.norbo11.util.config.PluginConfig;
 
 public class PokerTableSettings extends CardsTableSettings {
     public PokerTableSettings(PokerTable table) {
@@ -24,11 +24,11 @@ public class PokerTableSettings extends CardsTableSettings {
         originalAnte = ante.getValue();
 
         // Negative number allows players to set their rake. 0 or positive number fixes the rake to that amount.
-        if (UltimateCards.getPluginConfig().getFixRake() > -1) {
-            rake.setValue(UltimateCards.getPluginConfig().getFixRake());
+        if (PluginConfig.getFixRake() > -1) {
+            rake.setValue(PluginConfig.getFixRake());
             rakeFixed = true;
         } else {
-            rake.setValue(UltimateCards.getPluginConfig().getRake());
+            rake.setValue(PluginConfig.getRake());
             rakeFixed = false;
         }
     }
@@ -37,13 +37,13 @@ public class PokerTableSettings extends CardsTableSettings {
     private double originalBB;
     private double originalAnte;
     
-    public SB sb = new SB(UltimateCards.getPluginConfig().getSb());
-    public BB bb = new BB(UltimateCards.getPluginConfig().getBb());
-    public Ante ante = new Ante(UltimateCards.getPluginConfig().getAnte());
-    public Rake rake = new Rake(UltimateCards.getPluginConfig().getRake()); // A number from 0-1 which represents the rake that the owner of the table gets after paying a pot.
-    public MinRaise minRaise = new MinRaise(UltimateCards.getPluginConfig().getMinRaise());
-    public DynamicFrequency dynamicFrequency = new DynamicFrequency(UltimateCards.getPluginConfig().getDynamicFrequency());
-    public MinRaiseAlwaysBB minRaiseAlwaysBB = new MinRaiseAlwaysBB(UltimateCards.getPluginConfig().isMinRaiseAlwaysBB());
+    public SB sb = new SB(PluginConfig.getSb());
+    public BB bb = new BB(PluginConfig.getBb());
+    public Ante ante = new Ante(PluginConfig.getAnte());
+    public Rake rake = new Rake(PluginConfig.getRake()); // A number from 0-1 which represents the rake that the owner of the table gets after paying a pot.
+    public MinRaise minRaise = new MinRaise(PluginConfig.getMinRaise());
+    public DynamicFrequency dynamicFrequency = new DynamicFrequency(PluginConfig.getDynamicFrequency());
+    public MinRaiseAlwaysBB minRaiseAlwaysBB = new MinRaiseAlwaysBB(PluginConfig.isMinRaiseAlwaysBB());
    
     private boolean rakeFixed = false;
 
@@ -314,6 +314,6 @@ public class PokerTableSettings extends CardsTableSettings {
     @Override
     public void setTableSpecificSetting(String inputSetting, String inputValue) {
         if (!setSetting(inputSetting, inputValue, allSettings))        
-            Messages.sendMessage(getTable().getOwner(), "&cInvalid setting. Check available settings with " + PluginExecutor.tableListSettings.getCommandString() + ".");
+            Messages.sendMessage(getTable().getOwnerPlayer().getPlayer(), "&cInvalid setting. Check available settings with " + PluginExecutor.tableListSettings.getCommandString() + ".");
     }
 }

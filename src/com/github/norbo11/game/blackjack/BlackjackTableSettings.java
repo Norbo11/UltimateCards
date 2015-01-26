@@ -2,21 +2,21 @@ package com.github.norbo11.game.blackjack;
 
 import java.util.ArrayList;
 
-import com.github.norbo11.UltimateCards;
 import com.github.norbo11.commands.PluginExecutor;
 import com.github.norbo11.game.cards.CardsTableSettings;
 import com.github.norbo11.game.cards.TableSetting;
 import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.Messages;
+import com.github.norbo11.util.config.PluginConfig;
 
 public class BlackjackTableSettings extends CardsTableSettings {
     public BlackjackTableSettings(BlackjackTable table) {
         super(table);
     }
 
-    public AllowDoubleDown allowDoubleDown = new AllowDoubleDown(UltimateCards.getPluginConfig().isAllowDoubleDown());
-    public MinBet minBet = new MinBet(UltimateCards.getPluginConfig().getMinBet());
-    public AmountOfDecks amountOfDecks = new AmountOfDecks(UltimateCards.getPluginConfig().getAmountOfDecks());
+    public AllowDoubleDown allowDoubleDown = new AllowDoubleDown(PluginConfig.isAllowDoubleDown());
+    public MinBet minBet = new MinBet(PluginConfig.getMinBet());
+    public AmountOfDecks amountOfDecks = new AmountOfDecks(PluginConfig.getAmountOfDecks());
 
     public TableSetting<?>[] allSettings = {
         allowDoubleDown, minBet, amountOfDecks

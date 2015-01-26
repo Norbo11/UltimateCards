@@ -97,7 +97,7 @@ public class TableSit extends PluginCommand {
     @Override
     public void perform() throws Exception {
         if (PluginExecutor.tableTeleport.hasPermission(getPlayer())) {
-            getPlayer().teleport(cardsTable.getLocation());
+            getPlayer().teleport(cardsTable.getSettings().startLocation.getValue());
         }
 
         MoneyMethods.withdrawMoney(getPlayer().getName(), buyin);

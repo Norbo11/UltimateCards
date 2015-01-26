@@ -1,6 +1,6 @@
 package com.github.norbo11.commands.table;
 
-import org.bukkit.Bukkit;
+import org.bukkit.Location;
 
 import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.game.cards.CardsPlayer;
@@ -57,8 +57,11 @@ public class TableLeave extends PluginCommand {
         cardsTable.sendTableMessage("&6" + getPlayer().getName() + "&f has left the table with " + "&6" + Formatter.formatMoney(money));
 
         // Teleport
-        Bukkit.getPlayer(getPlayer().getName()).teleport(cardsPlayer.getStartLocation());
-
+        Location leaveLocation = cardsTable.getSettings().leaveLocation.getValue();
+        if (leaveLocation != null) {
+            cardsPlayer.getPlayer().teleport(leaveLocation);
+        } else cardsPlayer.getPlayer().teleport(cardsPlayer.getStartLocation());
+        
         // Remove player
         cardsTable.removePlayer(cardsPlayer);
     }

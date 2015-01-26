@@ -8,31 +8,11 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.github.norbo11.UltimateCards;
+import com.github.norbo11.util.config.PluginConfig;
 
 public class Messages {
-    public Messages(UltimateCards p) {
-        Messages.p = p;
-
-        // Uncoment if you want delays between messages
-        /*
-         * Bukkit.getScheduler().scheduleAsyncRepeatingTask(p, new Runnable(){
-         * 
-         * @Override public void run() { String message = null; Location location = null;
-         * 
-         * for (Entry<String, Location> entry : messageBuffer.entrySet()) { message = entry.getKey(); location = entry.getValue(); break; }
-         * 
-         * for (Player player : Bukkit.getOnlinePlayers()) { if (player.getWorld().equals(location.getWorld())) { if (player.getLocation().distance(location) <= UltimateCards.getPluginConfig().getChatRange()) { Messages.sendMessage(player, message); messageBuffer.remove(message); } } } }
-         * 
-         * }, 0L, 10L);
-         */
-    }
-
-    // public static HashMap<String, Location> messageBuffer = new HashMap<String, Location>();
-
-    public static UltimateCards p;
-
     public static String convertColors(String message) {
-        message = UltimateCards.getPluginConfig().getColorTag() + UltimateCards.getPluginTag() + " " + message;
+        message = PluginConfig.getColorTag() + UltimateCards.getPluginTag() + " " + message;
 
         message = message.replace("&l", ChatColor.BOLD + "");
         message = message.replace("&m", ChatColor.STRIKETHROUGH + "");
@@ -41,9 +21,9 @@ public class Messages {
         message = message.replace("&r", ChatColor.RESET + "");
         message = message.replace("&k", ChatColor.MAGIC + "");
 
-        message = message.replace("&c", UltimateCards.getPluginConfig().getColorErrorMessage() + "");
-        message = message.replace("&f", UltimateCards.getPluginConfig().getColorNormalMessage() + "");
-        message = message.replace("&6", UltimateCards.getPluginConfig().getColorHighlight() + "");
+        message = message.replace("&c", PluginConfig.getColorErrorMessage() + "");
+        message = message.replace("&f", PluginConfig.getColorNormalMessage() + "");
+        message = message.replace("&6", PluginConfig.getColorHighlight() + "");
         message = message.replaceAll("&([a-f0-9])", "\u00A7$1");
         return message;
     }
@@ -60,6 +40,7 @@ public class Messages {
         }
     }
 
+    @SuppressWarnings("deprecation")
     public static void sendMessage(String player, String message) {
         sendMessage(Bukkit.getPlayer(player), message);
     }

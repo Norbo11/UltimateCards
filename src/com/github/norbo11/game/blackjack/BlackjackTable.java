@@ -28,6 +28,7 @@ public class BlackjackTable extends CardsTable {
         setCardsTableSettings(new BlackjackTableSettings(this));
     }
 
+    @SuppressWarnings("deprecation")
     public BlackjackTable(String owner, String name, int id, Location location, double buyin) throws Exception {
         super(owner, name, id, location);
 

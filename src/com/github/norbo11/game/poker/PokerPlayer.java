@@ -1,5 +1,7 @@
 package com.github.norbo11.game.poker;
 
+import java.util.ArrayList;
+
 import org.bukkit.entity.Player;
 
 import com.github.norbo11.UltimateCards;
@@ -22,9 +24,9 @@ import com.github.norbo11.util.Timers;
 
 public class PokerPlayer extends CardsPlayer {
     public PokerPlayer(Player player, CardsTable table, double buyin) throws Exception {
+        super(player);
         setTable(table);
         setStartLocation(player.getLocation());
-        setName(player.getName());
         setID(table.getEmptyPlayerID());
         setMoney(buyin);
         MapMethods.giveMap(player, "poker");
@@ -52,7 +54,7 @@ public class PokerPlayer extends CardsPlayer {
         return cardsPlayer instanceof PokerPlayer ? (PokerPlayer) CardsPlayer.getCardsPlayer(name) : null;
     }
 
-    public void addCards(Card[] cards) {
+    public void addCards(ArrayList<Card> cards) {
         for (Card card : cards) {
             getHand().getCards().add(card);
             Messages.sendMessage(getPlayer(), "You have been dealt the " + card.toString());
@@ -95,8 +97,6 @@ public class PokerPlayer extends CardsPlayer {
     }
 
     public void check() {
-        // Simply say that the player has took action, and just send a message.
-        // Then go to the next player's turn
         setActed(true);
         getPokerTable().sendTableMessage("&6" + getPlayerName() + "&f checks.");
         cancelTurnTimer();

@@ -41,7 +41,7 @@ public class PokerPot extends PluginCommand {
     public void perform() throws Exception {
         for (PokerPlayer p : pokerPlayer.getPokerTable().getNonFoldedPlayers()) {
             double pot = p.getTotalPot() > 0 ? p.getTotalPot() : 0;
-            Messages.sendMessage(getPlayer(), "If &6[ID" + p.getID() + "] " + p.getPlayerName() + "&f wins, he will win &6" + Formatter.formatMoney(pot) + "&f.");
+            Messages.sendMessage(getPlayer(), "If &6" + p.getPlayerName() + "&f wins, he will win &6" + Formatter.formatMoney(pot) + "&f.");
         }
         Messages.sendMessage(getPlayer(), "Total amount to win: " + Formatter.formatMoney(pokerPlayer.getPokerTable().getHighestPot()));
     }

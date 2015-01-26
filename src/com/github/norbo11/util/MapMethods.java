@@ -308,8 +308,10 @@ public class MapMethods {
             ItemStack held = player.getInventory().getItem(0) == null ? new ItemStack(Material.AIR) : player.getInventory().getItem(0);
             player.getInventory().setItem(0, mapItem);
             player.getInventory().addItem(held);
+            player.getInventory().setHeldItemSlot(0);
         } else {
             player.getWorld().dropItemNaturally(player.getLocation(), mapItem);
+            Messages.sendMessage(player, "As you had no space in your inventory, your cards map interface was dropped in front of you. Please pick it up!");
         }
 
     }

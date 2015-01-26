@@ -1,5 +1,7 @@
 package com.github.norbo11.game.blackjack;
 
+import java.util.ArrayList;
+
 import com.github.norbo11.game.cards.Card;
 import com.github.norbo11.game.cards.Hand;
 
@@ -20,7 +22,7 @@ public class BlackjackHand {
 
     private BlackjackPlayer player;
 
-    public void addCards(Card[] cards) {
+    public void addCards(ArrayList<Card> cards) {
         for (Card card : cards) {
             hand.getCards().add(card);
             player.getTable().sendTableMessage("&6" + player.getPlayerName() + "&f has been dealt the " + card.toString() + (player.isSplit() ? " for hand ID &6" + id : ""));

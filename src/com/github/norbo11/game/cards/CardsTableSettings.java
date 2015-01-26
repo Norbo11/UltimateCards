@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 import org.bukkit.Location;
 
-import com.github.norbo11.UltimateCards;
 import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.Formatter;
 import com.github.norbo11.util.Messages;
 import com.github.norbo11.util.NumberMethods;
+import com.github.norbo11.util.config.PluginConfig;
 
 
 public abstract class CardsTableSettings {
@@ -155,7 +155,8 @@ public abstract class CardsTableSettings {
                 getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has enabled public display of &6" + value + "&f blocks.");
             } else {
                 getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has turned off the public display.");
-            }        }
+            }        
+        }
         
         @Override
         public String toString() {
@@ -182,7 +183,8 @@ public abstract class CardsTableSettings {
                 getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the turn time limit to &6" + getValue() + "&f seconds!");
             } else {
                 getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has allowed unlimited turn time.");
-            }        }
+            }        
+        }
         
         @Override
         public String toString() {
@@ -201,42 +203,24 @@ public abstract class CardsTableSettings {
         }
         
         @Override
-        public void setValue(Location value) {
-            if (getValue() != null) {
-                super.setValue(null);
-            } else {
-                super.setValue(value);
-            }
-        }
-        
-        @Override
         public String toString() {
             return "Leave location: " + Formatter.formatLocation(getValue());
         }
 
         @Override
         public void setValueUsingInput(String value) {
-            //Doesn't do anything, there is no string input to process
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the leave location to " + Formatter.formatLocation(getValue()));
         }
 
         @Override
         public String getHelpString() {
-            return "&6leaveLocation - &fThe location players will be teleported to after leaving.";
+            return "&6leaveLocation - &fThe location players will be teleported to after leaving (do not specify a value).";
         }
     }
     
     public class StartLocation extends TableSetting<Location> {
         public StartLocation() {
             super("startLocation");
-        }
-
-        @Override
-        public void setValue(Location value) {
-            if (getValue() != null) {
-                super.setValue(null);
-            } else {
-                super.setValue(value);
-            }
         }
         
         @Override
@@ -246,12 +230,38 @@ public abstract class CardsTableSettings {
 
         @Override
         public void setValueUsingInput(String value) {
-            //Doesn't do anything, there is no string input to process
+            getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has set the start location to " + Formatter.formatLocation(getValue()));
         }
 
         @Override
         public String getHelpString() {
-            return "&6startLocation - &fThe location players will be teleported to after joi.";
+            return "&6startLocation - &fThe location players will be teleported to after joining (do not specify a value).";
+        }
+    }
+    
+    public class AutoKickOnLeave extends TableSetting<Boolean> {
+        public AutoKickOnLeave(boolean value) {
+            super(value, "autoKickOnLeave");
+        }
+        
+        @Override
+        public void setValueUsingInput(String value) {
+            try { setValue(checkBoolean(value)); } catch (NumberFormatException e) { return; }
+            if (getValue()) {
+                getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has turned on auto-kick upon leaving the table!");
+            } else {
+                getTable().sendTableMessage("&6" + getTable().getOwner() + "&f has turned off auto-kick upon leaving the table!");
+            }
+        }
+        
+        @Override
+        public String toString() {
+            return "Auto-kick on leave: &6" + getValue();
+        }
+
+        @Override
+        public String getHelpString() {
+            return "&6autoKickOnLeave [true|false] - &fAutomatically kicks players who leave the table.";
         }
     }
     
@@ -261,18 +271,19 @@ public abstract class CardsTableSettings {
         this.parentTable = table;
     }
 
-    public AllowRebuys allowRebuys = new AllowRebuys(UltimateCards.getPluginConfig().isAllowRebuys());
-    public DisplayTurnsPublicly displayTurnsPublicly = new DisplayTurnsPublicly(UltimateCards.getPluginConfig().isDisplayTurnsPublicly());
-    public MinBuy minBuy = new MinBuy(UltimateCards.getPluginConfig().getMinBuy());
-    public MaxBuy maxBuy = new MaxBuy(UltimateCards.getPluginConfig().getMaxBuy());
-    public AutoStart autoStart = new AutoStart(UltimateCards.getPluginConfig().getAutoStart());
-    public PublicChatRange publicChatRange = new PublicChatRange(UltimateCards.getPluginConfig().getPublicChatRange());
-    public TurnSeconds turnSeconds = new TurnSeconds(UltimateCards.getPluginConfig().getTurnSeconds());
+    public AllowRebuys allowRebuys = new AllowRebuys(PluginConfig.isAllowRebuys());
+    public DisplayTurnsPublicly displayTurnsPublicly = new DisplayTurnsPublicly(PluginConfig.isDisplayTurnsPublicly());
+    public MinBuy minBuy = new MinBuy(PluginConfig.getMinBuy());
+    public MaxBuy maxBuy = new MaxBuy(PluginConfig.getMaxBuy());
+    public AutoStart autoStart = new AutoStart(PluginConfig.getAutoStart());
+    public PublicChatRange publicChatRange = new PublicChatRange(PluginConfig.getPublicChatRange());
+    public TurnSeconds turnSeconds = new TurnSeconds(PluginConfig.getTurnSeconds());
     public StartLocation startLocation = new StartLocation();
     public LeaveLocation leaveLocation = new LeaveLocation();
+    public AutoKickOnLeave autoKickOnLeave = new AutoKickOnLeave(PluginConfig.isAutoKickOnLeave());
     
     public TableSetting<?>[] allSettings = {
-        allowRebuys, displayTurnsPublicly, minBuy, maxBuy, autoStart, publicChatRange, turnSeconds, startLocation, leaveLocation
+        allowRebuys, displayTurnsPublicly, minBuy, maxBuy, autoStart, publicChatRange, turnSeconds, startLocation, leaveLocation, autoKickOnLeave
     };
     
     private CardsTable parentTable;
@@ -362,5 +373,16 @@ public abstract class CardsTableSettings {
             ErrorMessages.invalidPercentage(parentTable.getOwnerPlayer().getPlayer());
         }
         return -99999;
+    }
+
+
+    public void setStartLocation(Location location) {
+        startLocation.setValue(location);
+        startLocation.setValueUsingInput(null);
+    }
+    
+    public void setLeaveLocation(Location location) {
+        leaveLocation.setValue(location);
+        leaveLocation.setValueUsingInput(null);
     }
 }

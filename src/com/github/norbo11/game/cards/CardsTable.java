@@ -23,7 +23,6 @@ public abstract class CardsTable {
         setOwner(owner);
         setName(name);
         setId(id);
-        setLocation(location);
     }
 
     static {
@@ -42,9 +41,7 @@ public abstract class CardsTable {
 
     private String name;
     private CardsPlayer actionPlayer; // The player that is currently supposed to act
-
     private CardsTableSettings cardsTableSettings;
-    private Location location; // The location at which the table was created
 
     private Deck deck = new Deck(1); // Stores the deck assigned to this table
     private PokerPhase currentPhase;
@@ -226,10 +223,6 @@ public abstract class CardsTable {
         return id;
     }
 
-    public Location getLocation() {
-        return location;
-    }
-
     public abstract int getMinPlayers();
 
     public String getName() {
@@ -354,7 +347,7 @@ public abstract class CardsTable {
         }
 
         // Send public message to everyone apart from the table players, if the range setting is enabled
-        if (range > 0) Messages.sendToAllWithinRange(location, range, message, ignore);
+        if (range > 0) Messages.sendToAllWithinRange(getSettings().startLocation.getValue(), range, message, ignore);
     }
 
     public void sendTableMessage(String message, String ignore) {
@@ -399,10 +392,6 @@ public abstract class CardsTable {
 
     public void setInProgress(boolean inProgress) {
         this.inProgress = inProgress;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
     }
 
     public void setName(String name) {

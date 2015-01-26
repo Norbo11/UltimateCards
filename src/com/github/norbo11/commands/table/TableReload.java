@@ -1,8 +1,8 @@
 package com.github.norbo11.commands.table;
 
-import com.github.norbo11.UltimateCards;
 import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.util.Messages;
+import com.github.norbo11.util.config.PluginConfig;
 
 public class TableReload extends PluginCommand {
     public TableReload() {
@@ -29,7 +29,7 @@ public class TableReload extends PluginCommand {
 
     @Override
     public void perform() throws Exception {
-        UltimateCards.getPluginConfig().load();
+        PluginConfig.load();
         Messages.sendMessage(getPlayer(), "Plugin configuration sucessfully reloaded.");
     }
 }

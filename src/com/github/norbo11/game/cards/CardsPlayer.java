@@ -2,6 +2,7 @@ package com.github.norbo11.game.cards;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.github.norbo11.util.Messages;
@@ -9,6 +10,10 @@ import com.github.norbo11.util.PlayerControlled;
 import com.github.norbo11.util.Sound;
 
 public abstract class CardsPlayer extends PlayerControlled {
+    public CardsPlayer(Player player) {
+        super(player);
+    }
+
     private Location startLocation; // Used to teleport the player back to the location where he/she joined
     private CardsTable table;       // This holds the table that the player is sitting at
     protected double money;         // This is the player's stack
@@ -34,11 +39,9 @@ public abstract class CardsPlayer extends PlayerControlled {
     public static CardsPlayer getCardsPlayer(String toCheck, CardsTable table) {
         if (table != null) {
             for (CardsPlayer cardsPlayer : table.getPlayers())
-                // If the player list contains the player we are
-                // looking for
                 if (cardsPlayer.getPlayerName().equalsIgnoreCase(toCheck)) return cardsPlayer;
         }
-        return null; // If no match is found, or table doesnt exist, return null
+        return null;
     }
 
     public void cancelTurnTimer() {
@@ -122,11 +125,22 @@ public abstract class CardsPlayer extends PlayerControlled {
 
     // Sets the player's action flag to true and gives them an eye-catching message
     public void takeAction() {
-        if (getTable().getCardsTableSettings().displayTurnsPublicly.getValue()) {
-            getTable().sendTableMessage(ChatColor.DARK_PURPLE + getPlayerName() + " has &6" + table.getSettings().turnSeconds.getValue() + " seconds" + ChatColor.DARK_PURPLE + " to act!");
+        CardsTableSettings settings = getTable().getCardsTableSettings();
+        int turnSeconds = table.getSettings().turnSeconds.getValue();
+        String message = ChatColor.UNDERLINE  + "";
+        
+        if (turnSeconds > 0) {
+            message = "&6" + getPlayerName() + " " + ChatColor.DARK_PURPLE + "has &6" + turnSeconds + " seconds" + ChatColor.DARK_PURPLE + " to act!";
         } else {
-            Messages.sendMessage(getPlayer(), ChatColor.DARK_PURPLE + "You have &6" + table.getSettings().turnSeconds.getValue() + " seconds" + ChatColor.DARK_PURPLE + " to act!");
+            message = ChatColor.DARK_PURPLE + "It is your turn to act!";
         }
+        
+        if (settings.displayTurnsPublicly.getValue()) {
+            getTable().sendTableMessage(message);
+        } else {
+            Messages.sendMessage(getPlayer(), message);
+        }
+        
         Sound.tableTurnSounds(getTable(), getPlayerName());
         Sound.turn(getPlayer());
         startTurnTimer();

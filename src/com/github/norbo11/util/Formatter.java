@@ -12,6 +12,7 @@ public class Formatter {
     }
 
     public static String formatLocation(Location location) {
+        if (location == null) return "Not set";
         return "&6X: &f" + Math.round(location.getX()) + "&6 Z: &f" + Math.round(location.getZ()) + "&6 Y: &f" + Math.round(location.getY()) + "&6 World: &f" + location.getWorld().getName();
     }
 

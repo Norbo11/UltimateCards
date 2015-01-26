@@ -29,13 +29,14 @@ public class Deck {
     }
 
     // Generates the specified number of cards, returning an array
-    public Card[] generateCards(int number) {
-        Card[] returnValue = new Card[number];
+    public ArrayList<Card> generateCards(int number) {
+        ArrayList<Card> returnValue = new ArrayList<Card>();
         for (int i = 0; i < number; i++) {
-            returnValue[i] = cards.get(NumberMethods.getRandomInteger(cards.size() - 1));
+            Card card = cards.get(NumberMethods.getRandomInteger(cards.size() - 1));
+            returnValue.add(card);
 
             // Set that card to null in the deck
-            cards.remove(returnValue[i]);
+            cards.remove(card);
         }
         return returnValue;
     }

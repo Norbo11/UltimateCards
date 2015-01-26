@@ -45,7 +45,7 @@ public class TableTeleport extends PluginCommand {
 
     @Override
     public void perform() throws Exception {
-        getPlayer().teleport(cardsTable.getLocation());
+        getPlayer().teleport(cardsTable.getSettings().startLocation.getValue());
         Messages.sendMessage(getPlayer(), "You have teleported to table " + "&6" + cardsTable.getName() + "&f, ID #" + "&6" + cardsTable.getId() + "&f. Sit down with " + PluginExecutor.tableSit.getCommandString() + " [ID]");
     }
 }

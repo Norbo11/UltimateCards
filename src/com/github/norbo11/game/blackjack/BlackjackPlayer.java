@@ -14,10 +14,10 @@ import com.github.norbo11.util.Timers;
 
 public class BlackjackPlayer extends CardsPlayer {
     public BlackjackPlayer(Player player, BlackjackTable table, double buyin) throws Exception {
+        super(player);
         hands.add(new BlackjackHand(this, 0));
         setTable(table);
         setStartLocation(player.getLocation());
-        setName(player.getName());
         setID(table.getEmptyPlayerID());
         setMoney(buyin);
         MapMethods.giveMap(player, "blackjack");

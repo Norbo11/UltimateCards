@@ -1,7 +1,11 @@
+#fixRake: Needs to be either -1 (meaning it is not fixed andcan be set for individual tables),
+#or a value of 0 or above, fixing the rake to that value and preventing it from being changed by any table
 options:
   general:
     autoUpdate: true
     cleanupOnDisable: true
+    disableCommandsWhilePlaying: false
+    preventMovementOutsideChatRange: true
   log:
     enableLog: false
     dateFormat: 'dd/MM/yyyy HH:mm:ss'
@@ -19,6 +23,7 @@ options:
     maxBuy: 100000
     publicChatRange: 30
     turnSeconds: 60
+    autoKickOnLeave: false
   poker:
     fixRake: -1
     defaults:

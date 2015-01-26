@@ -31,8 +31,10 @@ public class PokerTable extends CardsTable {
 
     public PokerTable(String owner, String name, int id, Location location) throws Exception {
         super(owner, name, id, location);
+        getSettings().startLocation.setValue(location);
     }
 
+    @SuppressWarnings("deprecation")
     public PokerTable(String owner, String name, int id, Location location, double buyin) throws Exception {
         super(owner, name, id, location);
 
@@ -41,6 +43,7 @@ public class PokerTable extends CardsTable {
             getPlayers().add(getOwnerPlayer()); // Add the owner to the sitting players list
         }
         setCardsTableSettings(new PokerTableSettings(this));
+        getSettings().startLocation.setValue(location);
     }
 
     // Generic vars
@@ -167,14 +170,12 @@ public class PokerTable extends CardsTable {
         }
     }
 
-    // Method to display the board. If who is null, display to everyone around
-    // the table. Otherwise, display to just the player specified in "who".
-    public void displayBoard(Player who) {
+    public void displayBoard(Player who, ArrayList<Card> cards) {
         if (who == null) {
             sendTableMessage("&6" + UltimateCards.getLineString());
             sendTableMessage("Community Cards: ");
             int i = 1;
-            for (Card card : board.getCards()) {
+            for (Card card : cards) {
                 sendTableMessage("[" + i + "] " + card.toString());
                 i++;
             }
@@ -182,7 +183,7 @@ public class PokerTable extends CardsTable {
             Messages.sendMessage(who, "&6" + UltimateCards.getLineString());
             Messages.sendMessage(who, "Community Cards: ");
             int i = 1;
-            for (Card card : board.getCards()) {
+            for (Card card : cards) {
                 Messages.sendMessage(who, "[" + i + "] " + card.toString());
                 i++;
             }
@@ -495,11 +496,9 @@ public class PokerTable extends CardsTable {
     public void phaseFlop() {
         setCurrentPhase(PokerPhase.FLOP);
         clearBets();
-        Card[] cards = getDeck().generateCards(3);
-        board.getCards().add(cards[0]);
-        board.getCards().add(cards[1]);
-        board.getCards().add(cards[2]);
-        displayBoard(null); // Specifying null in the argument displays the board to everyone
+        ArrayList<Card> cards = getDeck().generateCards(3);
+        board.getCards().addAll(cards);
+        displayBoard(null, cards); // Specifying null in the argument displays the board to everyone
         sendTableMessage("Total amount in pots: &6" + Formatter.formatMoney(getHighestPot()));
         nextPersonTurn(getPokerPlayersThisHand().get(getButton())); // Take the action from the player AFTER the button (that would be the small blind)
     }
@@ -572,7 +571,6 @@ public class PokerTable extends CardsTable {
     public void phasePreflop() {
         setCurrentPhase(PokerPhase.PREFLOP);
         postBlinds();
-        sendTableMessage("Total amount in pots: &6" + Formatter.formatMoney(getHighestPot()));
         nextPersonTurn(getNextPlayer(getButton() + 1));
     }
 
@@ -580,9 +578,9 @@ public class PokerTable extends CardsTable {
     public void phaseRiver() {
         setCurrentPhase(PokerPhase.RIVER);
         clearBets();
-        board.getCards().add(getDeck().generateCards(1)[0]);
-        displayBoard(null); // Null in the argument makes it display the board
-                            // to everyone
+        ArrayList<Card> cards = getDeck().generateCards(1);
+        board.getCards().addAll(cards);
+        displayBoard(null, cards); 
         sendTableMessage("Total amount in pots: &6" + Formatter.formatMoney(getHighestPot()));
         nextPersonTurn(getPokerPlayersThisHand().get(getButton()));
     }
@@ -599,13 +597,13 @@ public class PokerTable extends CardsTable {
         if (board.getCards().size() != 5) // If somehow the board doesnt have 5 cards (an all in made the hand end early, for example)
         {
             // Generate required cards
-            Card[] cards = getDeck().generateCards(5 - board.getCards().size());
+            ArrayList<Card> cards = getDeck().generateCards(5 - board.getCards().size());
             for (Card card : cards) {
                 board.getCards().add(card);
             }
         }
 
-        displayBoard(null);
+        displayBoard(null, board.getCards());
 
         sendTableMessage("Use " + PluginExecutor.pokerReveal.getCommandString() + "&f to reveal your hand, or " + "&6/poker muck" + "&f to muck.");
         nextPersonTurn(getNextPlayer(getButton())); // Get the action of the player AFTER the button (the small blind)
@@ -615,8 +613,9 @@ public class PokerTable extends CardsTable {
     public void phaseTurn() {
         setCurrentPhase(PokerPhase.TURN);
         clearBets();
-        board.getCards().add(getDeck().generateCards(1)[0]);
-        displayBoard(null); // Specifying null displays the board to everyone
+        ArrayList<Card> cards = getDeck().generateCards(1);
+        board.getCards().addAll(cards);
+        displayBoard(null, cards); // Specifying null displays the board to everyone
         sendTableMessage("Total amount in pots: &6" + Formatter.formatMoney(getHighestPot()));
         nextPersonTurn(getPokerPlayersThisHand().get(getButton()));
     }

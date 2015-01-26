@@ -6,11 +6,12 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import com.github.norbo11.UltimateCards;
+import com.github.norbo11.util.config.PluginConfig;
 
 public class Log {
     public static void addToLog(String message) {
         // Only send to the log if it is enabled in the config
-        if (UltimateCards.getPluginConfig().isEnableLog()) {
+        if (PluginConfig.isEnableLog()) {
             try {
                 // Attempt to write the supplied message as a new line at the
                 // end of the log

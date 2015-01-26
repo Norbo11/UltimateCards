@@ -1,6 +1,6 @@
 package com.github.norbo11.game.blackjack;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.github.norbo11.game.cards.Card;
@@ -20,7 +20,7 @@ public class BlackjackDealer {
     private Hand hand = new Hand();
     private boolean bust;
 
-    public void addCards(Card[] cards) {
+    public void addCards(ArrayList<Card> cards) {
         for (Card card : cards) {
             getHand().getCards().add(card);
             table.sendTableMessage("&6" + "The dealer&f has been dealt the " + card.toString());
@@ -28,7 +28,7 @@ public class BlackjackDealer {
     }
 
     public void addInitialCards() {
-        List<Card> generated = Arrays.asList(table.getDeck().generateCards(2));
+        List<Card> generated = table.getDeck().generateCards(2);
         getHand().getCards().addAll(generated);
 
         table.sendTableMessage("&6" + "The dealer&f has been dealt the " + generated.get(0).toString());

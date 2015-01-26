@@ -21,30 +21,29 @@ import com.github.norbo11.commands.poker.PokerFold;
 import com.github.norbo11.commands.poker.PokerHand;
 import com.github.norbo11.commands.poker.PokerPot;
 import com.github.norbo11.commands.poker.PokerReveal;
-import com.github.norbo11.commands.table.TableDetails;
-import com.github.norbo11.commands.table.TableInvite;
-import com.github.norbo11.commands.table.TableLeave;
-import com.github.norbo11.commands.table.TableMoney;
-import com.github.norbo11.commands.table.TablePlayers;
-import com.github.norbo11.commands.table.TableRebuy;
-import com.github.norbo11.commands.table.TableReload;
-import com.github.norbo11.commands.table.TableSit;
-import com.github.norbo11.commands.table.TableTables;
-import com.github.norbo11.commands.table.TableTeleport;
-import com.github.norbo11.commands.table.TableWithdraw;
 import com.github.norbo11.commands.table.TableBan;
 import com.github.norbo11.commands.table.TableClose;
 import com.github.norbo11.commands.table.TableCreate;
 import com.github.norbo11.commands.table.TableDelete;
+import com.github.norbo11.commands.table.TableDetails;
+import com.github.norbo11.commands.table.TableInvite;
 import com.github.norbo11.commands.table.TableKick;
+import com.github.norbo11.commands.table.TableLeave;
 import com.github.norbo11.commands.table.TableListSettings;
+import com.github.norbo11.commands.table.TableMoney;
 import com.github.norbo11.commands.table.TableOpen;
-import com.github.norbo11.commands.table.TableRelocate;
+import com.github.norbo11.commands.table.TablePlayers;
+import com.github.norbo11.commands.table.TableRebuy;
+import com.github.norbo11.commands.table.TableReload;
 import com.github.norbo11.commands.table.TableSave;
 import com.github.norbo11.commands.table.TableSet;
+import com.github.norbo11.commands.table.TableSit;
 import com.github.norbo11.commands.table.TableStart;
+import com.github.norbo11.commands.table.TableTables;
+import com.github.norbo11.commands.table.TableTeleport;
 import com.github.norbo11.commands.table.TableUnban;
 import com.github.norbo11.commands.table.TableUnsave;
+import com.github.norbo11.commands.table.TableWithdraw;
 import com.github.norbo11.util.ErrorMessages;
 import com.github.norbo11.util.ExceptionCatcher;
 import com.github.norbo11.util.Log;
@@ -86,7 +85,6 @@ public class PluginExecutor implements CommandExecutor {
     public static TableUnban tableUnban = new TableUnban();
     public static TableSave tableSave = new TableSave();
     public static TableUnsave tableUnsave = new TableUnsave();
-    public static TableRelocate tableRelocate = new TableRelocate();
 
     public static BlackjackHit blackjackHit = new BlackjackHit();
     public static BlackjackStand blackjackStand = new BlackjackStand();
@@ -124,7 +122,6 @@ public class PluginExecutor implements CommandExecutor {
         commandsTable.add(tableUnban);
         commandsTable.add(tableSave);
         commandsTable.add(tableUnsave);
-        commandsTable.add(tableRelocate);
 
         commandsPoker.add(pokerHand);
         commandsPoker.add(pokerReveal);
@@ -166,7 +163,7 @@ public class PluginExecutor implements CommandExecutor {
                     if (command.getName().equalsIgnoreCase("table") || command.getName().equalsIgnoreCase("cards")) {
                         for (PluginCommand cmd : commandsTable) {
                             if (cmd.containsAlias(action)) {
-                                if (cmd.hasPermission(player) || player.hasPermission(PluginCommand.PERMISSIONS_BASE_NODE)) {
+                                if (cmd.hasPermission(player)) {
                                     performCommand(cmd, args, player);
                                 } else {
                                     ErrorMessages.noPermission(player);
@@ -180,7 +177,7 @@ public class PluginExecutor implements CommandExecutor {
                     if (command.getName().equalsIgnoreCase("poker")) {
                         for (PluginCommand cmd : commandsPoker) {
                             if (cmd.containsAlias(action)) {
-                                if (cmd.hasPermission(player) || player.hasPermission(PluginCommand.PERMISSIONS_BASE_NODE)) {
+                                if (cmd.hasPermission(player)) {
                                     performCommand(cmd, args, player);
                                 } else {
                                     ErrorMessages.noPermission(player);
@@ -194,7 +191,7 @@ public class PluginExecutor implements CommandExecutor {
                     if (command.getName().equalsIgnoreCase("blackjack") || command.getName().equalsIgnoreCase("bj")) {
                         for (PluginCommand cmd : commandsBlackjack) {
                             if (cmd.containsAlias(action)) {
-                                if (cmd.hasPermission(player) || player.hasPermission(PluginCommand.PERMISSIONS_BASE_NODE)) {
+                                if (cmd.hasPermission(player)) {
                                     performCommand(cmd, args, player);
                                 } else {
                                     ErrorMessages.noPermission(player);

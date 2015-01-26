@@ -18,7 +18,7 @@ import org.mcstats.MetricsLite;
 
 import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.commands.PluginExecutor;
-import com.github.norbo11.listeners.MapListener;
+import com.github.norbo11.listeners.CardsListener;
 import com.github.norbo11.util.MapMethods;
 import com.github.norbo11.util.MoneyMethods;
 import com.github.norbo11.util.ResourceManager;
@@ -31,9 +31,9 @@ public class UltimateCards extends JavaPlugin {
 
     // Listeners
     private static PluginExecutor pluginExecutor;
+    private static Plugin pluginInstance;
 
     // Classes
-    private static PluginConfig pluginConfig;
     private static SavedTables savedTables;
 
     // Files
@@ -50,6 +50,10 @@ public class UltimateCards extends JavaPlugin {
     private static final String PLUGIN_TAG = "[UC]&f";
     private static final String LINE_STRING = "---------------------------------------";
 
+    public static Plugin getPluginInstance() {
+        return pluginInstance;
+    }
+    
     public static Economy getEconomy() {
         return economy;
     }
@@ -76,10 +80,6 @@ public class UltimateCards extends JavaPlugin {
 
     public static Logger getLog() {
         return log;
-    }
-
-    public static PluginConfig getPluginConfig() {
-        return pluginConfig;
     }
 
     public static PluginExecutor getPluginExecutor() {
@@ -118,7 +118,7 @@ public class UltimateCards extends JavaPlugin {
         try {
             // Attempt to create the create a config file if one doesn't exist
             if (filePluginConfig.exists() == false) {
-                getConfig().options().copyDefaults(true); // Copies the config in the actual plugin
+                getConfig().options().copyDefaults(true).copyHeader(true); // Copies the config in the actual plugin
                 saveDefaultConfig(); // Saves the new config
                 log.info("Created config file");
             }
@@ -146,7 +146,7 @@ public class UltimateCards extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (pluginConfig.isCleanupOnDisable()) {
+        if (PluginConfig.isCleanupOnDisable()) {
             MoneyMethods.returnMoney();
             MapMethods.restoreAllMaps();
         }
@@ -155,6 +155,7 @@ public class UltimateCards extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        pluginInstance = this;
         log = getLogger();
         version = getDescription().getVersion();
 
@@ -170,7 +171,7 @@ public class UltimateCards extends JavaPlugin {
         MapMethods.p = this;
         Timers.p = this;
         Sound.p = this;
-        getServer().getPluginManager().registerEvents(new MapListener(), this);
+        getServer().getPluginManager().registerEvents(new CardsListener(), this);
         addPermissions();
 
         // Creates all files
@@ -182,8 +183,7 @@ public class UltimateCards extends JavaPlugin {
 
         // Create/load configs
         try {
-            pluginConfig = new PluginConfig(this);
-            pluginConfig.load();
+            PluginConfig.load();
             SavedTables.load();
         } catch (Exception e) {
             e.printStackTrace();
@@ -199,7 +199,7 @@ public class UltimateCards extends JavaPlugin {
 
         // Update
         Updater updater;
-        if (pluginConfig.isAutoUpdate()) {
+        if (PluginConfig.isAutoUpdate()) {
             updater = new Updater(this, 39468, getFile(), Updater.UpdateType.DEFAULT, true);
             if (updater.getResult() == Updater.UpdateResult.SUCCESS) {
                 log.info("To apply the update, reload/restart your server.");

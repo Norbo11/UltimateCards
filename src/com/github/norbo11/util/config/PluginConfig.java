@@ -5,156 +5,161 @@ import org.bukkit.configuration.file.FileConfiguration;
 import com.github.norbo11.UltimateCards;
 
 public class PluginConfig {
-    public PluginConfig(UltimateCards p) {
-        this.p = p;
-    }
-
-    private UltimateCards p;
-
     // Options --------------------------------------------------
-    private FileConfiguration config;
+    private static FileConfiguration config;
 
     // General
-    private boolean autoUpdate, cleanupOnDisable;
+    private static boolean autoUpdate, cleanupOnDisable, disableCommandsWhilePlaying, preventMovementOutsideChatRange;
 
     // Log
-    private boolean enableLog;
-    private String dateFormat;
+    private static boolean enableLog;
+    private static String dateFormat;
 
     // Chat
-    private boolean displayTag;
-    private String colorTag, colorNormalMessage, colorErrorMessage, colorHighlight;
+    private static boolean displayTag;
+    private static String colorTag, colorNormalMessage, colorErrorMessage, colorHighlight;
 
     // General
-    private boolean displayTurnsPublicly, allowRebuys;
-    private int autoStart, turnSeconds, publicChatRange;
+    private static boolean displayTurnsPublicly, allowRebuys, autoKickOnLeave;
+    private static int autoStart, turnSeconds, publicChatRange;
 
     // Poker
-    private int dynamicFrequency;
-
-    private double maxBuy, sb, bb, ante, minRaise, fixRake, minBuy, rake;
-
-    private boolean minRaiseAlwaysBB;
+    private static int dynamicFrequency;
+    private static double maxBuy, sb, bb, ante, minRaise, fixRake, minBuy, rake;
+    private static boolean minRaiseAlwaysBB;
+    
     // Blackjack
-    private boolean allowDoubleDown;
-    private double minBet;
+    private static boolean allowDoubleDown;
+    private static double minBet;
 
-    private int amountOfDecks;
+    private static int amountOfDecks;
+    
+    public static boolean isAutoKickOnLeave() {
+        return autoKickOnLeave;
+    }
 
-    public int getAmountOfDecks() {
+    public static boolean isPreventMovementOutsideChatRange() {
+        return preventMovementOutsideChatRange;
+    }
+
+    public static boolean isDisableCommandsWhilePlaying() {
+        return disableCommandsWhilePlaying;
+    }
+
+    public static int getAmountOfDecks() {
         return amountOfDecks;
     }
 
-    public double getAnte() {
+    public static double getAnte() {
         return ante;
     }
 
-    public int getAutoStart() {
+    public static int getAutoStart() {
         return autoStart;
     }
 
-    public double getBb() {
+    public static double getBb() {
         return bb;
     }
 
-    public String getColorErrorMessage() {
+    public static String getColorErrorMessage() {
         return colorErrorMessage;
     }
 
-    public String getColorHighlight() {
+    public static String getColorHighlight() {
         return colorHighlight;
     }
 
-    public String getColorNormalMessage() {
+    public static String getColorNormalMessage() {
         return colorNormalMessage;
     }
 
-    public String getColorTag() {
+    public static String getColorTag() {
         return colorTag;
     }
 
-    public FileConfiguration getConfig() {
+    public static FileConfiguration getConfig() {
         return config;
     }
 
-    public String getDateFormat() {
+    public static String getDateFormat() {
         return dateFormat;
     }
 
-    public int getDynamicFrequency() {
+    public static int getDynamicFrequency() {
         return dynamicFrequency;
     }
 
-    public double getFixRake() {
+    public static double getFixRake() {
         return fixRake;
     }
 
-    public double getMaxBuy() {
+    public static double getMaxBuy() {
         return maxBuy;
     }
 
-    public double getMinBet() {
+    public static double getMinBet() {
         return minBet;
     }
 
-    public double getMinBuy() {
+    public static double getMinBuy() {
         return minBuy;
     }
 
-    public double getMinRaise() {
+    public static double getMinRaise() {
         return minRaise;
     }
 
-    public int getPublicChatRange() {
+    public static int getPublicChatRange() {
         return publicChatRange;
     }
 
-    public double getRake() {
+    public static double getRake() {
         return rake;
     }
 
-    public double getSb() {
+    public static double getSb() {
         return sb;
     }
 
-    public int getTurnSeconds() {
+    public static int getTurnSeconds() {
         return turnSeconds;
     }
 
-    public boolean isAllowDoubleDown() {
+    public static boolean isAllowDoubleDown() {
         return allowDoubleDown;
     }
 
-    public boolean isAllowRebuys() {
+    public static boolean isAllowRebuys() {
         return allowRebuys;
     }
 
-    public boolean isAutoUpdate() {
+    public static boolean isAutoUpdate() {
         return autoUpdate;
     }
 
-    public boolean isCleanupOnDisable() {
+    public static boolean isCleanupOnDisable() {
         return cleanupOnDisable;
     }
 
-    public boolean isDisplayTag() {
+    public static boolean isDisplayTag() {
         return displayTag;
     }
 
-    public boolean isDisplayTurnsPublicly() {
+    public static boolean isDisplayTurnsPublicly() {
         return displayTurnsPublicly;
     }
 
-    public boolean isEnableLog() {
+    public static boolean isEnableLog() {
         return enableLog;
     }
 
-    public boolean isMinRaiseAlwaysBB() {
+    public static boolean isMinRaiseAlwaysBB() {
         return minRaiseAlwaysBB;
     }
 
-    public void load() {
-        config = p.getConfig();
+    public static void load() {
+        config = UltimateCards.getPluginInstance().getConfig();
         try {
             config.load(UltimateCards.getFilePluginConfig());
         } catch (Exception e) {
@@ -163,11 +168,14 @@ public class PluginConfig {
         setValues();
     }
 
-    private void setValues() {
+    private static void setValues() {
         // General
         cleanupOnDisable = config.getBoolean("options.general.cleanupOnDisable", config.getDefaults().getBoolean("options.general.cleanupOnDisable"));
         autoUpdate = config.getBoolean("options.general.autoUpdate", config.getDefaults().getBoolean("options.general.autoUpdate"));
-
+        disableCommandsWhilePlaying = config.getBoolean("options.general.disableCommandsWhilePlaying", config.getDefaults().getBoolean("options.general.disableCommandsWhilePlaying"));
+        preventMovementOutsideChatRange = config.getBoolean("options.general.preventMovementOutsideChatRange", config.getDefaults().getBoolean("options.general.preventMovementOutsideChatRange"));
+        autoKickOnLeave = config.getBoolean("options.general.autoKickOnLeave", config.getDefaults().getBoolean("options.general.autoKickOnLeave"));
+        
         // Log
         enableLog = config.getBoolean("options.log.enableLog", config.getDefaults().getBoolean("options.log.enableLog"));
         dateFormat = config.getString("options.log.dateFormat", config.getDefaults().getString("options.log.dataFormat"));
