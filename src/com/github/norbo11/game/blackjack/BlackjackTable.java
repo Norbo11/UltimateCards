@@ -19,27 +19,25 @@ import com.github.norbo11.util.Messages;
 import com.github.norbo11.util.Timers;
 
 public class BlackjackTable extends CardsTable {
-    public BlackjackTable(Player owner, String name, int id, Location location, double buyin) throws Exception {
-        this(owner.getName(), name, id, location, buyin);
-    }
-
-    public BlackjackTable(String owner, String name, int id, Location location) {
-        super(owner, name, id, location);
-        setCardsTableSettings(new BlackjackTableSettings(this));
-    }
-
     @SuppressWarnings("deprecation")
     public BlackjackTable(String owner, String name, int id, Location location, double buyin) throws Exception {
-        super(owner, name, id, location);
+        super(owner, name, id);
 
-        if (Bukkit.getPlayer(owner) != null) {
-            setOwnerPlayer(new BlackjackPlayer(Bukkit.getPlayer(owner), this, buyin));
-            getPlayers().add(getOwnerPlayer()); // Add the owner to the sitting players list
+        if (buyin != 0) {
+            if (Bukkit.getPlayer(owner) != null) {
+                setOwnerPlayer(new BlackjackPlayer(Bukkit.getPlayer(owner), this, buyin));
+                getPlayers().add(getOwnerPlayer()); // Add the owner to the sitting players list
+            }
         }
 
         setCardsTableSettings(new BlackjackTableSettings(this));
+        getSettings().startLocation.setValue(location);
     }
 
+    public BlackjackTable(String owner, String name, int id, Location location) throws Exception {
+        this(owner, name, id, location, 0);
+    }
+    
     // Generic vars
     private BlackjackDealer dealer = new BlackjackDealer(this);
 

@@ -68,9 +68,9 @@ public class TableCreate extends PluginCommand {
     public void perform() throws Exception {
         CardsTable newTable = null;
         if (gameType.equalsIgnoreCase("poker")) {
-            newTable = new PokerTable(getPlayer(), tableName, CardsTable.getFreeTableID(), getPlayer().getLocation(), buyin);
+            newTable = new PokerTable(getPlayer().getName(), tableName, CardsTable.getFreeTableID(), getPlayer().getLocation(), buyin);
         } else if (gameType.equalsIgnoreCase("blackjack") || gameType.equalsIgnoreCase("bj")) {
-            newTable = new BlackjackTable(getPlayer(), tableName, CardsTable.getFreeTableID(), getPlayer().getLocation(), buyin);
+            newTable = new BlackjackTable(getPlayer().getName(), tableName, CardsTable.getFreeTableID(), getPlayer().getLocation(), buyin);
         }
         CardsTable.getTables().add(newTable);
 

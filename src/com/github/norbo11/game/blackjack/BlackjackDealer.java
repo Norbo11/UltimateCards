@@ -38,7 +38,7 @@ public class BlackjackDealer {
     }
 
     public void addMoney(double amount) {
-        if (table.getOwner() != null) MoneyMethods.depositMoney(table.getOwner(), amount);
+        if (!table.getOwner().equals("")) MoneyMethods.depositMoney(table.getOwner(), amount);
     }
 
     public void bust() {
@@ -65,7 +65,7 @@ public class BlackjackDealer {
     }
 
     public double getMoney() {
-        if (table.getOwner() != null) return MoneyMethods.getMoney(table.getOwner());
+        if (!table.getOwner().equals("")) return MoneyMethods.getMoney(table.getOwner());
         return Double.MAX_VALUE;
     }
 
@@ -124,7 +124,7 @@ public class BlackjackDealer {
     }
 
     public void removeMoney(double amount) {
-        if (table.getOwner() != null) MoneyMethods.withdrawMoney(table.getOwner(), amount);
+        if (!table.getOwner().equals("")) MoneyMethods.withdrawMoney(table.getOwner(), amount);
     }
 
     public void reveal() {

@@ -18,7 +18,7 @@ import com.github.norbo11.util.NumberMethods;
 import com.github.norbo11.util.config.SavedTables;
 
 public abstract class CardsTable {
-    public CardsTable(String owner, String name, int id, Location location) {
+    public CardsTable(String owner, String name, int id) {
         // Set the table core properties
         setOwner(owner);
         setName(name);

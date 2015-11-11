@@ -1,7 +1,8 @@
 EditYourConfig:
     gameType: poker
     owner: ""
-    location: ["world",0,0,0]
+    startLocation: ["world",0,0,0]
+    leaveLocation: ["world",0,0,0]
     settings:
         allowRebuys: true
         displayTurnsPublicly: false
@@ -19,7 +20,8 @@ EditYourConfig:
 EditYourConfig2:
     gameType: bj
     owner: ""
-    location: ["world",100,0,100]
+    startLocation: ["world",0,0,0]
+    leaveLocation: ["world",0,0,0]
     settings:
         allowRebuys: true
         displayTurnsPublicly: false

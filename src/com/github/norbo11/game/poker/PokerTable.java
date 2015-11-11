@@ -25,25 +25,23 @@ import com.github.norbo11.util.Messages;
 import com.github.norbo11.util.Timers;
 
 public class PokerTable extends CardsTable {
-    public PokerTable(Player owner, String name, int id, Location location, double buyin) throws Exception {
-        this(owner.getName(), name, id, location, buyin);
+    @SuppressWarnings("deprecation")
+    public PokerTable(String owner, String name, int id, Location location, double buyin) throws Exception {
+        super(owner, name, id);
+        
+        if (buyin != 0) {
+            if (Bukkit.getPlayer(owner) != null) {
+                setOwnerPlayer(new PokerPlayer(Bukkit.getPlayer(owner), this, buyin));
+                getPlayers().add(getOwnerPlayer()); // Add the owner to the sitting players list
+            }
+        }
+
+        setCardsTableSettings(new PokerTableSettings(this));
+        getSettings().startLocation.setValue(location);
     }
 
     public PokerTable(String owner, String name, int id, Location location) throws Exception {
-        super(owner, name, id, location);
-        getSettings().startLocation.setValue(location);
-    }
-
-    @SuppressWarnings("deprecation")
-    public PokerTable(String owner, String name, int id, Location location, double buyin) throws Exception {
-        super(owner, name, id, location);
-
-        if (Bukkit.getPlayer(owner) != null) {
-            setOwnerPlayer(new PokerPlayer(Bukkit.getPlayer(owner), this, buyin));
-            getPlayers().add(getOwnerPlayer()); // Add the owner to the sitting players list
-        }
-        setCardsTableSettings(new PokerTableSettings(this));
-        getSettings().startLocation.setValue(location);
+        this(owner, name, id, location, 0);
     }
 
     // Generic vars
