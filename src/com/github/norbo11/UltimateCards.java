@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import net.gravitydevelopment.updater.Updater;
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
 
@@ -14,8 +13,6 @@ import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.mcstats.MetricsLite;
-
 import com.github.norbo11.commands.PluginCommand;
 import com.github.norbo11.commands.PluginExecutor;
 import com.github.norbo11.listeners.CardsListener;
@@ -187,23 +184,6 @@ public class UltimateCards extends JavaPlugin {
             SavedTables.load();
         } catch (Exception e) {
             e.printStackTrace();
-        }
-
-        // Metrics
-        try {
-            MetricsLite metrics = new MetricsLite(this);
-            metrics.start();
-        } catch (IOException e) {
-            System.out.println("Couldn't submit Metrics data!");
-        }
-
-        // Update
-        Updater updater;
-        if (PluginConfig.isAutoUpdate()) {
-            updater = new Updater(this, 39468, getFile(), Updater.UpdateType.DEFAULT, true);
-            if (updater.getResult() == Updater.UpdateResult.SUCCESS) {
-                log.info("To apply the update, reload/restart your server.");
-            }
         }
 
         // Set all commands to the command executor

@@ -109,13 +109,14 @@ public class MapMethods {
                     }
 
                     // Draw dealer score
-                    mapCanvas.drawText(80, 18, MinecraftFont.Font, "ง32;" + blackjackPlayer.getTable().getDealer().getScore());
+                    mapCanvas.drawText(80, 18, MinecraftFont.Font, "ยง32;" + blackjackPlayer.getTable().getDealer().getScore());
 
                     // Draw player score
-                    mapCanvas.drawText(80, 47, MinecraftFont.Font, "ง32;" + blackjackPlayer.scoreToString());
+                    mapCanvas.drawText(80, 47, MinecraftFont.Font, "ยง32;" + blackjackPlayer.scoreToString());
 
                     // Draw your bet
-                    mapCanvas.drawText(80, 76, MinecraftFont.Font, "ง32;" + Formatter.formatMoneyWithoutColor(blackjackPlayer.getTotalAmountBet()));
+                    // ๏ฟฝ -> ยง
+                    mapCanvas.drawText(80, 76, MinecraftFont.Font, "ยง32;" + Formatter.formatMoneyWithoutColor(blackjackPlayer.getTotalAmountBet()));
 
                     redrawsNeeded.put(player.getName(), false);
                     player.sendMap(mapView);
@@ -185,10 +186,11 @@ public class MapMethods {
                     }
 
                     // Draw current bet
-                    mapCanvas.drawText(56, 94, MinecraftFont.Font, "ง32;" + Formatter.formatMoneyWithoutColor(pokerPlayer.getPokerTable().getCurrentBet()));
+                    mapCanvas.drawText(56, 94, MinecraftFont.Font, "ยง32;" + Formatter.formatMoneyWithoutColor(pokerPlayer.getPokerTable().getCurrentBet()));
 
+                    // ๏ฟฝ
                     // Draw total in pots
-                    mapCanvas.drawText(56, 115, MinecraftFont.Font, "ง32;" + Formatter.formatMoneyWithoutColor(pokerPlayer.getPokerTable().getHighestPot()));
+                    mapCanvas.drawText(56, 115, MinecraftFont.Font, "ยง32;" + Formatter.formatMoneyWithoutColor(pokerPlayer.getPokerTable().getHighestPot()));
 
                     redrawsNeeded.put(player.getName(), false);
                     player.sendMap(mapView);

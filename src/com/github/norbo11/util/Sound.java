@@ -9,6 +9,7 @@ import org.bukkit.scheduler.BukkitTask;
 import com.github.norbo11.UltimateCards;
 import com.github.norbo11.game.cards.CardsPlayer;
 import com.github.norbo11.game.cards.CardsTable;
+import com.github.norbo11.Sounds;
 
 public class Sound {
     public static UltimateCards p;
@@ -22,7 +23,7 @@ public class Sound {
 
                 @Override
                 public void run() {
-                    player.playSound(player.getLocation(), org.bukkit.Sound.NOTE_PIANO, 1.0F, pitch);
+                    player.playSound(player.getLocation(), Sounds.NOTE_PIANO.bukkitSound(), 1.0F, pitch);
                     pitch -= 0.1F;
                     i++;
                     if (i == 7) {
@@ -35,8 +36,8 @@ public class Sound {
 
     public static void otherTurn(final Player player) {
         if (player != null) {
-            player.playSound(player.getLocation(), org.bukkit.Sound.NOTE_BASS_DRUM, 1.0F, 1.0F);
-            player.playSound(player.getLocation(), org.bukkit.Sound.NOTE_BASS_DRUM, 1.0F, 2.0F);
+            player.playSound(player.getLocation(), Sounds.NOTE_BASS_DRUM.bukkitSound(), 1.0F, 1.0F);
+            player.playSound(player.getLocation(), Sounds.NOTE_BASS_DRUM.bukkitSound(), 1.0F, 2.0F);
         }
     }
 
@@ -51,8 +52,8 @@ public class Sound {
 
     public static void turn(Player player) {
         if (player != null) {
-            player.playSound(player.getLocation(), org.bukkit.Sound.NOTE_PIANO, 1.0F, 1.0F);
-            player.playSound(player.getLocation(), org.bukkit.Sound.NOTE_PIANO, 1.0F, 2.0F);
+            player.playSound(player.getLocation(), Sounds.NOTE_PIANO.bukkitSound(), 1.0F, 1.0F);
+            player.playSound(player.getLocation(), Sounds.NOTE_PIANO.bukkitSound(), 1.0F, 2.0F);
         }
     }
 
@@ -64,7 +65,7 @@ public class Sound {
 
                 @Override
                 public void run() {
-                    player.playSound(player.getLocation(), org.bukkit.Sound.NOTE_PIANO, 1.0F, pitch);
+                    player.playSound(player.getLocation(), Sounds.NOTE_PIANO.bukkitSound(), 1.0F, pitch);
                     pitch += 0.1F;
                     i++;
                     if (i == 7) {

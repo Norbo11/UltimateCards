@@ -37,7 +37,14 @@ public class TableSit extends PluginCommand {
             CardsPlayer cardsPlayer = CardsPlayer.getCardsPlayer(getPlayer().getName());
             if (cardsPlayer == null) {
                 String idString = getArgs()[1];
-                int id = NumberMethods.getPositiveInteger(idString);
+
+                int id = 0;
+                 try {
+                    id = NumberMethods.getPositiveInteger(idString);
+                 } catch (NumberFormatException exc) {
+                     return false;
+                 }
+
                 // Check ID isn't a number
                 if (id == -99999) {
                     id = NumberMethods.getInteger(idString);
@@ -73,7 +80,7 @@ public class TableSit extends PluginCommand {
                                 } else {
                                     ErrorMessages.tableInProgress(getPlayer());
                                 }
-                            } else {
+                            } else 
                                 ErrorMessages.tableNotOpen(getPlayer(), getArgs()[1]);
                             }
                         } else {
