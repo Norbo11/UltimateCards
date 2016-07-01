@@ -80,7 +80,7 @@ public class TableSit extends PluginCommand {
                                 } else {
                                     ErrorMessages.tableInProgress(getPlayer());
                                 }
-                            } else 
+                            } else {
                                 ErrorMessages.tableNotOpen(getPlayer(), getArgs()[1]);
                             }
                         } else {
