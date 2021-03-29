@@ -1,1 +1,11 @@
+# IntelliJ IDEA Stuff
+/.idea
+Paintball.iml
+*.iml
+*.eml
+
+# Maven Stuff
 /target
+
+# Github stuff
+/.git
